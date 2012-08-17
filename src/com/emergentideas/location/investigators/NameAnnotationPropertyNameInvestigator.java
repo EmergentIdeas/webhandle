@@ -5,12 +5,12 @@ import java.lang.reflect.Method;
 
 import com.emergentideas.location.InvocationContext;
 import com.emergentideas.location.Name;
-import com.emergentideas.location.PropertyNameInvestigator;
+import com.emergentideas.location.ParameterNameInvestigator;
 
 public class NameAnnotationPropertyNameInvestigator implements
-		PropertyNameInvestigator {
+		ParameterNameInvestigator {
 
-	public <T> String determinePropertyName(Object focus, Method method, Class<T> parameterClass, Annotation[] parameterAnnotations,
+	public <T> String determineParameterName(Object focus, Method method, Class<T> parameterClass, Annotation[] parameterAnnotations,
 			InvocationContext context) {
 		for(Annotation annotation : parameterAnnotations) {
 			if(annotation instanceof Name) {

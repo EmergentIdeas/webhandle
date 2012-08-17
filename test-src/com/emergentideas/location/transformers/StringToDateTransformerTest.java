@@ -13,6 +13,6 @@ public class StringToDateTransformerTest {
 		
 		StringToDateTransformer transformer = new StringToDateTransformer();
 		
-		assertTrue(d1.after(transformer.transform(null, null, "2010.01.16")[0]));
+		assertTrue(d1.after(transformer.transform(null, null, null, "2010.01.16")[0]));
 	}
 }

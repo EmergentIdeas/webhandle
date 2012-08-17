@@ -20,11 +20,11 @@ public class NameAnnotationPropertyNameInvestigatorTest {
 		
 		
 		Method mTest1 = TestObj.class.getMethod("test1", String.class, String.class);
-		String name = investigator.determinePropertyName(null, mTest1, 
+		String name = investigator.determineParameterName(null, mTest1, 
 				String.class, mTest1.getParameterAnnotations()[0], context);
 		assertEquals("one", name);
 		
-		name = investigator.determinePropertyName(null, mTest1, 
+		name = investigator.determineParameterName(null, mTest1, 
 				String.class, mTest1.getParameterAnnotations()[1], context);
 		assertNull(name);
 	}

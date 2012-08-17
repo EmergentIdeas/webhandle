@@ -10,8 +10,8 @@ public class StringArrayToStringTransformerTest {
 		
 		StringArrayToStringTransformer transformer = new StringArrayToStringTransformer();
 		
-		assertEquals("one", transformer.transform(null, null, new String[] { "one" }));
-		assertEquals("one,two", transformer.transform(null, null, new String[] { "one", "two" }));
-		assertEquals("one,two,three", transformer.transform(null, null, new String[] { "one", "two", "three" }));
+		assertEquals("one", transformer.transform(null, null, null, new String[] { "one" }));
+		assertEquals("one,two", transformer.transform(null, null, null, new String[] { "one", "two" }));
+		assertEquals("one,two,three", transformer.transform(null, null, null, new String[] { "one", "two", "three" }));
 	}
 }

@@ -2,6 +2,8 @@ package com.emergentideas.location;
 
 import java.util.List;
 
+import com.emergentideas.location.composites.db.Db;
+
 public class TestObj {
 	
 	protected String a;
@@ -10,6 +12,15 @@ public class TestObj {
 	protected TestObj child1;
 	protected TestObj child2;
 	protected List<TestObj> manyChildren;
+	
+	public TestObj() {
+		
+	}
+	
+	public TestObj(String a, String b) {
+		this.a = a;
+		this.b = b;
+	}
 	
 	public String getA() {
 		return a;
@@ -26,7 +37,7 @@ public class TestObj {
 	public TestObj getChild1() {
 		return child1;
 	}
-	public void setChild1(TestObj child1) {
+	public void setChild1(@Db("id") TestObj child1) {
 		this.child1 = child1;
 	}
 	public TestObj getChild2() {
@@ -42,7 +53,9 @@ public class TestObj {
 		this.manyChildren = manyChildren;
 	}
 	
-	public void test1(@Name("one") String one, @Transformers({"one", "two"}) @Source("request") Integer[] two) {
+	public void test1(@Name("one") String one, 
+			@Name("two") @Transformers(value = {"one", "two"}, properties = "name1=value1&name2=value2") @Source("request") Integer[] two,
+			@Name("two") List<Double> three) {
 		
 	}
 

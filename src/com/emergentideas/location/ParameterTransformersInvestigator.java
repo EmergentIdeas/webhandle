@@ -3,13 +3,15 @@ package com.emergentideas.location;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
+import com.emergentideas.location.transformers.TransformerSpecification;
+
 /**
  * Determines which transformers should be applied to the source value before it is passed as an argument to a method.  Although it's 
  * up to the caller, the expectation would be that all of the transformers will get applied from all Transformer Investigators.
  * @author kolz
  *
  */
-public interface TransformersInvestigator {
+public interface ParameterTransformersInvestigator {
 	
 	/**
 	 * Determines which transformers should be applied to the source value before it is passed as an argument to a method
@@ -21,6 +23,6 @@ public interface TransformersInvestigator {
 	 * @param context
 	 * @return
 	 */
-	public <T> String[] determineTransformers(Object focus, Method method, Class<T> parameterClass, String parameterName, Annotation[] parameterAnnotations, InvocationContext context);
+	public <T> TransformerSpecification[] determineTransformers(Object focus, Method method, Class<T> parameterClass, String parameterName, Annotation[] parameterAnnotations, InvocationContext context);
 
 }

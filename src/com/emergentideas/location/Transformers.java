@@ -11,4 +11,9 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface Transformers {
 	public String[] value();
+	
+	
+	// A string which will be turned into a map of properties for the transformer.  This is configurable,
+	// but let's try not to get too carried away.  By default this will be a URL encoded string of properties.
+	public String properties() default "";
 }

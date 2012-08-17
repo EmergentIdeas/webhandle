@@ -1,12 +1,14 @@
 package com.emergentideas.location.transformers;
 
+import java.util.Map;
+
 import com.emergentideas.location.InvocationContext;
 import com.emergentideas.location.ValueTransformer;
 
-public class StringArrayToStringTransformer implements ValueTransformer<String, String> {
+public class StringArrayToStringTransformer implements ValueTransformer<String, String, String> {
 
 	
-	public String transform(InvocationContext context, String parameterName, String... source) {
+	public String transform(InvocationContext context, Map<String, String> transformationProperties, String parameterName, String... source) {
 		StringBuilder sb = new StringBuilder();
 		for(int i = 0; i < source.length; i++) {
 			sb.append(source[i]);

@@ -3,6 +3,7 @@ package com.emergentideas.location.transformers;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.pojava.datetime.DateTime;
@@ -10,7 +11,7 @@ import org.pojava.datetime.DateTime;
 import com.emergentideas.location.InvocationContext;
 import com.emergentideas.location.ValueTransformer;
 
-public class StringToDateTransformer implements ValueTransformer<String, Date[]> {
+public class StringToDateTransformer implements ValueTransformer<String, String, Date[]> {
 
 	protected static final String sWidgetDateFormat = "yyyy-MM-dd";
 	protected static final String sWidgetDateFormat2 = "yyyy.MM.dd";
@@ -44,7 +45,7 @@ public class StringToDateTransformer implements ValueTransformer<String, Date[]>
 			dfDateOnly4
 	};
 	
-	public Date[] transform(InvocationContext context, String parameterName, String... source) {
+	public Date[] transform(InvocationContext context, Map<String, String> transformationProperties, String parameterName, String... source) {
 		Date[] result = new Date[source.length];
 		
 		

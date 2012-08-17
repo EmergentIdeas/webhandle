@@ -10,7 +10,7 @@ public class StringToIntegerTransformerTest {
 	public void testIntegerConvertsion() {
 		StringToIntegerTransformer transformer = new StringToIntegerTransformer();
 		
-		Integer[] ints = transformer.transform(null, null, "12", "15", "16.6");
+		Integer[] ints = transformer.transform(null, null, null, "12", "15", "16.6");
 		assertEquals(3, ints.length);
 		
 		assertEquals((Integer)12, ints[0]);
