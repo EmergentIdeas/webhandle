@@ -3,6 +3,7 @@ package com.emergentideas.location;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -52,11 +53,24 @@ public class ParameterMarshal {
 	
 	
 	public ParameterMarshal() {
-		this(new ParameterMarshalConfiguration());
+		this(createDefaultConfiguration());
 	}
 	
 	public ParameterMarshal(ParameterMarshalConfiguration config) {
+		this(config, new InvocationContext());
+	}
+	
+	public ParameterMarshal(InvocationContext context) {
+		this(createDefaultConfiguration(), context);
+	}
+	
+	public ParameterMarshal(ParameterMarshalConfiguration config, InvocationContext context) {
 		this.configuration = config;
+		this.context = context;
+	}
+	
+	protected static ParameterMarshalConfiguration createDefaultConfiguration() {
+		return new ParameterMarshalConfiguration();
 	}
 	
 	public <T> String determineParameterName(Object focus, Method method, Class<T> parameterClass, Annotation[] parameterAnnotations) {
@@ -148,17 +162,70 @@ public class ParameterMarshal {
 		}
 	}
 	
-	public Object getTypedParameter(Object focus, Method method, int argumentIndex) {
+	/**
+	 * Returns the object which can be used as an argument for the object, method, and argument index.  It also
+	 * adds the found parameter to the invocation context.
+	 * @param focus The object the method will be called on
+	 * @param method The method that will be called
+	 * @param argumentIndex The argument index to find the parameter for
+	 * @return
+	 */
+	protected Object getTypedParameter(Object focus, Method method, int argumentIndex) {
 		
 		Annotation[] parameterAnnotations = method.getParameterAnnotations()[argumentIndex];
 		Class parameterClass = determineParameterClass(focus, method, argumentIndex);
 		Type parameterType = determineParameterType(focus, method, argumentIndex);
 		String parameterName = determineParameterName(focus, method, parameterClass, parameterAnnotations);
-		String[] allowedSources = determineAllowedSourceSets(focus, method, parameterClass, parameterName, parameterAnnotations);
-		TransformerSpecification[] transformers = determineTransformers(focus, method, parameterClass, parameterName, parameterAnnotations);
 		
-		Object initialData = getInitialObject(parameterName, parameterClass, allowedSources);
-		return getTypedParameter(parameterName, parameterClass, getComponentClass(parameterType), initialData, transformers);
+		// Let's see if we've already got it in the context
+		Object result = null;
+		if(parameterName == null) {
+			result = context.getFoundParameter(parameterClass);
+		}
+		else {
+			result = context.getFoundParameter(parameterName, parameterClass);
+		}
+		
+		if(result == null) {
+			String[] allowedSources = determineAllowedSourceSets(focus, method, parameterClass, parameterName, parameterAnnotations);
+			TransformerSpecification[] transformers = determineTransformers(focus, method, parameterClass, parameterName, parameterAnnotations);
+			
+			Object initialData = getInitialObject(parameterName, parameterClass, allowedSources);
+			
+			result = getTypedParameter(parameterName, parameterClass, getComponentClass(parameterType), initialData, transformers);
+			
+			// add any parameter we've found
+			if(parameterName == null) {
+				context.setFoundParameter(parameterClass, result);
+			}
+			else {
+				context.setFoundParameter(parameterName, parameterClass, result);
+			}
+		}
+		
+		return result;
+	}
+	
+	protected Object[] getTypedArguments(Object focus, Method method) {
+		int numArguments = method.getParameterTypes().length;
+		Object[] result = new Object[numArguments];
+		
+		for(int i = 0; i < numArguments; i++) {
+			result[i] = getTypedParameter(focus, method, i);
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Calls the method on <code>focus</code> with parameters determined by the sources, annotations, transformers,
+	 * etc.
+	 * @param focus The object to invoke the method on
+	 * @param method The method to invoke
+	 * @return
+	 */
+	public Object call(Object focus, Method method) throws InvocationTargetException, IllegalAccessException {
+		return method.invoke(focus, getTypedArguments(focus, method));
 	}
 	
 	/**

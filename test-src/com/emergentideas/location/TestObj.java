@@ -53,10 +53,26 @@ public class TestObj {
 		this.manyChildren = manyChildren;
 	}
 	
-	public void test1(@Name("one") String one, 
+	/**
+	 * Returns the <code>one</code>-[sum of two]-[sum of three]
+	 * @param one
+	 * @param two
+	 * @param three
+	 */
+	public String test1(@Name("one") String one, 
 			@Name("two") @Transformers(value = {"one", "two"}, properties = "name1=value1&name2=value2") @Source("request") Integer[] two,
 			@Name("two") List<Double> three) {
+		int intSum = 0;
+		for(int i : two) {
+			intSum += i;
+		}
 		
+		double dSum = 0;
+		for(Double d : three) {
+			dSum += d;
+		}
+		
+		return one + "-" + intSum + "-" + dSum;
 	}
 
 	

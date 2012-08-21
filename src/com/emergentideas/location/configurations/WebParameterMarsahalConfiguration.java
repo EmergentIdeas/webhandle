@@ -2,6 +2,7 @@ package com.emergentideas.location.configurations;
 
 import com.emergentideas.location.ParameterMarshalConfiguration;
 import com.emergentideas.location.composites.db.DbInvestigator;
+import com.emergentideas.location.investigators.BeanPropertyNameAndDbTransformerInvestigator;
 import com.emergentideas.location.investigators.NameAnnotationPropertyNameInvestigator;
 import com.emergentideas.location.investigators.SourceAnnotationSourceSetInvestigator;
 import com.emergentideas.location.investigators.TransformersAnnotationTransformersInvestigator;
@@ -30,6 +31,11 @@ public class WebParameterMarsahalConfiguration extends
 		DbInvestigator dbInvestigator = new DbInvestigator();
 		getParameterNameInvestigators().add(dbInvestigator);
 		getTransformersInvestigators().add(dbInvestigator);
+		
+		// add the investigator for populating the members of a bean
+		BeanPropertyNameAndDbTransformerInvestigator beanDbInvestigator = new BeanPropertyNameAndDbTransformerInvestigator();
+		getParameterNameInvestigators().add(beanDbInvestigator);
+		getTransformersInvestigators().add(beanDbInvestigator);
 		
 	}
 }
