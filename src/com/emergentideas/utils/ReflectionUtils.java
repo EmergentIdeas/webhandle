@@ -3,6 +3,7 @@ package com.emergentideas.utils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 public class ReflectionUtils {
 	
@@ -242,5 +243,7 @@ public class ReflectionUtils {
 		return null;
 	}
 	
-
+	public static boolean isPublic(Method m) {
+		return Modifier.isPublic(m.getDeclaringClass().getModifiers());
+	}
 }

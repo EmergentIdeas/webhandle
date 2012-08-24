@@ -16,10 +16,11 @@ public class InvocationContext {
 	protected static final String UNNAMED_PARAMETER_NAME = "IAMTHEUNNAMED";
 
 	public InvocationContext() {
-		
+		setFoundParameter(InvocationContext.class, this);
 	}
 	
 	public InvocationContext(Location location) {
+		this();
 		this.location = location;
 	}
 	

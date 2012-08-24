@@ -9,4 +9,12 @@ public class Constants {
 	// expected transformers
 	public static final String DB_TO_OBJECT_TRANSFORMER_NAME_DEFAULT = "dbObjectSourceTransformer";
 	
+	
+	// location locations
+	public static final String REQUEST_LOCATION = "requestLocation";
+	public static final String APP_LOCATION = "appLocation";
+	public static final String SESSION_LOCATION = "sessionLocation";
+	public static final String ENV_LOCATION = "envLocation";
+
+	
 }

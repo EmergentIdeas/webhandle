@@ -1,4 +1,4 @@
-package com.emergentideas.webhandle.objector;
+package com.emergentideas.webhandle.objectors;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;

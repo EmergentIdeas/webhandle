@@ -54,7 +54,7 @@ public class CommandValueTransformer implements ValueTransformer<String, Object,
 		
 		for(Method m : type.getMethods()) {
 			if(ReflectionUtils.isSetterMethod(m) && 
-					Modifier.isPublic(m.getDeclaringClass().getModifiers()) && ReflectionUtils.hasAnnotation(m, NoInject.class) == false) {
+					ReflectionUtils.isPublic(m) && ReflectionUtils.hasAnnotation(m, NoInject.class) == false) {
 				result.add(m);
 			}
 		}

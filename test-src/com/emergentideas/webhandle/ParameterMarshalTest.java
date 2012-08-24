@@ -169,6 +169,12 @@ public class ParameterMarshalTest {
 		context.setFoundParameter("two", Integer[].class, new Integer[] { 3, 5 });
 		assertEquals("1-8-5.0", marshal.call(obj, m));
 		
+		// now let's call with call specific properties.  These should be used even in preference 
+		// to the cached context parameters.
+		Map<String, Object> callProps = new HashMap<String, Object>();
+		callProps.put("two", new String[] { "14", "16" });
+		assertEquals("1-8-30.0", marshal.call(obj, m, false, "callParms", callProps));
+		
 		
 	}
 

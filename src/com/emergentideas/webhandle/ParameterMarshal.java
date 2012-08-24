@@ -23,6 +23,7 @@ import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.webhandle.exceptions.ParameterNotFoundException;
 import com.emergentideas.webhandle.exceptions.TransformationException;
 import com.emergentideas.webhandle.sources.CallSpecValueSource;
+import com.emergentideas.webhandle.sources.MapValueSource;
 import com.emergentideas.webhandle.transformers.ArrayToCollectionTransformer;
 import com.emergentideas.webhandle.transformers.ArrayToObjectTransformer;
 import com.emergentideas.webhandle.transformers.StringArrayToStringTransformer;
@@ -41,6 +42,10 @@ public class ParameterMarshal {
 
 	// holds the named value sources
 	protected Map<String, ValueSource<? extends Object>> sources = Collections.synchronizedMap(new HashMap<String, ValueSource<? extends Object>>());
+	
+	// check these sources first as they contain things like security attributes or responses which should not be
+	// drawn from the other data sources when information from these is available.
+	protected Map<String, ValueSource<? extends Object>> preferredSources = Collections.synchronizedMap(new HashMap<String, ValueSource<? extends Object>>());
 	
 	// The set of transformers and investigators that this marshal should use.  These are generally not specific
 	// to any one call put rather to a type or class of calls.
@@ -188,15 +193,21 @@ public class ParameterMarshal {
 		
 		// Let's see if we've already got it in the context
 		Object result = null;
-		if(parameterName == null) {
-			result = context.getFoundParameter(parameterClass);
-		}
-		else {
-			result = context.getFoundParameter(parameterName, parameterClass);
+		String[] allowedSources = determineAllowedSourceSets(focus, method, parameterClass, parameterName, parameterAnnotations);
+		
+		if(isInAllowedSources(parameterName, parameterClass, (Map)preferredSources, allowedSources) == false) {
+			// only look in the context (cache) if we know the value isn't in the preferred sources.
+			// this is a security mechanism which keeps us looking at any special call parameters even though we
+			// may have seen the parameter before or it exists in another source.
+			if(parameterName == null) {
+				result = context.getFoundParameter(parameterClass);
+			}
+			else {
+				result = context.getFoundParameter(parameterName, parameterClass);
+			}
 		}
 		
 		if(result == null) {
-			String[] allowedSources = determineAllowedSourceSets(focus, method, parameterClass, parameterName, parameterAnnotations);
 			TransformerSpecification[] transformers = determineTransformers(focus, method, parameterClass, parameterName, parameterAnnotations);
 			
 			ValueSource source = getInitialObjectSource(parameterName, parameterClass, allowedSources);
@@ -277,10 +288,36 @@ public class ParameterMarshal {
 	 * @return
 	 */
 	public Object call(Object focus, Method method, boolean failOnMissingParameters) throws InvocationTargetException, IllegalAccessException {
-		Object[] arguments = getTypedArguments(focus, method, failOnMissingParameters);
+		return call(focus, method, failOnMissingParameters, null, (ValueSource)null);
+	}
+	
+	public Object call(Object focus, Method method, boolean failOnMissingParameters, String callSourceName, Map<String, ?> callProperties) 
+			throws InvocationTargetException, IllegalAccessException {
 		
-		checkAuthorizationToCall(focus, method);
-		return method.invoke(focus, arguments);
+		ValueSource<?> source = null;
+		if(callProperties != null) {
+			source = new MapValueSource(callProperties);
+		}
+		
+		return call(focus, method, failOnMissingParameters, callSourceName, source);
+	}
+	public Object call(Object focus, Method method, boolean failOnMissingParameters, String callSourceName, ValueSource<?> source) 
+			throws InvocationTargetException, IllegalAccessException {
+		
+		if(callSourceName != null && source != null) {
+			preferredSources.put(callSourceName, source);
+		}
+		try {
+			Object[] arguments = getTypedArguments(focus, method, failOnMissingParameters);
+			
+			checkAuthorizationToCall(focus, method);
+			return method.invoke(focus, arguments);
+		}
+		finally {
+			if(callSourceName != null && source != null) {
+				preferredSources.remove(callSourceName);
+			}
+		}
 	}
 	
 	protected void checkAuthorizationToCall(Object focus, Method method) throws InvocationTargetException, IllegalAccessException {
@@ -288,10 +325,8 @@ public class ParameterMarshal {
 			CallSpec spec = inv.determineObjector(focus, method);
 			if(spec != null) {
 				CallSpecValueSource source = new CallSpecValueSource(spec);
-				String name = Constants.ANNOTATION_PROPERTIES_SOURCE_NAME;
-				sources.put(name, source);
 				try {
-					call(spec.getFocus(), spec.getMethod(), spec.isFailOnMissingParameter());
+					call(spec.getFocus(), spec.getMethod(), spec.isFailOnMissingParameter(), Constants.ANNOTATION_PROPERTIES_SOURCE_NAME, source);
 				}
 				catch(InvocationTargetException e) {
 					Throwable cause = e.getCause();
@@ -299,9 +334,6 @@ public class ParameterMarshal {
 						throw (SecurityException)cause;
 					}
 					throw e;
-				}
-				finally {
-					sources.remove(name);
 				}
 			}
 		}
@@ -608,6 +640,17 @@ public class ParameterMarshal {
 	 * @return
 	 */
 	public <T> ValueSource getInitialObjectSource(String name, Class<T> type, String ... allowedSources) {
+		// check prefered sources first
+		for(String sourceName : preferredSources.keySet()) {
+			if(isSourceAllowed(sourceName, allowedSources)) {
+				ValueSource source = preferredSources.get(sourceName);
+				if(source.canGet(name, type, context)) {
+					return source;
+				}
+			}
+		}
+		
+		// check other sources next
 		for(String sourceName : sources.keySet()) {
 			if(isSourceAllowed(sourceName, allowedSources)) {
 				ValueSource source = sources.get(sourceName);
@@ -618,6 +661,19 @@ public class ParameterMarshal {
 		}
 		
 		throw new ParameterNotFoundException();
+	}
+	
+	protected <T> boolean isInAllowedSources(String name, Class<T> type, Map<String, ValueSource> sources, String ... allowedSources) {
+		for(String sourceName : sources.keySet()) {
+			if(isSourceAllowed(sourceName, allowedSources)) {
+				ValueSource source = sources.get(sourceName);
+				if(source.canGet(name, type, context)) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 	/**

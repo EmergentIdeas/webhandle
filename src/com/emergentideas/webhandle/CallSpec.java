@@ -8,7 +8,7 @@ public class CallSpec {
 	protected Object focus;
 	protected Method method;
 	protected boolean failOnMissingParameter;
-	protected Map<String, Object> callSpecificProperties;
+	protected Map<String, ?> callSpecificProperties;
 	
 	public CallSpec() {
 		
@@ -39,11 +39,11 @@ public class CallSpec {
 		this.failOnMissingParameter = failOnMissingParameter;
 	}
 
-	public Map<String, Object> getCallSpecificProperties() {
+	public Map<String, ?> getCallSpecificProperties() {
 		return callSpecificProperties;
 	}
 
-	public void setCallSpecificProperties(Map<String, Object> callSpecificProperties) {
+	public void setCallSpecificProperties(Map<String, ?> callSpecificProperties) {
 		this.callSpecificProperties = callSpecificProperties;
 	}
 	

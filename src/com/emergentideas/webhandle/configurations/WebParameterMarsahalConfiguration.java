@@ -7,7 +7,7 @@ import com.emergentideas.webhandle.investigators.DebugInfoParameterNameInvestiga
 import com.emergentideas.webhandle.investigators.NameAnnotationPropertyNameInvestigator;
 import com.emergentideas.webhandle.investigators.SourceAnnotationSourceSetInvestigator;
 import com.emergentideas.webhandle.investigators.TransformersAnnotationTransformersInvestigator;
-import com.emergentideas.webhandle.objector.RolesAllowedObjectorInvestigator;
+import com.emergentideas.webhandle.objectors.RolesAllowedObjectorInvestigator;
 import com.emergentideas.webhandle.transformers.NumberToStringTransformer;
 import com.emergentideas.webhandle.transformers.StringToBooleanTransformer;
 import com.emergentideas.webhandle.transformers.StringToDateTransformer;
@@ -32,9 +32,15 @@ public class WebParameterMarsahalConfiguration extends
 		addAutomaticTypeTransformers();
 
 		addObjectorInvestigators();
+		
+		addOutputInvestigators();
 	}
 	
 	protected void addCustomInvestigators() {
+		
+	}
+	
+	protected void addOutputInvestigators() {
 		
 	}
 	
