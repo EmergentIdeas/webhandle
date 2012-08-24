@@ -4,6 +4,7 @@
     	<dependency org="commons-lang" name="commons-lang" rev="2.6"/>
 		<dependency org="junit" name="junit" rev="4.10" />
 		<dependency org="org.pojava" name="pojava" rev="2.8.1"/>
+		<dependency org="com.thoughtworks.paranamer" name="paranamer" rev="2.5"/>
 		<dependency org="javax.persistence" name="persistence-api" rev="1.0.2"/>
     </dependencies>
 </ivy-module>
