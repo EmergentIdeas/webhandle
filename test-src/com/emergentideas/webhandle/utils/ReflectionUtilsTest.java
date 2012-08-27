@@ -30,6 +30,9 @@ public class ReflectionUtilsTest {
 		assertTrue(isSetterMethod(TestObj.class.getMethod("setChild2", TestObj.class)));
 		
 		assertEquals("child2", getPropertyName(TestObj.class.getMethod("setChild2", TestObj.class)));
+		
+		assertTrue(isReturnTypeVoid(getFirstMethod(TestObj.class, "setOrder")));
+		assertFalse(isReturnTypeVoid(getFirstMethod(TestObj.class, "getOrder")));
 	}
 	
 	@Test

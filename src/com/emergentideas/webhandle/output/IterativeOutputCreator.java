@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.emergentideas.logging.Logger;
 import com.emergentideas.logging.SystemOutLogger;
+import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.webhandle.CallSpec;
 import com.emergentideas.webhandle.InvocationContext;
 import com.emergentideas.webhandle.ParameterMarshal;
@@ -20,7 +21,6 @@ public class IterativeOutputCreator implements OutputCreator {
 	
 	protected ParameterMarshal marshal;
 	protected Object response;
-	protected SegmentedOutput output;
 	
 	
 	protected Respondent finalRespondent;
@@ -32,7 +32,7 @@ public class IterativeOutputCreator implements OutputCreator {
 		this(marshal, response, marshal.getContext().getFoundParameter(SegmentedOutput.class));
 	}
 	
-	public IterativeOutputCreator(ParameterMarshal marshal, Object response, SegmentedOutput output) {
+	protected IterativeOutputCreator(ParameterMarshal marshal, Object response, SegmentedOutput output) {
 		this.marshal = marshal;
 		this.response = response;
 		
@@ -40,8 +40,6 @@ public class IterativeOutputCreator implements OutputCreator {
 			output = new SegmentedOutput();
 			marshal.getContext().setFoundParameter(SegmentedOutput.class, output);
 		}
-		
-		this.output = output;
 		
 		marshal.addSource(RESPONSE_VALUE_SOURCE_NAME, new ResponseValueSource());
 	}
@@ -54,12 +52,19 @@ public class IterativeOutputCreator implements OutputCreator {
 		
 		for(CallSpec spec : transformers) {
 			try {
-				marshal.call(spec.getFocus(), spec.getMethod(), spec.isFailOnMissingParameter(), CALL_SPECIFIC_DATA_SOURCE_NAME, spec.getCallSpecificProperties());
+				Object ret = marshal.call(spec.getFocus(), spec.getMethod(), spec.isFailOnMissingParameter(), CALL_SPECIFIC_DATA_SOURCE_NAME, spec.getCallSpecificProperties());
+				if(ReflectionUtils.isReturnTypeVoid(spec.getMethod()) == false) {
+					// If the return type isn't void, we'd like to assign the return value of the transformer
+					// to the the current response type even if the value is null.
+					this.response = ret;
+				}
 			}
 			catch(Throwable t) {
 				log.error("Could not transform for method: " + spec.getMethod().toString(), t);
 			}
 		}
+		
+		finalRespondent.respond(servletContext, request, response);
 
 	}
 
@@ -70,12 +75,40 @@ public class IterativeOutputCreator implements OutputCreator {
 	public void setFinalRespondent(Respondent respondent) {
 		this.finalRespondent = respondent;
 	}
-	
-	
 
 	public void setResponseObject(Object response) {
 		this.response = response;
 	}
+	
+	public ParameterMarshal getMarshal() {
+		return marshal;
+	}
+
+	public void setMarshal(ParameterMarshal marshal) {
+		this.marshal = marshal;
+	}
+
+	public Object getResponse() {
+		return response;
+	}
+
+	public void setResponse(Object response) {
+		this.response = response;
+	}
+
+	public List<CallSpec> getTransformers() {
+		return transformers;
+	}
+
+	public void setTransformers(List<CallSpec> transformers) {
+		this.transformers = transformers;
+	}
+
+	public Respondent getFinalRespondent() {
+		return finalRespondent;
+	}
+
+
 
 	class ResponseValueSource implements ValueSource<Object> {
 

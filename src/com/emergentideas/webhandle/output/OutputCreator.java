@@ -2,6 +2,12 @@ package com.emergentideas.webhandle.output;
 
 import com.emergentideas.webhandle.CallSpec;
 
+/**
+ * A generic way of applying a number of transformers and writing that transformed object and 
+ * {@link SegmentedOutput} to an HTTP response 
+ * @author kolz
+ *
+ */
 public interface OutputCreator extends Respondent {
 	
 	public static final String RESPONSE_VALUE_SOURCE_NAME = "responseValueSource";

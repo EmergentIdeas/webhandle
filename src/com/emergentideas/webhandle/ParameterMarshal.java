@@ -291,6 +291,10 @@ public class ParameterMarshal {
 		return call(focus, method, failOnMissingParameters, null, (ValueSource)null);
 	}
 	
+	public Object call(CallSpec spec) throws InvocationTargetException, IllegalAccessException {
+		return call(spec.getFocus(), spec.getMethod(), spec.isFailOnMissingParameter(), Constants.USER_INFORMATION_SOURCE_NAME, spec.getCallSpecificProperties());
+	}
+	
 	public Object call(Object focus, Method method, boolean failOnMissingParameters, String callSourceName, Map<String, ?> callProperties) 
 			throws InvocationTargetException, IllegalAccessException {
 		

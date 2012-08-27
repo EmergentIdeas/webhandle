@@ -60,22 +60,25 @@ public class HandleAnnotationHandlerInvestigator implements HandlerInvestigator 
 	}
 	
 	
-	public CallSpec determineHandler(String requestUrl, HttpMethod method) {
+	public CallSpec[] determineHandlers(String requestUrl, HttpMethod method) {
+		
+		List<CallSpec> result = new ArrayList<CallSpec>();
+		
 		for(UrlRegexOutput regex : handlerRegexs) {
 			Map<String, String> properties = regex.matches(requestUrl);
 			if(properties != null) {
 				HttpRequestCallSpec spec = handlerCalls.get(regex);
-				if(contains(spec.getAllowedMethods(), method)) {
+				if(contains(spec.getAllowedMethods(), HttpMethod.ANY) || contains(spec.getAllowedMethods(), method)) {
 					// looks like we've found a method which will handle the url
 					// and the request type.
 					CallSpec userSpec =  new CallSpec(spec.getFocus(), spec.getMethod(), false);
 					userSpec.setCallSpecificProperties(properties);
-					return userSpec;
+					result.add(userSpec);
 				}
 			}
 		}
 		
-		return null;
+		return result.toArray(new CallSpec[result.size()]);
 	}
 	
 	protected <T> boolean contains(T[] baseSet, T focus) {

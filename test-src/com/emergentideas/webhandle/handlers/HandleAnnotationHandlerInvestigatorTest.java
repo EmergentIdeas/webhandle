@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import org.junit.Test;
 
 import com.emergentideas.utils.ReflectionUtils;
+import com.emergentideas.webhandle.CallSpec;
 
 public class HandleAnnotationHandlerInvestigatorTest {
 
@@ -32,22 +33,38 @@ public class HandleAnnotationHandlerInvestigatorTest {
 
 		handler1Tests(investigator, one, two);
 		
-		assertNull(investigator.determineHandler("/1/hello", HttpMethod.GET));
-		assertEquals(three, investigator.determineHandler("/1/one/12", HttpMethod.GET).getMethod());
+		assertEquals(0, investigator.determineHandlers("/1/hello", HttpMethod.GET).length);
+		
+		CallSpec[] specs = investigator.determineHandlers("/1/one/12", HttpMethod.GET);
+		assertEquals(1, specs.length);
+		assertEquals(three, specs[0].getMethod());
 		
 		// make sure we examine them in order
-		assertEquals(three, investigator.determineHandler("/2/one", HttpMethod.GET).getMethod());
+		specs = investigator.determineHandlers("/2/one", HttpMethod.GET);
+		assertEquals(2, specs.length);
+		assertEquals(three, specs[0].getMethod());
 		
-		assertEquals(four, investigator.determineHandler("/2/one", HttpMethod.POST).getMethod());
+		specs = investigator.determineHandlers("/2/one", HttpMethod.POST);
+		assertEquals(1, specs.length);
+		assertEquals(four, specs[0].getMethod());
 	}
 	
 	protected void handler1Tests(HandlerInvestigator investigator, Method one, Method two) {
-		assertNull(investigator.determineHandler("/hello", HttpMethod.GET));
-		assertEquals(one, investigator.determineHandler("/one/12", HttpMethod.GET).getMethod());
+		
+		CallSpec[] specs = investigator.determineHandlers("/hello", HttpMethod.GET); 
+		assertEquals(0, specs.length);
+		
+		specs = investigator.determineHandlers("/one/12", HttpMethod.GET);
+		assertEquals(1, specs.length);
+		assertEquals(one, specs[0].getMethod());
 		
 		// make sure we examine them in order
-		assertEquals(one, investigator.determineHandler("/one", HttpMethod.GET).getMethod());
+		specs = investigator.determineHandlers("/one", HttpMethod.GET);
+		assertEquals(2, specs.length);
+		assertEquals(one, specs[0].getMethod());
 		
-		assertEquals(two, investigator.determineHandler("/one", HttpMethod.POST).getMethod());
+		specs = investigator.determineHandlers("/one", HttpMethod.POST);
+		assertEquals(1, specs.length);
+		assertEquals(two, specs[0].getMethod());
 	}
 }

@@ -1,54 +1,65 @@
 package com.emergentideas.webhandle.investigators;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 
-import com.emergentideas.webhandle.CallSpec;
+import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.webhandle.InvocationContext;
-import com.emergentideas.webhandle.OutputTransformersInvestigator;
+import com.emergentideas.webhandle.OutputResponseInvestigator;
+import com.emergentideas.webhandle.ParameterMarshal;
+import com.emergentideas.webhandle.output.DirectRespondent;
+import com.emergentideas.webhandle.output.HtmlDocRespondent;
+import com.emergentideas.webhandle.output.IterativeOutputCreator;
+import com.emergentideas.webhandle.output.OutputCreator;
+import com.emergentideas.webhandle.output.Respondent;
+import com.emergentideas.webhandle.output.SegmentedOutput;
 import com.emergentideas.webhandle.output.Template;
+import com.emergentideas.webhandle.output.Wrap;
+import com.emergentideas.webhandle.transformers.TemplateTransformer;
+import com.emergentideas.webhandle.transformers.WrapTransformer;
 
 /**
- * Finds specs for the methods that should be called to transform the output
- * into data in a segmented output.
+ * Uses {@link Template} and {@link Wrap} (and perhaps others) to create an OutputCreator capable of 
+ * responding to the request.  
  * @author kolz
  *
  */
 public class TemplateOutputTransformersInvestigator implements
-		OutputTransformersInvestigator {
-	
-	protected Object transformer;
-	protected Method transform;
+		OutputResponseInvestigator {
 	
 	public TemplateOutputTransformersInvestigator() {
 		
 	}
-	
-	public TemplateOutputTransformersInvestigator(Object transformer, Method transform) {
-		this.transformer = transformer;
-		this.transform = transform;
-	}
-	
-	
-	public CallSpec[] determineTransformers(Object focus, Method method,
-			Annotation annotation, InvocationContext context) {
-		if(isAnnotationCorrectType(annotation)) {
-			CallSpec spec = new CallSpec(transformer, transform, false);
-			Map<String, String> props = new HashMap<String, String>();
-			addProperties(props, annotation);
-			spec.setCallSpecificProperties(props);
-			return new CallSpec[] { spec };
+
+	public Respondent determineTransformers(InvocationContext context,
+			Object focus, Method method, Object response) {
+		
+		if(response instanceof Respondent) {
+			return (Respondent)response;
 		}
-		return null;
+		
+		Template template = ReflectionUtils.getAnnotation(method, Template.class);
+		Wrap wrap = ReflectionUtils.getAnnotation(method, Wrap.class);
+		
+		if(template == null && wrap == null) {
+			return new DirectRespondent(response);
+		}
+		
+		OutputCreator creator = new IterativeOutputCreator(context.getFoundParameter(ParameterMarshal.class), response);
+		if(template != null) {
+			TemplateTransformer tt = new TemplateTransformer();
+			creator.addTransformer(ReflectionUtils.getFirstMethodCallSpec(tt, "transform"));
+		}
+		if(wrap != null) {
+			WrapTransformer wt = new WrapTransformer();
+			creator.addTransformer(ReflectionUtils.getFirstMethodCallSpec(wt, "transform"));
+		}
+		
+		creator.setFinalRespondent(new HtmlDocRespondent(context.getFoundParameter(SegmentedOutput.class)));
+		
+		return creator;
 	}
 	
-	protected boolean isAnnotationCorrectType(Annotation annotation) {
-		return annotation instanceof Template;
-	}
 	
-	protected void addProperties(Map<String, String> props, Annotation annotation) {
-	}
+	
 
 }

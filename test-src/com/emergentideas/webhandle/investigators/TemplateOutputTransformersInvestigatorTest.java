@@ -13,7 +13,12 @@ import com.emergentideas.webhandle.ParameterMarshal;
 import com.emergentideas.webhandle.configurations.WebParameterMarsahalConfiguration;
 import com.emergentideas.webhandle.configurations.WebRequestContextPopulator;
 import com.emergentideas.webhandle.handlers.Handler1;
+import com.emergentideas.webhandle.output.DirectRespondent;
+import com.emergentideas.webhandle.output.HtmlDocRespondent;
+import com.emergentideas.webhandle.output.IterativeOutputCreator;
+import com.emergentideas.webhandle.output.Respondent;
 import com.emergentideas.webhandle.transformers.TemplateTransformer;
+import com.emergentideas.webhandle.transformers.WrapTransformer;
 
 public class TemplateOutputTransformersInvestigatorTest {
 
@@ -23,17 +28,33 @@ public class TemplateOutputTransformersInvestigatorTest {
 		ParameterMarshal marshal = new ParameterMarshal(new WebParameterMarsahalConfiguration(), context);
 		new WebRequestContextPopulator().populate(marshal, context);
 		
-		TemplateTransformer transformer = new TemplateTransformer();
-		Method method = ReflectionUtils.getFirstMethod(TemplateTransformer.class, "transform");
-		
-		TemplateOutputTransformersInvestigator investigator = new TemplateOutputTransformersInvestigator(transformer, method);
+		TemplateOutputTransformersInvestigator investigator = new TemplateOutputTransformersInvestigator();
 		
 		Handler1 handler = new Handler1();
 		Method handlerMethod = ReflectionUtils.getFirstMethod(Handler1.class, "one");
 		
 		
-//		CallSpec[] specs = investigator.determineTransformers(handler, handlerMethod, annotation, context)
+		Respondent resp = investigator.determineTransformers(context, handler, handlerMethod, "test");
 		
+		assertTrue(resp instanceof DirectRespondent);
+		
+		DirectRespondent dr = (DirectRespondent)resp;
+		assertEquals("test", dr.getOutput());
+		
+		handlerMethod = ReflectionUtils.getFirstMethod(Handler1.class, "two");
+		resp = investigator.determineTransformers(context, handler, handlerMethod, "test.template");
+		
+		assertTrue(resp instanceof IterativeOutputCreator);
+		
+		IterativeOutputCreator ioc = (IterativeOutputCreator)resp;
+		assertTrue(ioc.getTransformers().get(0).getFocus() instanceof TemplateTransformer);
+		assertTrue(ioc.getTransformers().get(1).getFocus() instanceof WrapTransformer);
+		
+		assertTrue(ioc.getFinalRespondent() instanceof HtmlDocRespondent);
+		
+		
+		resp = investigator.determineTransformers(context, handler, handlerMethod, new DirectRespondent("hello"));
+		assertEquals("hello", ((DirectRespondent)resp).getOutput());
 		
 	}
 }

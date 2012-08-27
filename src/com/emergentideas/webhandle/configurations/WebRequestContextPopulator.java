@@ -13,7 +13,7 @@ import com.emergentideas.webhandle.output.SegmentedOutput;
 public class WebRequestContextPopulator {
 
 	/**
-	 * Adds the SegmentedOutput and iterative respondent classes.  Also creates a new
+	 * Adds the SegmentedOutput.  Also creates a new
 	 * request level Location and assigns it to the context.
 	 * @param marshal
 	 * @param context
@@ -22,10 +22,10 @@ public class WebRequestContextPopulator {
 		
 		context.setFoundParameter(SegmentedOutput.class, new SegmentedOutput());
 		
-		IterativeOutputCreator creator = new IterativeOutputCreator(marshal, null);
-		
-		context.setFoundParameter(Respondent.class, creator);
-		context.setFoundParameter(OutputCreator.class, creator);
+//		IterativeOutputCreator creator = new IterativeOutputCreator(marshal, null);
+//		
+//		context.setFoundParameter(Respondent.class, creator);
+//		context.setFoundParameter(OutputCreator.class, creator);
 		
 		// configure the location
 		AppLocation loc = new AppLocation(context.getLocation());

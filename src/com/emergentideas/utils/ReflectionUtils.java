@@ -5,6 +5,8 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import com.emergentideas.webhandle.CallSpec;
+
 public class ReflectionUtils {
 	
 	protected static Class[] primitives = new Class[] { Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE, Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE, Void.TYPE };
@@ -243,7 +245,28 @@ public class ReflectionUtils {
 		return null;
 	}
 	
+    /**
+     * Gets the first method from <code>focus</code> of the name <code>methodName</code> and creates a 
+     * call spec so it can be called. Returns null if no method of that name is found.
+     * @param focus
+     * @param methodName
+     * @return
+     */
+	public static <T> CallSpec getFirstMethodCallSpec(Object focus, String methodName) {
+		Method m = getFirstMethod(focus.getClass(), methodName);
+		if(m != null) {
+			return new CallSpec(focus, m, false);
+		}
+		
+		return null;
+	}
+	
 	public static boolean isPublic(Method m) {
 		return Modifier.isPublic(m.getDeclaringClass().getModifiers());
+	}
+	
+	public static boolean isReturnTypeVoid(Method m) {
+		Class c = m.getReturnType();
+		return c.equals(Void.class) || c.equals(Void.TYPE);
 	}
 }
