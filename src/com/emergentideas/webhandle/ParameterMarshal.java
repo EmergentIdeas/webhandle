@@ -204,6 +204,9 @@ public class ParameterMarshal {
 			}
 			else {
 				result = context.getFoundParameter(parameterName, parameterClass);
+				if(result == null) {
+					result = context.getFoundParameter(parameterClass);
+				}
 			}
 		}
 		

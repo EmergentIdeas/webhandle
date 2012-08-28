@@ -16,7 +16,7 @@ public interface Location {
 	 * @param path A forward slash separated path to the data
 	 * @return
 	 */
-	public List<Object> all(String path);
+	public List all(String path);
 	
 	/**
 	 * Gets the first object located at <code>path</code>

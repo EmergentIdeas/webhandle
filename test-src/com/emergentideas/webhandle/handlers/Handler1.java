@@ -49,5 +49,21 @@ public class Handler1 {
 	public String six(String id) {
 		throw new TransformationException();
 	}
+	
+	@Handle(path = "/seven")
+	public String seven(String id) {
+		return "The number is: " + id;
+	}
+	
+	@Handle(path = "/eight/{id}")
+	public String eight(Double id) {
+		return "The number is: " + id;
+	}
+	
+	@Handle(path = "/nine")
+	@Template
+	public String nine(String id) {
+		return "one.template";
+	}
 
 }

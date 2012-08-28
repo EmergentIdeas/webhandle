@@ -14,6 +14,7 @@ import com.emergentideas.webhandle.output.Respondent;
 import com.emergentideas.webhandle.output.SegmentedOutput;
 import com.emergentideas.webhandle.output.Template;
 import com.emergentideas.webhandle.output.Wrap;
+import com.emergentideas.webhandle.templates.TemplateSource;
 import com.emergentideas.webhandle.transformers.TemplateTransformer;
 import com.emergentideas.webhandle.transformers.WrapTransformer;
 
@@ -26,10 +27,6 @@ import com.emergentideas.webhandle.transformers.WrapTransformer;
 public class TemplateOutputTransformersInvestigator implements
 		OutputResponseInvestigator {
 	
-	public TemplateOutputTransformersInvestigator() {
-		
-	}
-
 	public Respondent determineTransformers(InvocationContext context,
 			Object focus, Method method, Object response) {
 		
@@ -58,8 +55,5 @@ public class TemplateOutputTransformersInvestigator implements
 		
 		return creator;
 	}
-	
-	
-	
 
 }

@@ -11,6 +11,7 @@ public class JavaBeanPropertyAccessor implements PropertyAccessor {
 			return pd.getReadMethod().invoke(focus, null);
 		}
 		catch(IntrospectionException e) {
+			e.printStackTrace();
 			// This bean doesn't seem to have that property
 		}
 		catch(RuntimeException e) {
