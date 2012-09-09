@@ -1,6 +1,8 @@
 package com.emergentideas.webhandle.configurations;
 
+import com.emergentideas.webhandle.Name;
 import com.emergentideas.webhandle.ParameterMarshalConfiguration;
+import com.emergentideas.webhandle.WebAppLocation;
 import com.emergentideas.webhandle.composites.db.DbInvestigator;
 import com.emergentideas.webhandle.investigators.BeanPropertyNameAndDbTransformerInvestigator;
 import com.emergentideas.webhandle.investigators.DebugInfoParameterNameInvestigator;
@@ -14,6 +16,7 @@ import com.emergentideas.webhandle.transformers.StringToDateTransformer;
 import com.emergentideas.webhandle.transformers.StringToDoubleTransformer;
 import com.emergentideas.webhandle.transformers.StringToIntegerTransformer;
 
+@Name(WebAppLocation.WEB_PARAMETER_MARSHAL_CONFIGURATION)
 public class WebParameterMarsahalConfiguration extends
 		ParameterMarshalConfiguration {
 

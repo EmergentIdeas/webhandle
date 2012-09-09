@@ -6,6 +6,8 @@ public class WebAppLocation {
 	
 	protected Location location;
 	
+	public static final String WEB_PARAMETER_MARSHAL_CONFIGURATION = "web-parameter-marshal-configuration";
+	
 	public WebAppLocation(Location location) {
 		this.location = location;
 		
@@ -22,24 +24,50 @@ public class WebAppLocation {
 		return this;
 	}
 	
+	public void setServiceByName(String name, Object service) {
+		init();
+		((Location)location.get("servicesByName")).put(name, service);
+	}
+	
+	public void setServiceByType(String type, Object service) {
+		init();
+		((Location)location.get("servicesByType")).put(type, service);
+	}
+	
+	public Object getServiceByType(String type) {
+		return location.get("servicesByType/" + type);
+	}
+	
+	public <T> T getServiceByType(Class<T> type) {
+		Object o = getServiceByType(type.getName());
+		if(o == null) {
+			return null;
+		}
+		
+		if(type.isAssignableFrom(o.getClass())) {
+			return (T)o;
+		}
+		return null;
+	}
+	
+	public Object getServiceByName(String name) {
+		return location.get("servicesByName/" + name);
+	}
+	
 	public void setTemplateSource(TemplateSource source) {
-		((Location)location.get("servicesByType")).put(TemplateSource.class.getName(), source);
+		setServiceByType(TemplateSource.class.getName(), source);
 	}
 
 	public TemplateSource getTemplateSource() {
-		return getTemplateSource(location);
-	}
-	
-	public static TemplateSource getTemplateSource(Location location) {
-		return (TemplateSource)location.get("servicesByType/" + TemplateSource.class.getName());
+		return (TemplateSource)getServiceByType(TemplateSource.class.getName());
 	}
 	
 	public void setParameterMarshalConfiguration(ParameterMarshalConfiguration config) {
-		((Location)location.get("servicesByType")).put(ParameterMarshalConfiguration.class.getName(), config);
+		setServiceByType(ParameterMarshalConfiguration.class.getName(), config);
 	}
 
 	public ParameterMarshalConfiguration getParameterMarshalConfiguration() {
-		return (ParameterMarshalConfiguration)location.get("servicesByType/" + ParameterMarshalConfiguration.class.getName());
+		return (ParameterMarshalConfiguration)getServiceByType(ParameterMarshalConfiguration.class.getName());
 	}
 
 }

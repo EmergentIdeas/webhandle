@@ -10,14 +10,23 @@ import java.util.Map;
 
 import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.webhandle.CallSpec;
+import com.emergentideas.webhandle.Location;
+import com.emergentideas.webhandle.Type;
+import com.emergentideas.webhandle.bootstrap.ConfigurationAtom;
+import com.emergentideas.webhandle.bootstrap.Integrate;
+import com.emergentideas.webhandle.bootstrap.Integrator;
+import com.emergentideas.webhandle.bootstrap.Loader;
 
 /**
  * Examines a bunch of objects and returns a call spec for the best one to handle this url if
- * any of them will handle a this url.
+ * any of them will handle a this url.  It also serves as its own integrator, detecting new
+ * beans with Handle annotations as they're loaded.
  * @author kolz
  *
  */
-public class HandleAnnotationHandlerInvestigator implements HandlerInvestigator {
+@Type("com.emergentideas.webhandle.handlers.HandlerInvestigator")
+@Integrate
+public class HandleAnnotationHandlerInvestigator implements HandlerInvestigator, Integrator {
 
 	protected UrlRequestElementsProcessor processor = new UrlRequestElementsProcessor();
 	
@@ -25,6 +34,16 @@ public class HandleAnnotationHandlerInvestigator implements HandlerInvestigator 
 	
 	protected Map<UrlRegexOutput, HttpRequestCallSpec> handlerCalls = Collections.synchronizedMap(new HashMap<UrlRegexOutput, HttpRequestCallSpec>());
 	
+	
+	
+	public void integrate(Loader loader, Location location,
+			ConfigurationAtom atom, Object focus) {
+		if(focus != null) {
+			analyzeObject(focus);
+		}
+	}
+
+
 	public void analyzeObject(Object handler) {
 		String[] urlPrefixPattern;
 		

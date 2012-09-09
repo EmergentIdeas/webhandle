@@ -24,7 +24,7 @@ public class TripartateTemplateElementProcessor implements ElementProcessor {
 			TemplateInstance ti = null;
 			
 			if(te.getHandlingExpression() != null) {
-				ti = WebAppLocation.getTemplateSource(location).get(te.getHandlingExpression());
+				ti = new WebAppLocation(location).getTemplateSource().get(te.getHandlingExpression());
 				if(ti == null) {
 					logger.error("Could not find template named: " + te.getHandlingExpression());
 					return true;

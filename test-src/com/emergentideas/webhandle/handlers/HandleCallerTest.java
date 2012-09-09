@@ -2,11 +2,15 @@ package com.emergentideas.webhandle.handlers;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
+
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.catalina.ssi.ByteArrayServletOutputStream;
 import org.junit.Test;
 import static org.mockito.Mockito.*;
 
@@ -23,7 +27,7 @@ public class HandleCallerTest {
 	@Test
 	public void testMakeCall() throws Exception {
 		
-		final ByteArrayServletOutputStream out = new ByteArrayServletOutputStream();
+		final ByteArrayOutputStream out = new ByteArrayOutputStream();
 		
 		InvocationContext context = new InvocationContext();
 		ParameterMarshal marshal = new ParameterMarshal(new WebParameterMarsahalConfiguration(), context);
@@ -45,7 +49,7 @@ public class HandleCallerTest {
 		when(request.getMethod()).thenReturn("GET");
 		
 		HttpServletResponse response = mock(HttpServletResponse.class);
-		when(response.getOutputStream()).thenReturn(out);
+		when(response.getOutputStream()).thenReturn(new TestServletOutputStream(out));
 
 		caller.call(null, request, response, marshal);
 		
@@ -54,9 +58,9 @@ public class HandleCallerTest {
 		
 		// check to be sure we go to the next handler when we see a could not handle exception
 		when(request.getServletPath()).thenReturn("/three");
-		final ByteArrayServletOutputStream out2 = new ByteArrayServletOutputStream();
+		final ByteArrayOutputStream out2 = new ByteArrayOutputStream();
 		response = mock(HttpServletResponse.class);
-		when(response.getOutputStream()).thenReturn(out2);
+		when(response.getOutputStream()).thenReturn(new TestServletOutputStream(out2));
 		
 		caller.call(null, request, response, marshal);
 		
@@ -69,9 +73,9 @@ public class HandleCallerTest {
 
 		// test a security exception
 		when(request.getServletPath()).thenReturn("/five");
-		final ByteArrayServletOutputStream out3 = new ByteArrayServletOutputStream();
+		final ByteArrayOutputStream out3 = new ByteArrayOutputStream();
 		response = mock(HttpServletResponse.class);
-		when(response.getOutputStream()).thenReturn(out3);
+		when(response.getOutputStream()).thenReturn(new TestServletOutputStream(out3));
 		
 		caller.call(null, request, response, marshal);
 		
@@ -80,16 +84,14 @@ public class HandleCallerTest {
 		
 		// test a transformation exception
 		when(request.getServletPath()).thenReturn("/six");
-		final ByteArrayServletOutputStream out4 = new ByteArrayServletOutputStream();
+		final ByteArrayOutputStream out4 = new ByteArrayOutputStream();
 		response = mock(HttpServletResponse.class);
-		when(response.getOutputStream()).thenReturn(out4);
+		when(response.getOutputStream()).thenReturn(new TestServletOutputStream(out4));
 		
 		caller.call(null, request, response, marshal);
 		
 		written = new String(out4.toByteArray(), "UTF-8");
 		assertEquals("transformation exception", written);
-		
-		
 	}
 	
 	
@@ -100,4 +102,19 @@ public class HandleCallerTest {
 	public String transformationException() {
 		return "transformation exception";
 	}
+}
+
+class TestServletOutputStream extends ServletOutputStream {
+
+	protected OutputStream out;
+	
+	public TestServletOutputStream(OutputStream out) {
+		this.out = out;
+	}
+	
+	@Override
+	public void write(int b) throws IOException {
+		out.write(b);
+	}
+	
 }

@@ -12,11 +12,14 @@ import com.emergentideas.webhandle.Transformers;
 import com.emergentideas.webhandle.composites.db.Db;
 
 @Entity
+@Name("hello")
+@Type({"there", "world"})
 public class TestObj {
 	
 	protected String a;
 	protected String b;
 	protected String id;
+	protected String[] c;
 	
 	protected TestObj child1;
 	protected TestObj child2;
@@ -54,6 +57,8 @@ public class TestObj {
 	public String getA() {
 		return a;
 	}
+	
+	@Wire
 	public void setA(String a) {
 		this.a = a;
 	}
@@ -109,6 +114,15 @@ public class TestObj {
 		}
 		
 		return one + "-" + intSum + "-" + dSum;
+	}
+
+	public String[] getC() {
+		return c;
+	}
+
+	@Wire
+	public void setC(String[] c) {
+		this.c = c;
 	}
 
 	

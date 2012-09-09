@@ -1,4 +1,4 @@
-package com.emergentideas.webhandle.utils;
+package com.emergentideas.utils;
 
 import static org.junit.Assert.*;
 
@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.webhandle.NoInject;
 import com.emergentideas.webhandle.TestObj;
 import static com.emergentideas.utils.ReflectionUtils.*;
