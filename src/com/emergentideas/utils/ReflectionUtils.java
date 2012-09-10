@@ -4,6 +4,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.emergentideas.webhandle.CallSpec;
 
@@ -245,6 +247,22 @@ public class ReflectionUtils {
 		return null;
 	}
 	
+	public static <T> CallSpec[] getMethodsWithAnnotaion(Object focus, Class<T> annotation) {
+		if(focus == null || annotation == null) {
+			return new CallSpec[0];
+		}
+		
+		List<CallSpec> result = new ArrayList<CallSpec>();
+		for(Method m : focus.getClass().getMethods()) {
+			T t = getAnnotation(m, annotation);
+			if(t != null) {
+				result.add(new CallSpec(focus, m, false));
+			}
+		}
+		
+		return result.toArray(new CallSpec[result.size()]);
+	}
+	
     /**
      * Gets the first method from <code>focus</code> of the name <code>methodName</code> and creates a 
      * call spec so it can be called. Returns null if no method of that name is found.
@@ -268,5 +286,9 @@ public class ReflectionUtils {
 	public static boolean isReturnTypeVoid(Method m) {
 		Class c = m.getReturnType();
 		return c.equals(Void.class) || c.equals(Void.TYPE);
+	}
+	
+	public static Class getClassForName(String name) throws ClassNotFoundException {
+		return Thread.currentThread().getContextClassLoader().loadClass(name);
 	}
 }

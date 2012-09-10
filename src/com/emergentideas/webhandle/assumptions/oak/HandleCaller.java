@@ -1,9 +1,12 @@
-package com.emergentideas.webhandle.handlers;
+package com.emergentideas.webhandle.assumptions.oak;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -11,13 +14,28 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.emergentideas.logging.Logger;
 import com.emergentideas.logging.SystemOutLogger;
+import com.emergentideas.webhandle.AppLocation;
 import com.emergentideas.webhandle.CallSpec;
+import com.emergentideas.webhandle.Constants;
+import com.emergentideas.webhandle.Location;
+import com.emergentideas.webhandle.Name;
 import com.emergentideas.webhandle.OutputResponseInvestigator;
 import com.emergentideas.webhandle.ParameterMarshal;
+import com.emergentideas.webhandle.ParameterMarshalConfiguration;
+import com.emergentideas.webhandle.Type;
+import com.emergentideas.webhandle.WebAppLocation;
+import com.emergentideas.webhandle.Wire;
+import com.emergentideas.webhandle.configurations.WebRequestContextPopulator;
 import com.emergentideas.webhandle.exceptions.CouldNotHandleException;
+import com.emergentideas.webhandle.handlers.HandlerInvestigator;
+import com.emergentideas.webhandle.handlers.HttpMethod;
+import com.emergentideas.webhandle.handlers.ResponseLifecycleHandler;
 import com.emergentideas.webhandle.output.Respondent;
 
-public class HandleCaller {
+@Name("request-handler")
+@Type("com.emergentideas.webhandle.handlers.ResponseLifecycleHandler")
+public class HandleCaller implements ResponseLifecycleHandler {
+	
 	
 	public static final String EXCEPTION_PARAMETER_NAME = "exception";
 	
@@ -26,14 +44,58 @@ public class HandleCaller {
 	
 	protected Map<Class, CallSpec> exceptionHandlers = Collections.synchronizedMap(new HashMap<Class, CallSpec>());
 	
+	protected List<CallSpec> preHandleCalls = Collections.synchronizedList(new ArrayList<CallSpec>());
+	protected List<CallSpec> preResponseCalls = Collections.synchronizedList(new ArrayList<CallSpec>());
+	protected List<CallSpec> postResponseCalls = Collections.synchronizedList(new ArrayList<CallSpec>());
+	
+	// The app level location
+	protected Location location;
+	
 	protected Logger log = SystemOutLogger.get(HandleCaller.class);
 	
+	protected String handlerIdentifier = UUID.randomUUID().toString();
+	protected String handlerLocationIdentifier = handlerIdentifier + ".location";
+	
+	protected WebRequestContextPopulator populator = new WebRequestContextPopulator();
+
+	
+	public void respond(ServletContext servletContext,
+			HttpServletRequest request, HttpServletResponse response) {
+		setupUserSession(request, response);
+		Location userLocation = (Location)request.getSession().getAttribute(handlerLocationIdentifier);
+		
+		WebAppLocation webApp = new WebAppLocation(userLocation);
+		ParameterMarshalConfiguration conf = (ParameterMarshalConfiguration)webApp.getServiceByName(WebAppLocation.WEB_PARAMETER_MARSHAL_CONFIGURATION);
+		ParameterMarshal marshal = new ParameterMarshal(conf);
+		marshal.getContext().setLocation(userLocation);
+		
+		populator.populate(marshal, marshal.getContext(), request);
+		
+		call(servletContext, request, response, marshal);
+	}
+	
+	protected void setupUserSession(HttpServletRequest request, HttpServletResponse response) {
+		Location loc = (Location)request.getSession().getAttribute(handlerLocationIdentifier);
+		if(loc == null) {
+			loc = new AppLocation(location);
+			loc.put(Constants.SESSION_LOCATION, loc);
+			request.getSession().setAttribute(handlerLocationIdentifier, loc);
+		}
+	}
+
 	public void call(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, ParameterMarshal marshal) {
 		
 		CallSpec called = null;
 		Object result = null;
 		
 		try {
+			
+			// Call all the methods we'll need before the actual handler is called
+			for(CallSpec spec : preHandleCalls) {
+				result = callAndUnwrapException(marshal, spec);
+				called = spec;
+			}
+			
 			for(CallSpec spec : handlerInvestigator.determineHandlers(getUrl(request), getMethod(request))) {
 				try {
 					result = callAndUnwrapException(marshal, spec);
@@ -45,8 +107,14 @@ public class HandleCaller {
 					// handle the request
 				}
 			}
+			
+			// Call any post response handlers like database commit handlers
+			for(CallSpec spec : preResponseCalls) {
+				callAndUnwrapException(marshal, spec);
+			}
 		}
 		catch(Exception e) {
+			e.printStackTrace();
 			marshal.getContext().setFoundParameter(EXCEPTION_PARAMETER_NAME, Exception.class, e);
 			
 			for(Class c : exceptionHandlers.keySet()) {
@@ -70,6 +138,17 @@ public class HandleCaller {
 				resp.respond(servletContext, request, response);
 			}
 		}
+		
+		for(CallSpec spec : preResponseCalls) {
+			try {
+				callAndUnwrapException(marshal, spec);
+			}
+			catch(Exception e) {
+				// no better way to handle these, log and go on
+				log.error("Problem executing a post response handler", e);
+			}
+		}
+
 	}
 	
 	protected Object callAndUnwrapException(ParameterMarshal marshal, CallSpec spec) throws InvocationTargetException, IllegalAccessException {
@@ -126,6 +205,27 @@ public class HandleCaller {
 
 	public void setOutputInvestigator(OutputResponseInvestigator outputInvestigator) {
 		this.outputInvestigator = outputInvestigator;
+	}
+
+	public List<CallSpec> getPreRequestCalls() {
+		return preHandleCalls;
+	}
+
+	public List<CallSpec> getPreResponseCalls() {
+		return preResponseCalls;
+	}
+
+	public List<CallSpec> getPostResponseCalls() {
+		return postResponseCalls;
+	}
+
+	public Location getLocation() {
+		return location;
+	}
+
+	@Wire
+	public void setLocation(Location location) {
+		this.location = location;
 	}
 	
 	

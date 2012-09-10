@@ -34,10 +34,9 @@ public class TripartateFileTemplateSource implements TemplateSource {
 	
 
 	public TemplateInstance get(String templateName) {
-		if(templateName.contains("..")) {
+		if(templateName.contains("..") || templateName.contains("~")) {
 			return null;
 		}
-		
 		
 		File templateFile = new File(root, templateName);
 		

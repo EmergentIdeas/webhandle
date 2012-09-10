@@ -3,6 +3,7 @@ package com.emergentideas.webhandle.bootstrap;
 import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.webhandle.Location;
 
+@Integrate
 public class CreateIntegrator implements Integrator {
 
 	public void integrate(Loader loader, Location location, ConfigurationAtom atom, Object focus) {

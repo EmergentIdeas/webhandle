@@ -18,6 +18,9 @@ public class Constants {
 	public static final String APP_LOCATION = "appLocation";
 	public static final String SESSION_LOCATION = "sessionLocation";
 	public static final String ENV_LOCATION = "envLocation";
+	
+	// locations of interesting objects
+	public static final String LOCATION_OF_REQUEST = "request";
 
 	
 }

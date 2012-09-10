@@ -14,15 +14,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.emergentideas.webhandle.InvocationContext;
 import com.emergentideas.webhandle.ParameterMarshal;
+import com.emergentideas.webhandle.assumptions.oak.CompositeTemplateSource;
+import com.emergentideas.webhandle.assumptions.oak.HandleCaller;
+import com.emergentideas.webhandle.assumptions.oak.LibraryTemplateSource;
 import com.emergentideas.webhandle.configurations.WebParameterMarsahalConfiguration;
 import com.emergentideas.webhandle.configurations.WebRequestContextPopulator;
 import com.emergentideas.webhandle.handlers.HandleAnnotationHandlerInvestigator;
-import com.emergentideas.webhandle.handlers.HandleCaller;
 import com.emergentideas.webhandle.handlers.Handler1;
 import com.emergentideas.webhandle.investigators.TemplateOutputTransformersInvestigator;
 import com.emergentideas.webhandle.output.SegmentedOutput;
-import com.emergentideas.webhandle.templates.CompositeTemplateSource;
-import com.emergentideas.webhandle.templates.LibraryTemplateSource;
 import com.emergentideas.webhandle.templates.TemplateInstance;
 import com.emergentideas.webhandle.templates.TripartateFileTemplateSource;
 

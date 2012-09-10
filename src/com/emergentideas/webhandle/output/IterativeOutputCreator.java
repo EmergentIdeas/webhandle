@@ -57,6 +57,12 @@ public class IterativeOutputCreator implements OutputCreator {
 					// If the return type isn't void, we'd like to assign the return value of the transformer
 					// to the the current response type even if the value is null.
 					this.response = ret;
+					
+					// If we get a response which is a respondent, then we'll use it as the final respondent
+					if(this.response instanceof Respondent) {
+						((Respondent)this.response).respond(servletContext, request, response);
+						return;
+					}
 				}
 			}
 			catch(Throwable t) {

@@ -6,8 +6,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.emergentideas.logging.Logger;
+import com.emergentideas.logging.SystemOutLogger;
 import com.emergentideas.webhandle.AppLocation;
 import com.emergentideas.webhandle.Location;
+import com.emergentideas.webhandle.WebAppLocation;
 
 /**
  * Loads and integrates configuration atoms into a location
@@ -17,19 +20,28 @@ import com.emergentideas.webhandle.Location;
 public class BasicLoader implements Loader {
 	
 	public static final String DELEGATE_LOADER_TYPE = "lets-get-this-party-started";
+	public static final String APP_LEVEL_LOCATION = "app-level-location";
 
 	protected Map<String, Creator> creators = new HashMap<String, Creator>();
 	protected List<Integrator> integrators = new ArrayList<Integrator>();
 	
 	protected Location location = new AppLocation();
 	
+	protected Logger log = SystemOutLogger.get(BasicLoader.class);
+	
 	public BasicLoader() {
+		location.put(APP_LEVEL_LOCATION, location);
+		
+		WebAppLocation webApp = new WebAppLocation(location);
+		webApp.setServiceByType(Location.class.getName(), location);
+		
 		loadBootstrapObjects();
 	}
 	
 	protected void loadBootstrapObjects() {
 		getIntegrators().add(new CreateIntegrator());
 		getIntegrators().add(new IntegrateIntegrator());
+
 		
 		BeanCreator creator = new BeanCreator();
 		integrate(this, location, null, creator);
@@ -54,8 +66,13 @@ public class BasicLoader implements Loader {
 		}
 		
 		for(ConfigurationAtom atom : configuration) {
-			Object created = create(delegatedLoader, location, atom);
-			integrate(delegatedLoader, location, atom, created);
+			try {
+				Object created = create(delegatedLoader, location, atom);
+				integrate(delegatedLoader, location, atom, created);
+			}
+			catch(Exception e) {
+				log.error("Could not process configuration atom with type->value: " + atom.getType() + "->" + atom.getValue(), e);
+			}
 		}
 	}
 	
@@ -100,4 +117,11 @@ public class BasicLoader implements Loader {
 		return integrators;
 	}
 
+	public Location getLocation() {
+		return location;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
+	}
 }

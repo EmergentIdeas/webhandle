@@ -1,9 +1,14 @@
-package com.emergentideas.webhandle.templates;
+package com.emergentideas.webhandle.assumptions.oak;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.emergentideas.webhandle.Name;
+import com.emergentideas.webhandle.templates.TemplateInstance;
+import com.emergentideas.webhandle.templates.TemplateSource;
+
+@Name("template-library")
 public class LibraryTemplateSource implements TemplateSource {
 
 	protected Map<String, TemplateInstance> templates = Collections.synchronizedMap(new HashMap<String, TemplateInstance>());

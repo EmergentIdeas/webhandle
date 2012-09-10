@@ -1,4 +1,4 @@
-package com.emergentideas.webhandle.templates;
+package com.emergentideas.webhandle.assumptions.oak;
 
 import static org.junit.Assert.*;
 
@@ -12,7 +12,11 @@ import com.emergentideas.webhandle.AppLocation;
 import com.emergentideas.webhandle.Location;
 import com.emergentideas.webhandle.TestObj;
 import com.emergentideas.webhandle.WebAppLocation;
+import com.emergentideas.webhandle.assumptions.oak.CompositeTemplateSource;
 import com.emergentideas.webhandle.output.SegmentedOutput;
+import com.emergentideas.webhandle.templates.TemplateInstance;
+import com.emergentideas.webhandle.templates.TripartateFileTemplateSource;
+import com.emergentideas.webhandle.templates.TripartateTemplate;
 
 public class CompositeTemplateSourceTest {
 

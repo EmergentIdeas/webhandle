@@ -2,6 +2,8 @@ package com.emergentideas.utils;
 
 import static org.junit.Assert.*;
 
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.List;
 
 import org.junit.Test;
@@ -56,6 +58,17 @@ public class ReflectionUtilsTest {
 		assertTrue(isPrimitive(TestObj.class.getMethod("getOrder", null).getReturnType()));
 		
 		assertEquals(0, getDefault(Integer.TYPE));
+	}
+	
+	@Test
+	public void testLoadResource() throws Exception {
+		ClassLoader cl = getClass().getClassLoader();
+		
+		Enumeration<URL> urls = cl.getResources("com/emergentideas/*");
+		while(urls.hasMoreElements()) {
+			URL url = urls.nextElement();
+			System.out.println(url.toString());
+		}
 	}
 		
 }

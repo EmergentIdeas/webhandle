@@ -25,7 +25,7 @@ public class WebRequestContextPopulator {
 		populate(marshal, context);
 		
 		marshal.getSources().put(Constants.REQUEST_BODY_SOURCE_NAME, new HttpBodyValueSource(request));
-		
+		context.getLocation().put(Constants.LOCATION_OF_REQUEST, request);
 	}
 	
 	/**
@@ -37,11 +37,6 @@ public class WebRequestContextPopulator {
 	public void populate(ParameterMarshal marshal, InvocationContext context) {
 		
 		context.setFoundParameter(SegmentedOutput.class, new SegmentedOutput());
-		
-//		IterativeOutputCreator creator = new IterativeOutputCreator(marshal, null);
-//		
-//		context.setFoundParameter(Respondent.class, creator);
-//		context.setFoundParameter(OutputCreator.class, creator);
 		
 		// configure the location
 		AppLocation loc = new AppLocation(context.getLocation());
