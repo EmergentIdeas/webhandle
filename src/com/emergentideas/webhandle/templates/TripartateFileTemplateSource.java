@@ -63,10 +63,11 @@ public class TripartateFileTemplateSource implements TemplateSource {
 				}
 			}
 			
-			return new TripartateTemplate(this, elementStreamProcessor, parts);
+			TemplateInstance template = new TripartateTemplate(this, elementStreamProcessor, parts);
+			return template;
 		}
 		catch(IOException e) {
-			logger.error("Could not read template file", e);
+			logger.error("Could not read template file: " + templateName, e);
 			return null;
 		}
 	}

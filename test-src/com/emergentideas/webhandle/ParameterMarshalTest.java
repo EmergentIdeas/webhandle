@@ -101,17 +101,17 @@ public class ParameterMarshalTest {
 		MapValueSource source = new MapValueSource(values);
 		marshal.getSources().put("request", source);
 		
-		Object parameter = marshal.getTypedParameter(obj, m, 0);
+		Object parameter = marshal.getTypedParameter(obj, m, 0, true);
 		assertEquals("1", parameter);
-		parameter = marshal.getTypedParameter(obj, m, 1);
+		parameter = marshal.getTypedParameter(obj, m, 1, true);
 		assertArrayEquals(intArgs1, (Object[])parameter);
 		
 		
 		values.put("two", new String[] {"2", "3"});
-		parameter = marshal.getTypedParameter(obj, m, 1);
+		parameter = marshal.getTypedParameter(obj, m, 1, true);
 		assertArrayEquals(intArgs1, (Object[])parameter);
 		
-		List l = (List)marshal.getTypedParameter(obj, m, 2);
+		List l = (List)marshal.getTypedParameter(obj, m, 2, true);
 		assertEquals(2.0, l.get(0));
 		assertEquals(3.0, l.get(1));
 		

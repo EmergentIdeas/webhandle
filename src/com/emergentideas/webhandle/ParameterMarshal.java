@@ -184,7 +184,7 @@ public class ParameterMarshal {
 	 * @param argumentIndex The argument index to find the parameter for
 	 * @return
 	 */
-	protected Object getTypedParameter(Object focus, Method method, int argumentIndex) {
+	protected Object getTypedParameter(Object focus, Method method, int argumentIndex, boolean failOnMissingParameters) {
 		
 		Annotation[] parameterAnnotations = method.getParameterAnnotations()[argumentIndex];
 		Class parameterClass = determineParameterClass(focus, method, argumentIndex);
@@ -212,13 +212,31 @@ public class ParameterMarshal {
 		
 		if(result == null) {
 			TransformerSpecification[] transformers = determineTransformers(focus, method, parameterClass, parameterName, parameterAnnotations);
-			
-			ValueSource source = getInitialObjectSource(parameterName, parameterClass, allowedSources);
-			Object initialData = source.get(parameterName, parameterClass, context);
+			Object initialData = null;
+			boolean cachable = true;
+			try {
+				ValueSource source = getInitialObjectSource(parameterName, parameterClass, allowedSources);
+				initialData = source.get(parameterName, parameterClass, context);
+				cachable = source.isCachable();
+			}
+			catch(ParameterNotFoundException e) {
+				if(failOnMissingParameters) {
+					throw e;
+				}
+				else {
+					// we can either use null if the type is not a primitive or a default type if it is a primitive
+					if(isPrimitive(parameterClass)) {
+						initialData = getDefault(parameterClass);
+					}
+					else {
+						initialData = null;
+					}
+				}
+			}
 			
 			result = getTypedParameter(parameterName, parameterClass, getComponentClass(parameterType), initialData, transformers);
 			
-			if(source.isCachable()) {
+			if(cachable) {
 				// add any parameter we've found
 				if(parameterName == null) {
 					context.setFoundParameter(parameterClass, result);
@@ -246,24 +264,7 @@ public class ParameterMarshal {
 		Object[] result = new Object[numArguments];
 		
 		for(int i = 0; i < numArguments; i++) {
-			try {
-				result[i] = getTypedParameter(focus, method, i);
-			}
-			catch(ParameterNotFoundException e) {
-				if(failOnMissingParameters) {
-					throw e;
-				}
-				else {
-					// we can either use null if the type is not a primitive or a default type if it is a primitive
-					Class parameterClass = determineParameterClass(focus, method, i);
-					if(isPrimitive(parameterClass)) {
-						result[i] = getDefault(parameterClass);
-					}
-					else {
-						result[i] = null;
-					}
-				}
-			}
+			result[i] = getTypedParameter(focus, method, i, failOnMissingParameters);
 		}
 		
 		return result;
@@ -538,7 +539,7 @@ public class ParameterMarshal {
 			if(transformer != null) {
 				try {
 					if(canRun(data, transformer)) {
-						data = makeArrayFromObject(transformer.transform(null, spec.getTransformerProperties(), finalParameterClass, null, data));
+						data = makeArrayFromObject(transformer.transform(context, spec.getTransformerProperties(), finalParameterClass, null, data));
 						transformersRun.add(spec.getTransformerName());
 					}
 				}

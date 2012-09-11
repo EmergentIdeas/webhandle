@@ -2,6 +2,7 @@ package com.emergentideas.webhandle.handlers;
 
 import com.emergentideas.webhandle.Command;
 import com.emergentideas.webhandle.Location;
+import com.emergentideas.webhandle.NotNull;
 import com.emergentideas.webhandle.TestObj;
 import com.emergentideas.webhandle.exceptions.CouldNotHandleException;
 import com.emergentideas.webhandle.exceptions.TransformationException;
@@ -70,13 +71,15 @@ public class Handler1 {
 	
 	@Handle(path = "/ten")
 	@Template
-	public String ten(@Command TestObj obj, Location loc) {
-		if(obj == null) {
-			obj = new TestObj();
+	public String ten(@NotNull @Command TestObj obj, Location loc) {
+		if(obj.getA() == null) {
+			obj.setA("hello");
 		}
-		obj.setA("hello");
 		obj.setB("world");
-		obj.setId("3");
+		
+		if(obj.getId() == null) {
+			obj.setId("3");
+		}
 		loc.add(obj);
 		return "form1.template";
 	}

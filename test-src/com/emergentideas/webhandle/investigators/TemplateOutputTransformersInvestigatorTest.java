@@ -17,6 +17,7 @@ import com.emergentideas.webhandle.output.DirectRespondent;
 import com.emergentideas.webhandle.output.HtmlDocRespondent;
 import com.emergentideas.webhandle.output.IterativeOutputCreator;
 import com.emergentideas.webhandle.output.Respondent;
+import com.emergentideas.webhandle.transformers.InputValuesTransformer;
 import com.emergentideas.webhandle.transformers.TemplateTransformer;
 import com.emergentideas.webhandle.transformers.WrapTransformer;
 
@@ -48,7 +49,8 @@ public class TemplateOutputTransformersInvestigatorTest {
 		
 		IterativeOutputCreator ioc = (IterativeOutputCreator)resp;
 		assertTrue(ioc.getTransformers().get(0).getFocus() instanceof TemplateTransformer);
-		assertTrue(ioc.getTransformers().get(1).getFocus() instanceof WrapTransformer);
+		assertTrue(ioc.getTransformers().get(1).getFocus() instanceof InputValuesTransformer);
+		assertTrue(ioc.getTransformers().get(2).getFocus() instanceof WrapTransformer);
 		
 		assertTrue(ioc.getFinalRespondent() instanceof HtmlDocRespondent);
 		
