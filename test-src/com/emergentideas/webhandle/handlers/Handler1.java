@@ -1,6 +1,8 @@
 package com.emergentideas.webhandle.handlers;
 
+import com.emergentideas.webhandle.Command;
 import com.emergentideas.webhandle.Location;
+import com.emergentideas.webhandle.TestObj;
 import com.emergentideas.webhandle.exceptions.CouldNotHandleException;
 import com.emergentideas.webhandle.exceptions.TransformationException;
 import com.emergentideas.webhandle.output.Template;
@@ -64,6 +66,19 @@ public class Handler1 {
 	@Template
 	public String nine(String id) {
 		return "one.template";
+	}
+	
+	@Handle(path = "/ten")
+	@Template
+	public String ten(@Command TestObj obj, Location loc) {
+		if(obj == null) {
+			obj = new TestObj();
+		}
+		obj.setA("hello");
+		obj.setB("world");
+		obj.setId("3");
+		loc.add(obj);
+		return "form1.template";
 	}
 
 }

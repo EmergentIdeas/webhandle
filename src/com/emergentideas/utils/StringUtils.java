@@ -58,5 +58,75 @@ public class StringUtils {
 		InputStream input = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName);
 		return input;
 	}
+	
+	/**
+	 * Replaces text in source using the arguments passed where the arguments after 
+	 * source are always in the order target, replacement
+	 * @param source
+	 * @param replacements
+	 */
+	public static void replaceString(StringBuffer source, String ... replacements ) {
+		for(int i = 0; i + 1 < replacements.length; i += 2)
+		{
+			String target = replacements[i];
+			String replacement = replacements[i + 1];
+			replaceString(source, target, replacement);
+		}
+	}	
+	
+	/**
+	 * Replaces text in source using the arguments passed where the arguments after 
+	 * source are always in the order target, replacement
+	 * @param source
+	 * @param replacements
+	 */
+	public static String replaceString(String source, String ... replacements ) {
+		StringBuffer sb = new StringBuffer(source);
+		replaceString(sb, replacements);
+		return sb.toString();
+	}	
+	
+	/**
+	 * Replaces the target text in the source string with the replacement string
+	 * @param source
+	 * @param target
+	 * @param replacement
+	 * @return
+	 */
+	public static void replaceString(StringBuffer source, String target, String replacement) {
+		if(target == null)
+		{
+			return;
+		}
+		if(replacement == null)
+		{
+			replacement = "";
+		}
+		
+		int iTargetLength = target.length();
+		int index;
+		int starting = 0;
+		while((index = source.indexOf(target, starting)) > -1)
+		{
+			source.replace(index, index + iTargetLength, replacement);
+			starting = index + replacement.length();
+		}
+	}
+	
+	public static String replaceString(String source, String target, String replacement) {
+		if(target == null)
+		{
+			return source;
+		}
+		if(replacement == null)
+		{
+			replacement = "";
+		}
+		
+		StringBuffer sb = new StringBuffer(source);
+		replaceString(sb, target, replacement);
+		return sb.toString();
+	}
+
 
 }

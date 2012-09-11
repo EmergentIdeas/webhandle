@@ -15,6 +15,7 @@ import com.emergentideas.webhandle.output.SegmentedOutput;
 import com.emergentideas.webhandle.output.Template;
 import com.emergentideas.webhandle.output.Wrap;
 import com.emergentideas.webhandle.templates.TemplateSource;
+import com.emergentideas.webhandle.transformers.InputValuesTransformer;
 import com.emergentideas.webhandle.transformers.TemplateTransformer;
 import com.emergentideas.webhandle.transformers.WrapTransformer;
 
@@ -45,6 +46,9 @@ public class TemplateOutputTransformersInvestigator implements
 		if(template != null) {
 			TemplateTransformer tt = new TemplateTransformer();
 			creator.addTransformer(ReflectionUtils.getFirstMethodCallSpec(tt, "transform"));
+			
+			InputValuesTransformer ivt = new InputValuesTransformer();
+			creator.addTransformer(ReflectionUtils.getFirstMethodCallSpec(ivt, "transform"));
 		}
 		if(wrap != null) {
 			WrapTransformer wt = new WrapTransformer();

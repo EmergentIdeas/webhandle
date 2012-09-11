@@ -8,12 +8,14 @@ import java.util.Map;
 
 import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.webhandle.InvocationContext;
+import com.emergentideas.webhandle.NamedTransformer;
 import com.emergentideas.webhandle.NoInject;
 import com.emergentideas.webhandle.ParameterMarshal;
 import com.emergentideas.webhandle.ValueTransformer;
 import com.emergentideas.webhandle.exceptions.ParameterNotFoundException;
 import com.emergentideas.webhandle.exceptions.TransformationException;
 
+@NamedTransformer("command-transformer")
 public class CommandValueTransformer implements ValueTransformer<String, Object, Object[]> {
 
 	public Object[] transform(InvocationContext context,
