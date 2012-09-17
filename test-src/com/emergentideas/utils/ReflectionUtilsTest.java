@@ -2,6 +2,7 @@ package com.emergentideas.utils;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.List;
@@ -10,6 +11,8 @@ import org.junit.Test;
 
 import com.emergentideas.webhandle.NoInject;
 import com.emergentideas.webhandle.TestObj;
+import com.emergentideas.webhandle.TestObj2;
+
 import static com.emergentideas.utils.ReflectionUtils.*;
 
 public class ReflectionUtilsTest {
@@ -69,6 +72,19 @@ public class ReflectionUtilsTest {
 			URL url = urls.nextElement();
 			System.out.println(url.toString());
 		}
+	}
+	
+	@Test
+	public void testGetSetter() throws Exception {
+		TestObj2 obj2 = new TestObj2();
+		Method m = getSetterMethod(obj2, "a");
+		assertNotNull(m);
+		assertEquals("setA", m.getName());
+		
+		m = getSetterMethod(obj2, "inner");
+		assertNotNull(m);
+		assertEquals("setInner", m.getName());
+		
 	}
 		
 }

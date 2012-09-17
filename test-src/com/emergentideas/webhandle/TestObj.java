@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Transient;
 
 import com.emergentideas.webhandle.Name;
 import com.emergentideas.webhandle.NoInject;
@@ -18,13 +20,19 @@ public class TestObj {
 	
 	protected String a;
 	protected String b;
+	
+	@Id
 	protected String id;
 	protected String[] c;
 	
+	@Transient
 	protected TestObj child1;
+	@Transient
 	protected TestObj child2;
+	@Transient
 	protected List<TestObj> manyChildren;
 	
+	@Transient
 	int order = 2;
 	
 	public TestObj() {
@@ -70,6 +78,7 @@ public class TestObj {
 	public void setB(String b) {
 		this.b = b;
 	}
+	
 	public TestObj getChild1() {
 		return child1;
 	}

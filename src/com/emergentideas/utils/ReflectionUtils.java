@@ -30,6 +30,26 @@ public class ReflectionUtils {
 	}
 	
 	/**
+	 * returns the setter method if it exists for a given object and property name.  If two or more 
+	 * methods with the correct name but differing types are found, the first found will be returned
+	 * @param focus
+	 * @param propertyName like address
+	 * @return
+	 */
+	public static Method getSetterMethod(Object focus, String propertyName) {
+		String methodName = "set" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
+		for(Method m : focus.getClass().getMethods()) {
+			if(m.getName().equals(methodName)) {
+				if(m.getParameterTypes().length == 1) {
+					return m;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
 	 * Returns the property name if this is a setter method or null otherwise.
 	 * @param method
 	 * @return

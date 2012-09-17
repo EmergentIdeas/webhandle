@@ -36,7 +36,7 @@ public class FlatFileConfigurationParser {
 				continue;
 			}
 			
-			ConfigurationAtom atom = new ConfigurationAtom();
+			ConfigurationAtomBase atom = new ConfigurationAtomBase();
 			result.add(atom);
 			
 			int sepLocation = line.indexOf(separator);

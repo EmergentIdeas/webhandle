@@ -19,12 +19,32 @@ import com.emergentideas.webhandle.WebAppLocation;
  */
 public class BasicLoader implements Loader {
 	
+	/**
+	 * a special type which indicates that we should use a declared loader class to load the configuration atoms
+	 * instead of this
+	 * 
+	 */
 	public static final String DELEGATE_LOADER_TYPE = "lets-get-this-party-started";
+	
+	/**
+	 * A name for the {@link Location} which contains all of the information at the application level.  This can
+	 * be used like:
+	 * <pre>
+	 * 		location.get("app-level-location")
+	 * </pre>
+	 */
 	public static final String APP_LEVEL_LOCATION = "app-level-location";
 
+	// objects which will create objects based on a configuration atom
 	protected Map<String, Creator> creators = new HashMap<String, Creator>();
+	
+	// objects which integrate created objects and configurations into the existing infrastructure
 	protected List<Integrator> integrators = new ArrayList<Integrator>();
 	
+	// objects which parse individual configuration lines into configuration atoms
+	protected List<AtomizerConfiguration> atomizerConfigurations = new ArrayList<AtomizerConfiguration>();
+	
+	// the location which holds information for the application
 	protected Location location = new AppLocation();
 	
 	protected Logger log = SystemOutLogger.get(BasicLoader.class);
@@ -65,8 +85,18 @@ public class BasicLoader implements Loader {
 			delegatedLoader = this;
 		}
 		
-		for(ConfigurationAtom atom : configuration) {
+		for(int i = 0; i < configuration.size(); i++) {
+			ConfigurationAtom atom = configuration.get(i);
 			try {
+				
+				AtomizerConfiguration atomizerConfig = findAtomizer(atom);
+				if(atomizerConfig != null) {
+					// If we've got an atomizer for this type, create a new configuration
+					// atom and put it in the list.
+					atom = atomizerConfig.getAtomizer().atomize(atom.getType(), atom.getValue());
+					configuration.set(i, atom);
+				}
+				
 				Object created = create(delegatedLoader, location, atom);
 				integrate(delegatedLoader, location, atom, created);
 			}
@@ -74,6 +104,16 @@ public class BasicLoader implements Loader {
 				log.error("Could not process configuration atom with type->value: " + atom.getType() + "->" + atom.getValue(), e);
 			}
 		}
+	}
+	
+	protected AtomizerConfiguration findAtomizer(ConfigurationAtom atom) {
+		for(AtomizerConfiguration ac : atomizerConfigurations) {
+			if(ac.getTypePattern().matcher(atom.getType()).matches()) {
+				return ac;
+			}
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -88,7 +128,7 @@ public class BasicLoader implements Loader {
 			ConfigurationAtom atom = atoms.next();
 			if(DELEGATE_LOADER_TYPE.equals(atom.getType())) {
 				atoms.remove();
-				ConfigurationAtom objAtom = new ConfigurationAtom("class", atom.getValue());
+				ConfigurationAtom objAtom = new ConfigurationAtomBase("class", atom.getValue());
 				Object created = create(this, location, atom);
 				if(created != null && created instanceof Loader) {
 					return (Loader)created;
@@ -124,4 +164,9 @@ public class BasicLoader implements Loader {
 	public void setLocation(Location location) {
 		this.location = location;
 	}
+
+	public List<AtomizerConfiguration> getAtomizerConfigurations() {
+		return atomizerConfigurations;
+	}
+	
 }

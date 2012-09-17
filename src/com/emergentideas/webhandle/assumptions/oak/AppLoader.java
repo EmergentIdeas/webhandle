@@ -11,6 +11,7 @@ import com.emergentideas.webhandle.Location;
 import com.emergentideas.webhandle.WebAppLocation;
 import com.emergentideas.webhandle.bootstrap.BasicLoader;
 import com.emergentideas.webhandle.bootstrap.ConfigurationAtom;
+import com.emergentideas.webhandle.bootstrap.ConfigurationAtomBase;
 import com.emergentideas.webhandle.bootstrap.FlatFileConfigurationParser;
 import com.emergentideas.webhandle.bootstrap.IncludeConfigurationCreator;
 
@@ -66,7 +67,7 @@ public class AppLoader extends BasicLoader {
 		super.loadBootstrapObjects();
 		
 		// allows us to include referenced configurations
-		integrate(this, location, new ConfigurationAtom("", "com.emergentideas.webhandle.bootstrap.IncludeConfigurationCreator"), new IncludeConfigurationCreator());
+		integrate(this, location, new ConfigurationAtomBase("", "com.emergentideas.webhandle.bootstrap.IncludeConfigurationCreator"), new IncludeConfigurationCreator());
 	}
 
 	protected String createAppLocation(File configuration) {
