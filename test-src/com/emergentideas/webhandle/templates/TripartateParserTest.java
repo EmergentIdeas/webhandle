@@ -64,7 +64,7 @@ public class TripartateParserTest {
 		tp = (TripartateElement)it.next();
 		assertEquals("adsService/allStores", tp.getDataSelectorExpression());
 		assertNull(tp.getConditionalExpression());
-		assertEquals("storeLink.template", tp.getHandlingExpression());
+		assertEquals("storeLink", tp.getHandlingExpression());
 		
 		assertEquals(test1_3, it.next().toString());
 		assertFalse(it.hasNext());
@@ -110,7 +110,7 @@ public class TripartateParserTest {
 			"<div class=\"tundra\" dojoType=\"dijit.Dialog\" id=\"switchStoreDialog\" title=\"Switch Store\" style=\"background-color: white; border: solid black 1px; display: none;\">\n" + 
 			"    <div class=\"switch-store-dialog-contents\">\n" + 
 			"    	<ul class=\"switch-to-store-list\">\n" + 
-			"        __adsService/allStores::storeLink.template__\n" + 
+			"        __adsService/allStores::storeLink__\n" + 
 			" 		</ul>\n" + 
 			"    </div>\n" + 
 			"</div>\n";

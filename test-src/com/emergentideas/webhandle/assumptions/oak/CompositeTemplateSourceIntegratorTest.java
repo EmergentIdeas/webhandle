@@ -33,11 +33,11 @@ public class CompositeTemplateSourceIntegratorTest {
 		assertNull(ts.get("Template1"));
 		
 		
-		TemplateInstance ti = ts.get("template2.template");
+		TemplateInstance ti = ts.get("template2");
 		assertNotNull(ti);
 		
 		SegmentedOutput output = new SegmentedOutput();
-		ti.render(output, loader.getLocation());
+		ti.render(output, loader.getLocation(), null, null);
 		assertEquals("hello world", output.getStream("body").toString());
 	}
 }

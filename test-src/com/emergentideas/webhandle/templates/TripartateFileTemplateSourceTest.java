@@ -21,9 +21,9 @@ public class TripartateFileTemplateSourceTest {
 	public void testLoadAllParts() throws Exception {
 		TripartateFileTemplateSource ts = new TripartateFileTemplateSource(new File("WebContent/WEB-INF/testTemplates"));
 		
-		TripartateTemplate tt = (TripartateTemplate)ts.get("one.template");
+		TripartateTemplate tt = (TripartateTemplate)ts.get("one");
 		
-		assertEquals("hello there", tt.sections.get("template"));
+		assertEquals("hello there", tt.sections.get("body"));
 		assertEquals("/css/sheet.css", tt.sections.get("cssInclude"));
 		assertEquals(FileUtils.getFileAsString(new File("WebContent/WEB-INF/testTemplates/one.header")), tt.sections.get("header"));
 		
@@ -32,7 +32,7 @@ public class TripartateFileTemplateSourceTest {
 	@Test
 	public void testRender() throws Exception {
 		TripartateFileTemplateSource ts = new TripartateFileTemplateSource(new File("WebContent/WEB-INF/testTemplates"));
-		TripartateTemplate tt = (TripartateTemplate)ts.get("two.template");
+		TripartateTemplate tt = (TripartateTemplate)ts.get("two");
 		Location loc = new AppLocation();
 		WebAppLocation web = new WebAppLocation(loc);
 		web.init();
@@ -56,13 +56,13 @@ public class TripartateFileTemplateSourceTest {
 		loc.add(obj);
 		
 		SegmentedOutput out = new SegmentedOutput();
-		tt.render(out, loc);
+		tt.render(out, loc, "body", null);
 		
 		assertEquals("hello there myid", out.getStream("body").toString());
 		
-		tt = (TripartateTemplate)ts.get("three.template");
+		tt = (TripartateTemplate)ts.get("three");
 		out = new SegmentedOutput();
-		tt.render(out, loc);
+		tt.render(out, loc, null, null);
 		
 		String body = out.getStream("body").toString();
 		assertTrue(body.contains("is:AA"));

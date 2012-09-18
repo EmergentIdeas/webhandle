@@ -5,5 +5,5 @@ import com.emergentideas.webhandle.output.SegmentedOutput;
 
 public interface TemplateInstance {
 
-	public void render(SegmentedOutput output, Location location);
+	public void render(SegmentedOutput output, Location location, String elementSourceName, String... processingHints);
 }

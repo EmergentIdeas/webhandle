@@ -1,23 +1,31 @@
 package com.emergentideas.webhandle.templates;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import com.emergentideas.logging.Logger;
 import com.emergentideas.logging.SystemOutLogger;
 import com.emergentideas.utils.FileUtils;
+import com.emergentideas.utils.ReflectionUtils;
+import com.emergentideas.utils.StringUtils;
 
 public class TripartateFileTemplateSource implements TemplateSource {
 	
 	protected File root;
 	
 	protected ElementStreamProcessor elementStreamProcessor;
+	protected Properties defaultHints;
 	
 	protected Logger logger = SystemOutLogger.get(TripartateFileTemplateSource.class);
+	
+	public static final String HINTS_EXTENSION = "hints";
+	
 	
 	public TripartateFileTemplateSource() {
 		
@@ -25,6 +33,15 @@ public class TripartateFileTemplateSource implements TemplateSource {
 		processors.add(new StringElementProcessor());
 		processors.add(new TripartateTemplateElementProcessor());
 		elementStreamProcessor = new ElementStreamProcessor(processors);
+		
+		// set up the default hints that will apply if no others have been selected
+		defaultHints = new Properties();
+		try {
+			defaultHints.load(StringUtils.getStreamFromClassPathLocation("com/emergentideas/webhandle/templates/defaultTemplateHints.properties"));
+		}
+		catch(Exception e) {
+			logger.error("Could not load default tripartate template hints", e);
+		}
 	}
 	
 	public TripartateFileTemplateSource(File root) {
@@ -40,30 +57,34 @@ public class TripartateFileTemplateSource implements TemplateSource {
 		
 		File templateFile = new File(root, templateName);
 		
-		if(templateFile.exists() == false) {
-			return null;
-		}
 		
 		Map<String, String> parts = new HashMap<String, String>();
-		
+		Properties hints = defaultHints;
 		try {
-			if(templateName.endsWith(".template")) {
-				parts.put("template", FileUtils.getFileAsString(templateFile));
-				
-				String path = templateFile.getAbsolutePath();
-				String prefix = path.substring(0, path.length() - "template".length());
-				int prefixLength = prefix.length();
-				
-				File parent = templateFile.getParentFile();
-				for(File child : parent.listFiles()) {
-					if(child.getAbsolutePath().startsWith(prefix)) {
-						String suffix = child.getAbsolutePath().substring(prefixLength);
+			String path = templateFile.getAbsolutePath();
+			int prefixLength = path.length();
+			
+			File parent = templateFile.getParentFile();
+			for(File child : parent.listFiles()) {
+				if(child.getAbsolutePath().startsWith(path)) {
+					// get the part name
+					String suffix = child.getAbsolutePath().substring(prefixLength + 1);
+					
+					if(HINTS_EXTENSION.equals(suffix)) {
+						hints = new Properties(hints);
+						hints.load(new FileInputStream(child));
+					}
+					else {
 						parts.put(suffix, FileUtils.getFileAsString(child));
 					}
 				}
 			}
 			
-			TemplateInstance template = new TripartateTemplate(this, elementStreamProcessor, parts);
+			if(parts.size() == 0) {
+				return null;
+			}
+			
+			TemplateInstance template = new TripartateTemplate(this, elementStreamProcessor, parts, hints);
 			return template;
 		}
 		catch(IOException e) {

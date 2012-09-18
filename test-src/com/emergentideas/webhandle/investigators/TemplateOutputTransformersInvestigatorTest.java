@@ -43,7 +43,7 @@ public class TemplateOutputTransformersInvestigatorTest {
 		assertEquals("test", dr.getOutput());
 		
 		handlerMethod = ReflectionUtils.getFirstMethod(Handler1.class, "two");
-		resp = investigator.determineTransformers(context, handler, handlerMethod, "test.template");
+		resp = investigator.determineTransformers(context, handler, handlerMethod, "test");
 		
 		assertTrue(resp instanceof IterativeOutputCreator);
 		

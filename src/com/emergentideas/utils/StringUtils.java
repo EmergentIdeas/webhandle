@@ -127,6 +127,23 @@ public class StringUtils {
 		replaceString(sb, target, replacement);
 		return sb.toString();
 	}
+	
+	public static <T> boolean contains(T[] list, T searchTerm) {
+		for(T item : list) {
+			if(searchTerm == null && item == null) {
+				return true;
+			}
+			if(searchTerm == null || item == null) {
+				continue;
+			}
+			
+			if(searchTerm.equals(item)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
 
 
 }

@@ -9,7 +9,7 @@ import com.emergentideas.webhandle.templates.TripartateElement;
 public class ParameterElementProcessor implements ElementProcessor {
 
 	public boolean process(Location location, SegmentedOutput output,
-			Element element) {
+			Element element, String elementSourceName, String... processingHints) {
 		
 		if(element instanceof TripartateElement) {
 			UrlRegexOutput urlOut = new UrlRegexOutput(output);

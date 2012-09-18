@@ -31,8 +31,8 @@ public class CompositeTemplateSourceTest {
 		LibraryTemplateSource lts = new LibraryTemplateSource();
 		lts.add("arbitrary", new TemplateInstance() {
 			
-			public void render(SegmentedOutput output, Location location) {
-				output.getStream("body").append("this is some arbitrary text");
+			public void render(SegmentedOutput output, Location location, String elementSourceName, String... processingHints) {
+				output.getStream(elementSourceName).append("this is some arbitrary text");
 			}
 		});
 		
@@ -43,7 +43,7 @@ public class CompositeTemplateSourceTest {
 		
 		web.setTemplateSource(cts);
 		
-		TripartateTemplate tt = (TripartateTemplate)cts.get("two.template");
+		TripartateTemplate tt = (TripartateTemplate)cts.get("two");
 		TestObj obj = new TestObj("AA", "BB");
 		obj.setId("myid");
 		
@@ -62,13 +62,13 @@ public class CompositeTemplateSourceTest {
 		loc.add(obj);
 		
 		SegmentedOutput out = new SegmentedOutput();
-		tt.render(out, loc);
+		tt.render(out, loc, null, null);
 		
 		assertEquals("hello there myid", out.getStream("body").toString());
 		
-		tt = (TripartateTemplate)cts.get("three.template");
+		tt = (TripartateTemplate)cts.get("three");
 		out = new SegmentedOutput();
-		tt.render(out, loc);
+		tt.render(out, loc, null, null);
 		
 		String body = out.getStream("body").toString();
 		assertTrue(body.contains("is:AA"));
@@ -76,9 +76,9 @@ public class CompositeTemplateSourceTest {
 		assertTrue(body.contains("manyChildren is:B2B3"));
 		
 		
-		tt = (TripartateTemplate)cts.get("five.template");
+		tt = (TripartateTemplate)cts.get("five");
 		out = new SegmentedOutput();
-		tt.render(out, loc);
+		tt.render(out, loc, null, null);
 		
 		body = out.getStream("body").toString();
 		assertTrue(body.contains("this is some arbitrary text"));

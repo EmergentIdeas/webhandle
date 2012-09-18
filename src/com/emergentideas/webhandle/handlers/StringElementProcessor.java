@@ -10,7 +10,7 @@ import com.emergentideas.webhandle.templates.StringElement;
 
 public class StringElementProcessor implements ElementProcessor {
 
-	public boolean process(Location location, SegmentedOutput output, Element element) {
+	public boolean process(Location location, SegmentedOutput output, Element element, String elementSourceName, String... processingHints) {
 		if(element instanceof StringElement) {
 			UrlRegexOutput urlOut = new UrlRegexOutput(output);
 			

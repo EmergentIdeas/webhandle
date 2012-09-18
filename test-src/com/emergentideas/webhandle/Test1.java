@@ -55,8 +55,8 @@ public class Test1 extends HttpServlet {
 		LibraryTemplateSource lts = new LibraryTemplateSource();
 		lts.add("arbitrary", new TemplateInstance() {
 			
-			public void render(SegmentedOutput output, Location location) {
-				output.getStream("body").append("this is some arbitrary text");
+			public void render(SegmentedOutput output, Location location, String elementSourceName, String... processingHints) {
+				output.getStream(elementSourceName).append("this is some arbitrary text");
 			}
 		});
 		

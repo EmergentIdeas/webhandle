@@ -7,9 +7,9 @@ import com.emergentideas.webhandle.output.SegmentedOutput;
 public class StringElementProcessor implements ElementProcessor {
 
 	public boolean process(Location location, SegmentedOutput output,
-			Element element) {
+			Element element, String elementSourceName, String... processingHints) {
 		if(element instanceof StringElement) {
-			output.getStream("body").append(element.toString());
+			output.getStream(elementSourceName).append(element.toString());
 			
 			return true;
 		}

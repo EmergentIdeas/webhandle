@@ -23,7 +23,7 @@ public class UrlRequestElementsProcessor extends ElementStreamProcessor {
 	public UrlRegexOutput process(String url) {
 		List<Element> elements = parser.parse(url);
 		SegmentedOutput output = new SegmentedOutput();
-		process(null, output, processors, elements);
+		process(null, output, processors, elements, null, null);
 		return new UrlRegexOutput(output);
 	}
 

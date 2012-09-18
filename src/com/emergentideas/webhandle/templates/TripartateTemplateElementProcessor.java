@@ -17,7 +17,7 @@ public class TripartateTemplateElementProcessor implements ElementProcessor {
 	public TripartateTemplateElementProcessor() {
 	}
 	
-	public boolean process(Location location, SegmentedOutput output, Element element) {
+	public boolean process(Location location, SegmentedOutput output, Element element, String elementSourceName, String... processingHints) {
 		if(element instanceof TripartateElement) {
 			TripartateElement te = (TripartateElement)element;
 			
@@ -33,7 +33,7 @@ public class TripartateTemplateElementProcessor implements ElementProcessor {
 			
 			String dataSelector = te.getDataSelectorExpression();
 			if(dataSelector == null || "".equals(dataSelector.trim())) {
-				ti.render(output, location);
+				ti.render(output, location, elementSourceName, null);
 			}
 			else {
 				List<Object> data = location.all(dataSelector);
@@ -41,10 +41,10 @@ public class TripartateTemplateElementProcessor implements ElementProcessor {
 					if(ti != null) {
 						Location callLocation = new AppLocation(location);
 						callLocation.add(o);
-						ti.render(output, callLocation);
+						ti.render(output, callLocation, elementSourceName, null);
 					}
 					else {
-						output.getStream("body").append(o.toString());
+						output.getStream(elementSourceName).append(o.toString());
 					}
 				}
 			}

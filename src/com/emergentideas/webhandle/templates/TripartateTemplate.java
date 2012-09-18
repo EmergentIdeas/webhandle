@@ -1,33 +1,128 @@
 package com.emergentideas.webhandle.templates;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
+import com.emergentideas.logging.Logger;
+import com.emergentideas.logging.SystemOutLogger;
+import com.emergentideas.utils.StringUtils;
 import com.emergentideas.webhandle.Location;
 import com.emergentideas.webhandle.output.SegmentedOutput;
+import com.emergentideas.webhandle.output.SegmentedOutputOverlay;
 
 public class TripartateTemplate implements TemplateInstance {
 
 	protected Map<String, String> sections = Collections.synchronizedMap(new HashMap<String, String>());
 	
-	protected List<Element> templateElements = Collections.synchronizedList(new ArrayList<Element>());
+	protected Properties hints;
 	
 	protected ElementStreamProcessor processor;
 	
-	public TripartateTemplate(TemplateSource templateSource, ElementStreamProcessor processor, Map<String, String> sections) {
+	protected Logger log = SystemOutLogger.get(TripartateTemplate.class);
+	
+	public static final String APPEND_MARKER = "append";
+	public static final String REPLACE_MARKER = "replace";
+	
+	public static final String STREAM_MARKER = "stream";
+	public static final String LIST_MARKER = "list";
+	public static final String MAP_MARKER = "map";
+	
+	
+	
+	public TripartateTemplate(TemplateSource templateSource, ElementStreamProcessor processor, Map<String, String> sections, Properties hints) {
 		this.sections.putAll(sections);
 		this.processor = processor;
-		
-		String template = sections.get("template");
-		templateElements.addAll(new TripartateParser().parse(template));
+		this.hints = hints;
 	}
 	
-	public void render(SegmentedOutput output, Location location) {
-		processor.process(location, output, templateElements);
-
+	public void render(SegmentedOutput output, Location location, String elementSourceName, String... processingHints) {
+		TripartateParser parser = new TripartateParser();
+		
+		for(String sectionName : sections.keySet()) {
+			String hintsString = hints.getProperty(sectionName);
+			if(hintsString == null) {
+				hintsString = hints.getProperty("$default");
+			}
+			
+			String[] hints = hintsString.split(",");
+			
+			// whatever this is, the text should be processed as a tripartate template
+			List<Element> elements = parser.parse(sections.get(sectionName));
+			
+			if(StringUtils.contains(hints, STREAM_MARKER) && StringUtils.contains(hints, APPEND_MARKER)) {
+				// if we're appending to the stream, we don't have to do anything because the natural
+				// behavior of our processors should do everything we want
+				processor.process(location, output, elements, sectionName, hints);
+			}
+			else {
+				// we'll have to create an overlay so that we can pick up all of the additions and post process
+				// them either to replace the current text or to split it into list or map formats
+				SegmentedOutputOverlay overlay = new SegmentedOutputOverlay(output, sectionName);
+				processor.process(location, overlay, elements, sectionName, hints);
+				if(StringUtils.contains(hints, STREAM_MARKER) && StringUtils.contains(hints, REPLACE_MARKER)) {
+					// easy enough
+					StringBuilder sb = output.getStream(sectionName);
+					sb.delete(0, sb.length());
+					sb.append(overlay.getStream(sectionName));
+				}
+				else if(StringUtils.contains(hints, LIST_MARKER)) {
+					if(StringUtils.contains(hints, REPLACE_MARKER)) {
+						output.getList(sectionName).clear();
+					}
+					
+					output.getList(sectionName).addAll(parseList(overlay.getStream(sectionName).toString()));
+				}
+				else if(StringUtils.contains(hints, MAP_MARKER)) {
+					Map<String, String> newProperties = parseProperties(overlay.getStream(sectionName).toString());
+					if(StringUtils.contains(hints, REPLACE_MARKER)) {
+						output.getPropertySet(sectionName).putAll(newProperties);
+					}
+					else if(StringUtils.contains(hints, APPEND_MARKER)) {
+						Map<String, String> existing = output.getPropertySet(sectionName);
+						for(String key : newProperties.keySet()) {
+							String value = existing.get(key);
+							if(value == null) {
+								value = "";
+							}
+							value += newProperties.get(key);
+							existing.put(key, value);
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	protected List<String> parseList(String info) {
+		List<String> result = new ArrayList<String>();
+		
+		info = StringUtils.replaceString(info, "\\r\\n", "\\n");
+		for(String s : info.split("\\n")) {
+			result.add(s);
+		}
+		
+		return result;
+	}
+	
+	protected Map<String, String> parseProperties(String info) {
+		Properties properties = new Properties();
+		try {
+			properties.load(new StringReader(info));
+		}
+		catch(Exception ex) {
+			log.error("Could not parse properties", ex);
+		}
+		
+		Map<String, String> result = new HashMap<String, String>();
+		for(Object key : properties.keySet()) {
+			result.put(key.toString(), properties.getProperty(key.toString()));
+		}
+		return result;
 	}
 
 	public Map<String, String> getSections() {
@@ -38,13 +133,4 @@ public class TripartateTemplate implements TemplateInstance {
 		this.sections = sections;
 	}
 
-	public List<Element> getTemplateElements() {
-		return templateElements;
-	}
-
-	public void setTemplateElements(List<Element> templateElements) {
-		this.templateElements = templateElements;
-	}
-	
-	
 }

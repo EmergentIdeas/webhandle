@@ -22,7 +22,7 @@ public class Handler1 {
 	@Template
 	@Wrap
 	public String two(String id, Location location) {
-		return "mytemplate.template";
+		return "mytemplate";
 	}
 	
 	@Handle(path = "/three")
@@ -66,7 +66,7 @@ public class Handler1 {
 	@Handle(path = "/nine")
 	@Template
 	public String nine(String id) {
-		return "one.template";
+		return "one";
 	}
 	
 	@Handle(path = "/ten")
@@ -81,7 +81,7 @@ public class Handler1 {
 			obj.setId("3");
 		}
 		loc.add(obj);
-		return "form1.template";
+		return "form1";
 	}
 
 }

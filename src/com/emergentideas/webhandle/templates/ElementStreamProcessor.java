@@ -20,8 +20,8 @@ public class ElementStreamProcessor {
 		setProcessors(processors);
 	}
 	
-	public void process(Location location, SegmentedOutput output, List<Element> elements) {
-		process(location, output, processors, elements);
+	public void process(Location location, SegmentedOutput output, List<Element> elements, String elementSourceName, String... processingHints) {
+		process(location, output, processors, elements, elementSourceName, processingHints);
 	}
 	
 	/**
@@ -31,10 +31,10 @@ public class ElementStreamProcessor {
 	 * @param processors
 	 * @param elements
 	 */
-	public void process(Location location, SegmentedOutput output, List<ElementProcessor> processors, List<Element> elements) {
+	public void process(Location location, SegmentedOutput output, List<ElementProcessor> processors, List<Element> elements, String elementSourceName, String... processingHints) {
 		for(Element element : elements) {
 			for(ElementProcessor processor : processors) {
-				if(processor.process(location, output, element)) {
+				if(processor.process(location, output, element, elementSourceName, processingHints)) {
 					continue;
 				}
 			}

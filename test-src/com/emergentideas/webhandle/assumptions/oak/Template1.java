@@ -8,7 +8,7 @@ import com.emergentideas.webhandle.templates.TemplateInstance;
 @TemplateDef("template1")
 public class Template1 implements TemplateInstance {
 
-	public void render(SegmentedOutput output, Location location) {
+	public void render(SegmentedOutput output, Location location, String elementSourceName, String... processingHints) {
 		// TODO Auto-generated method stub
 
 	}
