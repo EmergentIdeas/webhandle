@@ -27,7 +27,7 @@ public class CompositeTemplateSourceIntegratorTest {
 		
 		CompositeTemplateSource cts = (CompositeTemplateSource)ts;
 		assertEquals(2, cts.getSources().size());
-		assertTrue(cts.getSources().get(0) instanceof LibraryTemplateSource);
+		assertTrue(cts.getSources().get(1) instanceof LibraryTemplateSource);
 		
 		assertNotNull(ts.get("template1"));
 		assertNull(ts.get("Template1"));

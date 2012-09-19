@@ -20,7 +20,7 @@ public class Handler1 {
 	
 	@Handle(path = "/one", method = {HttpMethod.POST, HttpMethod.GET})
 	@Template
-	@Wrap
+	@Wrap("app_page")
 	public String two(String id, Location location) {
 		return "mytemplate";
 	}
@@ -83,5 +83,13 @@ public class Handler1 {
 		loc.add(obj);
 		return "form1";
 	}
+	
+	@Handle(path = "/eleven", method = {HttpMethod.POST, HttpMethod.GET})
+	@Template
+	@Wrap("app_page")
+	public String eleven(String id, Location location) {
+		return "mytemplate";
+	}
+
 
 }

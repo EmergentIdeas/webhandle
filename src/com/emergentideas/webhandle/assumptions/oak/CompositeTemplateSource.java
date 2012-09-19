@@ -24,8 +24,13 @@ public class CompositeTemplateSource implements TemplateSource {
 		return null;
 	}
 	
+	/**
+	 * Add sources will get added to the list in the first place and therefore will get searched
+	 * first
+	 * @param source
+	 */
 	public void addTemplateSource(TemplateSource source) {
-		sources.add(source);
+		sources.add(0, source);
 	}
 	
 	public List<TemplateSource> getSources() {

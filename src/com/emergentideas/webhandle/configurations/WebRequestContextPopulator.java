@@ -7,6 +7,7 @@ import com.emergentideas.webhandle.Constants;
 import com.emergentideas.webhandle.InvocationContext;
 import com.emergentideas.webhandle.Location;
 import com.emergentideas.webhandle.ParameterMarshal;
+import com.emergentideas.webhandle.output.HTML5SegmentedOutput;
 import com.emergentideas.webhandle.output.IterativeOutputCreator;
 import com.emergentideas.webhandle.output.OutputCreator;
 import com.emergentideas.webhandle.output.Respondent;
@@ -36,7 +37,7 @@ public class WebRequestContextPopulator {
 	 */
 	public void populate(ParameterMarshal marshal, InvocationContext context) {
 		
-		context.setFoundParameter(SegmentedOutput.class, new SegmentedOutput());
+		context.setFoundParameter(SegmentedOutput.class, new HTML5SegmentedOutput());
 		
 		// configure the location
 		AppLocation loc = new AppLocation(context.getLocation());

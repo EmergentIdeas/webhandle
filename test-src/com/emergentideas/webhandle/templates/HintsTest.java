@@ -27,10 +27,10 @@ public class HintsTest {
 		
 		ti.render(out, loc, null, null);
 
-		assertTrue(out.getList("cssIncludes").contains("default.css"));
-		assertTrue(out.getList("cssIncludes").contains("one.css"));
-		assertTrue(out.getList("cssIncludes").contains("two.css"));
-		assertTrue(out.getList("cssIncludes").contains("three.css"));
+		assertTrue(out.getList("footerLibraries").contains("default.css"));
+		assertTrue(out.getList("footerLibraries").contains("one.css"));
+		assertTrue(out.getList("footerLibraries").contains("two.css"));
+		assertTrue(out.getList("footerLibraries").contains("three.css"));
 		
 		assertTrue(out.getStream("body").toString().startsWith("start:"));
 		assertTrue(out.getStream("body").toString().endsWith("This is some body text"));
@@ -46,10 +46,10 @@ public class HintsTest {
 		out = prepOutput();
 		ti.render(out, loc, null, null);
 		
-		assertFalse(out.getList("cssIncludes").contains("default.css"));
-		assertTrue(out.getList("cssIncludes").contains("one.css"));
-		assertTrue(out.getList("cssIncludes").contains("two.css"));
-		assertTrue(out.getList("cssIncludes").contains("three.css"));
+		assertFalse(out.getList("footerLibraries").contains("default.css"));
+		assertTrue(out.getList("footerLibraries").contains("one.css"));
+		assertTrue(out.getList("footerLibraries").contains("two.css"));
+		assertTrue(out.getList("footerLibraries").contains("three.css"));
 		
 		assertFalse(out.getStream("body").toString().startsWith("start:"));
 		assertTrue(out.getStream("body").toString().endsWith("This is some body text"));
@@ -64,7 +64,7 @@ public class HintsTest {
 	
 	protected SegmentedOutput prepOutput() {
 		SegmentedOutput out = new HTML5SegmentedOutput();
-		out.getList("cssIncludes").add("default.css");
+		out.getList("footerLibraries").add("default.css");
 		out.getStream("body").append("start:");
 		out.getPropertySet("httpHeader").put("Location", "the default location");
 		out.getPropertySet("httpHeader").put("Arbitrary", "the default arbitrary value");

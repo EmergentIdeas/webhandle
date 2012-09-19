@@ -1,5 +1,6 @@
 package com.emergentideas.webhandle.templates;
 
+import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,7 +44,7 @@ public class TripartateTemplate implements TemplateInstance {
 	public void render(SegmentedOutput output, Location location, String elementSourceName, String... processingHints) {
 		TripartateParser parser = new TripartateParser();
 		
-		for(String sectionName : sections.keySet()) {
+		for(String sectionName : createSectionRenderOrder()) {
 			String hintsString = hints.getProperty(sectionName);
 			if(hintsString == null) {
 				hintsString = hints.getProperty("$default");
@@ -52,7 +53,12 @@ public class TripartateTemplate implements TemplateInstance {
 			String[] hints = hintsString.split(",");
 			
 			// whatever this is, the text should be processed as a tripartate template
-			List<Element> elements = parser.parse(sections.get(sectionName));
+			String templateText = sections.get(sectionName);
+			if(org.apache.commons.lang.StringUtils.isBlank(templateText)) {
+				continue;
+			}
+			
+			List<Element> elements = parser.parse(templateText);
 			
 			if(StringUtils.contains(hints, STREAM_MARKER) && StringUtils.contains(hints, APPEND_MARKER)) {
 				// if we're appending to the stream, we don't have to do anything because the natural
@@ -98,6 +104,24 @@ public class TripartateTemplate implements TemplateInstance {
 		}
 	}
 	
+	protected List<String> createSectionRenderOrder() {
+		List<String> order = new ArrayList<String>();
+		String orderHints = hints.getProperty("$order");
+		if(org.apache.commons.lang.StringUtils.isBlank(orderHints) == false) {
+			for(String s : orderHints.split(",")) {
+				order.add(s);
+			}
+		}
+		
+		for(String s : sections.keySet()) {
+			if(order.contains(s) == false) {
+				order.add(s);
+			}
+		}
+		
+		return order;
+	}
+	
 	protected List<String> parseList(String info) {
 		List<String> result = new ArrayList<String>();
 		
@@ -112,7 +136,7 @@ public class TripartateTemplate implements TemplateInstance {
 	protected Map<String, String> parseProperties(String info) {
 		Properties properties = new Properties();
 		try {
-			properties.load(new StringReader(info));
+			properties.load(new ByteArrayInputStream(info.getBytes()));
 		}
 		catch(Exception ex) {
 			log.error("Could not parse properties", ex);

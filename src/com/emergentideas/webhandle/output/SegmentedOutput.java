@@ -2,8 +2,10 @@ package com.emergentideas.webhandle.output;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class SegmentedOutput {
 	
@@ -38,5 +40,51 @@ public class SegmentedOutput {
 			namedValues.put(name, list);
 		}
 		return list;
+	}
+	
+	public Set<String> getStreamKeys() {
+		Set<String> result = new HashSet<String>();
+		
+		result.addAll(namedStreams.keySet());
+		
+		return result;
+	}
+	
+	public Set<String> getListKeys() {
+		Set<String> result = new HashSet<String>();
+		
+		result.addAll(namedValues.keySet());
+		
+		return result;
+	}
+	
+	public Set<String> getPropertySetKeys() {
+		Set<String> result = new HashSet<String>();
+		
+		result.addAll(namedPropertySets.keySet());
+		
+		return result;
+	}
+	
+
+	
+	public Set<String> getAllKeys() {
+		Set<String> result = new HashSet<String>();
+		
+		result.addAll(namedStreams.keySet());
+		result.addAll(namedPropertySets.keySet());
+		result.addAll(namedValues.keySet());
+		
+		return result;
+	}
+	
+	public void replaceInfoWith(SegmentedOutput otherOutput) {
+		namedStreams.clear();
+		namedPropertySets.clear();
+		namedValues.clear();
+		
+		namedStreams.putAll(otherOutput.namedStreams);
+		namedPropertySets.putAll(otherOutput.namedPropertySets);
+		namedValues.putAll(otherOutput.namedValues);
 	}
 }

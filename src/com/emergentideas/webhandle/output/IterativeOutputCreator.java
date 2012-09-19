@@ -37,7 +37,7 @@ public class IterativeOutputCreator implements OutputCreator {
 		this.response = response;
 		
 		if(output == null) {
-			output = new SegmentedOutput();
+			output = new HTML5SegmentedOutput();
 			marshal.getContext().setFoundParameter(SegmentedOutput.class, output);
 		}
 		
