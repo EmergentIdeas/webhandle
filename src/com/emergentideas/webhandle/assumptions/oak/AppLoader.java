@@ -27,6 +27,7 @@ public class AppLoader extends BasicLoader {
 	public static final String APPLICATION_ON_DISK_LOCATION = "application-on-disk-location";
 	
 	protected WebAppLocation webApp = new WebAppLocation(location);
+	protected ClassLoader threadClassLoader;
 	
 	public AppLoader() {
 		super();
@@ -51,12 +52,18 @@ public class AppLoader extends BasicLoader {
 	
 	@Override
 	public void load(Location location, List<ConfigurationAtom> configuration) {
-		ClassLoader threadClassLoader = Thread.currentThread().getContextClassLoader();
+		boolean restore = false;
+		if(threadClassLoader == null) {
+			threadClassLoader = Thread.currentThread().getContextClassLoader();
+			restore = true;
+		}
 		try {
 			super.load(location, configuration);
 		}
 		finally {
-			Thread.currentThread().setContextClassLoader(threadClassLoader);
+			if(restore) {
+				Thread.currentThread().setContextClassLoader(threadClassLoader);
+			}
 		}
 	}
 
