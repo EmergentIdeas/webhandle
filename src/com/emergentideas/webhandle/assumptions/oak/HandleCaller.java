@@ -47,6 +47,7 @@ public class HandleCaller implements ResponseLifecycleHandler {
 	protected List<CallSpec> preHandleCalls = Collections.synchronizedList(new ArrayList<CallSpec>());
 	protected List<CallSpec> preResponseCalls = Collections.synchronizedList(new ArrayList<CallSpec>());
 	protected List<CallSpec> postResponseCalls = Collections.synchronizedList(new ArrayList<CallSpec>());
+	protected List<CallSpec> normalHanlderFailedCalls = Collections.synchronizedList(new ArrayList<CallSpec>());
 	
 	// The app level location
 	protected Location location;
@@ -139,7 +140,7 @@ public class HandleCaller implements ResponseLifecycleHandler {
 			}
 		}
 		
-		for(CallSpec spec : preResponseCalls) {
+		for(CallSpec spec : postResponseCalls) {
 			try {
 				callAndUnwrapException(marshal, spec);
 			}
@@ -226,6 +227,10 @@ public class HandleCaller implements ResponseLifecycleHandler {
 	@Wire
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+
+	public List<CallSpec> getNormalHanlderFailedCalls() {
+		return normalHanlderFailedCalls;
 	}
 	
 	

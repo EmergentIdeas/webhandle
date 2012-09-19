@@ -7,6 +7,7 @@ import java.util.List;
 import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.webhandle.CallSpec;
 import com.emergentideas.webhandle.ExceptionHandler;
+import com.emergentideas.webhandle.HandlingFail;
 import com.emergentideas.webhandle.Location;
 import com.emergentideas.webhandle.OutputResponseInvestigator;
 import com.emergentideas.webhandle.PostResponse;
@@ -52,6 +53,10 @@ public class ResponseLifecycleIntegrator implements Integrator {
 		
 		for(CallSpec cs : ReflectionUtils.getMethodsWithAnnotaion(focus, PostResponse.class)) {
 			lifecycle.getPostResponseCalls().add(cs);
+		}
+		
+		for(CallSpec cs : ReflectionUtils.getMethodsWithAnnotaion(focus, HandlingFail.class)) {
+			lifecycle.getNormalHanlderFailedCalls().add(cs);
 		}
 		
 		List<CallSpec> result = new ArrayList<CallSpec>();

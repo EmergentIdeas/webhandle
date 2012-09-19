@@ -134,7 +134,7 @@ public class BindingUtils
 				if(isBlank(valueToSet) == false)
 				{
 					String inputType = getAttributeValue(s, "type");
-					if("text".equals(inputType))
+					if("text".equals(inputType) || "hidden".equals(inputType))
 					{
 						//If it already has a value, delete the value
 						Matcher mValue = pValAttr.matcher(s);

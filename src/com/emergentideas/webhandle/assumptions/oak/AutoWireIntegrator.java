@@ -43,7 +43,7 @@ public class AutoWireIntegrator implements Integrator {
 		
 		ParameterMarshal marshal = new ParameterMarshal(conf, context);
 		marshal.addSource("named", new NamedServicesValueSource());
-		marshal.addSource("type", new TypedServicesValueSource());
+		marshal.addSource("typed", new TypedServicesValueSource());
 		
 		for(Method m : focus.getClass().getMethods()) {
 			Wire w = ReflectionUtils.getAnnotation(m, Wire.class);

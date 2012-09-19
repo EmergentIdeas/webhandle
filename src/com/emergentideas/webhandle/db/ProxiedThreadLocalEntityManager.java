@@ -93,7 +93,9 @@ public class ProxiedThreadLocalEntityManager implements EntityManager {
 	}
 
 	public void close() {
-		em().close();
+		if(currentManager.get() != null) {
+			currentManager.get().close();
+		}
 		currentManager.remove();
 	}
 

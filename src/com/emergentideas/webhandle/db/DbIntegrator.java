@@ -48,32 +48,6 @@ public class DbIntegrator implements Integrator {
 				protected Enumeration<URL> findResources(String name)
 						throws IOException {
 					if("META-INF/persistence.xml".equals(name)) {
-						final StringBuilder data = new StringBuilder("<persistence xmlns=\"http://java.sun.com/xml/ns/persistence\"\n" + 
-								"	xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + 
-								"	xsi:schemaLocation=\"http://java.sun.com/xml/ns/persistence persistence_1_0.xsd\"\n" + 
-								"	version=\"1.0\">\n" + 
-								"	<persistence-unit name=\"" + conf.getUnitName() + "\" transaction-type=\"RESOURCE_LOCAL\">\n" + 
-								"		<provider>" + conf.getProvider() + "</provider>\n" );
-						
-						for(String className : conf.getClassNames()) {
-							data.append("		<class>" + className + "</class>\n" );
-						}
-						data.append(
-								"		<exclude-unlisted-classes>true</exclude-unlisted-classes>\n" + 
-								"		<properties>\n" + 
-								"			<property name=\"javax.persistence.jdbc.driver\" value=\"" + conf.getDriver() + "\" />\n" + 
-								"			<property name=\"javax.persistence.jdbc.url\" value=\"" + conf.getUrl() + "\" />\n" + 
-								"			<property name=\"javax.persistence.jdbc.user\" value=\"" + conf.getUser() + "\" />\n" + 
-								"			<property name=\"javax.persistence.jdbc.password\" value=\"" + conf.getPassword() + "\" />\n");
-						
-						for(Entry<String, String> entry : conf.getArbitraryProperties().entrySet()) {
-							data.append("			<property name=\"" + entry.getKey() + "\" value=\"" + entry.getValue() + "\"/>\n");
-						}
-								 
-						data.append(		"		</properties>\n" + 
-								"	</persistence-unit>\n" + 
-								"</persistence>"
-								);
 						Vector<URL> urls = new Vector<URL>();
 						urls.add(
 								new URL("local", "localhost", 80, "/fakelocation/META-INF/persistence.xml", new URLStreamHandler() {
@@ -88,7 +62,7 @@ public class DbIntegrator implements Integrator {
 											@Override
 											public InputStream getInputStream()
 													throws IOException {
-												InputStream is = new ByteArrayInputStream(data.toString().getBytes());
+												InputStream is = new ByteArrayInputStream(generatePersistenceXml(conf).getBytes());
 												return is;
 											}
 										};
@@ -123,6 +97,38 @@ public class DbIntegrator implements Integrator {
 			}
 		}
 
+	}
+	
+	
+	protected String generatePersistenceXml(DbConfiguration conf) {
+		final StringBuilder data = new StringBuilder("<persistence xmlns=\"http://java.sun.com/xml/ns/persistence\"\n" + 
+				"	xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + 
+				"	xsi:schemaLocation=\"http://java.sun.com/xml/ns/persistence persistence_1_0.xsd\"\n" + 
+				"	version=\"1.0\">\n" + 
+				"	<persistence-unit name=\"" + conf.getUnitName() + "\" transaction-type=\"RESOURCE_LOCAL\">\n" + 
+				"		<provider>" + conf.getProvider() + "</provider>\n" );
+		
+		for(String className : conf.getClassNames()) {
+			data.append("		<class>" + className + "</class>\n" );
+		}
+		data.append(
+				"		<exclude-unlisted-classes>true</exclude-unlisted-classes>\n" + 
+				"		<properties>\n" + 
+				"			<property name=\"javax.persistence.jdbc.driver\" value=\"" + conf.getDriver() + "\" />\n" + 
+				"			<property name=\"javax.persistence.jdbc.url\" value=\"" + conf.getUrl() + "\" />\n" + 
+				"			<property name=\"javax.persistence.jdbc.user\" value=\"" + conf.getUser() + "\" />\n" + 
+				"			<property name=\"javax.persistence.jdbc.password\" value=\"" + conf.getPassword() + "\" />\n");
+		
+		for(Entry<String, String> entry : conf.getArbitraryProperties().entrySet()) {
+			data.append("			<property name=\"" + entry.getKey() + "\" value=\"" + entry.getValue() + "\"/>\n");
+		}
+				 
+		data.append(		"		</properties>\n" + 
+				"	</persistence-unit>\n" + 
+				"</persistence>"
+				);
+		
+		return data.toString();
 	}
 
 }

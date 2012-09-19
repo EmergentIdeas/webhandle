@@ -64,7 +64,7 @@ public class AppLoaderTest {
 		String result = new String(realOut.toByteArray());
 		assertTrue(result.contains("<input name=\"a\" value=\"hello\"  type=\"text\" />"));
 		assertTrue(result.contains("<textarea name=\"b\">world</textarea>"));
-		assertTrue(result.contains("<option value=\"2\" selected=\"selected\" >2</option>"));
+		assertTrue(result.contains("<input name=\"id\" value=\"2\"  type=\"hidden\" />"));
 		
 
 	}

@@ -67,5 +67,13 @@ public interface ResponseLifecycleHandler extends Respondent {
 	 * @return
 	 */
 	public List<CallSpec> getPostResponseCalls();
+	
+	/**
+	 * If no handler can be found which does not return an error or an exception is thrown
+	 * during the handling, an Exception handler will be chosen.  Before that exception
+	 * handler is invoked these calls will be.
+	 * @return
+	 */
+	public List<CallSpec> getNormalHanlderFailedCalls();
 
 }
