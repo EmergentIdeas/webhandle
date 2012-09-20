@@ -11,6 +11,7 @@ I like Spring and its dependency injection.
 
 
 What I want:
+
 1.	An environment that doesn't make me specify a cargo container ship of configuration but is not so strongly wedded to its conventions
 that they are a pain to change.
 2.	To be able to program for the web in Java.
