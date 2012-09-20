@@ -17,6 +17,7 @@ public class DirectRespondent implements Respondent {
 	protected String encoding = "UTF-8";
 	protected Object output;
 	protected Map<String, String> headers = new HashMap<String, String>();
+	protected int responseStatus;
 	
 	protected Logger log = SystemOutLogger.get(DirectRespondent.class);
 	
@@ -25,11 +26,12 @@ public class DirectRespondent implements Respondent {
 	}
 	
 	public DirectRespondent(Object output) {
-		this(output, null);
+		this(output, 200, null);
 	}
 	
-	public DirectRespondent(Object output, Map<String, String> headers) {
+	public DirectRespondent(Object output, int responseStatus, Map<String, String> headers) {
 		this.output = output;
+		this.responseStatus = responseStatus;
 		if(headers != null) {
 			this.headers.putAll(headers);
 		}
@@ -38,6 +40,8 @@ public class DirectRespondent implements Respondent {
 	
 	public void respond(ServletContext servletContext,
 			HttpServletRequest request, HttpServletResponse response) {
+		
+		response.setStatus(responseStatus);
 		
 		if(headers != null) {
 			for(String key : headers.keySet()) {

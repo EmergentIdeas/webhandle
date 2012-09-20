@@ -13,6 +13,17 @@ public class StringUtils {
 	 * @throws IOException
 	 */
 	public static String readStream(InputStream input) throws IOException {
+		
+		return new String(readStreamBytes(input));
+	}
+	
+	/**
+	 * Reads all of the bytes from an input stream and returns them as an array
+	 * @param input
+	 * @return
+	 * @throws IOException
+	 */
+	public static byte[] readStreamBytes(InputStream input) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		
 		byte[] temp = new byte[1000];
@@ -21,7 +32,7 @@ public class StringUtils {
 			baos.write(temp, 0, i);
 		}
 		
-		return new String(baos.toByteArray());
+		return baos.toByteArray();
 	}
 	
 	/**
