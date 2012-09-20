@@ -2,6 +2,7 @@ Basics of Building a Simple Web App
 ===================================
 
 Web apps are made up of:
+
 1. Request Handlers - They DO something based on an HTTP operation (GET/POST/PUT request)
 2. Templates - They show something, possibly including other templates
 3. Infrastructure - Provides a pedestal on which your awesomeness can stand
