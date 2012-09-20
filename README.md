@@ -19,7 +19,7 @@ that they are a pain to change.
 
 
 I've been high as kite all week on the satisfaction of what's already working (enough to create apps, end to end functional).  
-I've got some info about the basics at [webhandle basics](blob/master/docs/basics.md).
+I've got some info about the basics at [webhandle basics](docs/basics.md).
 
 Although I'm writing webhandle for my own use, I hope it works for you as well.  Feel free to grab a copy and use it under the Apache 2 license.  Also,
 please send me any questions or suggestions you might have.
