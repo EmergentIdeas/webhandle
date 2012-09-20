@@ -20,19 +20,19 @@ public class Handler1 {
 	protected boolean calledOnce = false;
 	protected EntityManager entityManager;
 	
-	@Handle(path = {"/one/{name}", "/one" }, method = HttpMethod.GET)
+	@Handle(value = {"/one/{name}", "/one" }, method = HttpMethod.GET)
 	public String one(String name) {
 		return "really";
 	}
 	
-	@Handle(path = "/one", method = {HttpMethod.POST, HttpMethod.GET})
+	@Handle(value = "/one", method = {HttpMethod.POST, HttpMethod.GET})
 	@Template
 	@Wrap("app_page")
 	public String two(String id, Location location) {
 		return "mytemplate";
 	}
 	
-	@Handle(path = "/three")
+	@Handle(value = "/three")
 	public String three(String id) {
 		if(calledOnce == false) {
 			calledOnce = true;
@@ -41,7 +41,7 @@ public class Handler1 {
 		return "called twice";
 	}
 	
-	@Handle(path = "/three")
+	@Handle(value = "/three")
 	public String four(String id) {
 		if(calledOnce == false) {
 			calledOnce = true;
@@ -50,33 +50,33 @@ public class Handler1 {
 		return "called twice";
 	}
 	
-	@Handle(path = "/five")
+	@Handle(value = "/five")
 	public String five(String id) {
 		throw new SecurityException();
 	}
 	
-	@Handle(path = "/six")
+	@Handle(value = "/six")
 	public String six(String id) {
 		throw new TransformationException();
 	}
 	
-	@Handle(path = "/seven")
+	@Handle(value = "/seven")
 	public String seven(String id) {
 		return "The number is: " + id;
 	}
 	
-	@Handle(path = "/eight/{id}")
+	@Handle(value = "/eight/{id}")
 	public String eight(Double id) {
 		return "The number is: " + id;
 	}
 	
-	@Handle(path = "/nine")
+	@Handle(value = "/nine")
 	@Template
 	public String nine(String id) {
 		return "one";
 	}
 	
-	@Handle(path = {"/ten", "/ten/{id}"}, method = HttpMethod.GET)
+	@Handle(value = {"/ten", "/ten/{id}"}, method = HttpMethod.GET)
 	@Template
 	public String tenGet(@Db("id") @NotNull @Command TestObj obj, Location loc) {
 		if(obj.getA() == null) {
@@ -91,7 +91,7 @@ public class Handler1 {
 		return "form1";
 	}
 	
-	@Handle(path = "/ten", method = HttpMethod.POST)
+	@Handle(value = "/ten", method = HttpMethod.POST)
 	@Template
 	public String ten(@Db("id") @NotNull @Command TestObj obj, Location loc) {
 		if(StringUtils.isBlank(obj.getId())) {
@@ -102,7 +102,7 @@ public class Handler1 {
 		return "form1";
 	}
 	
-	@Handle(path = "/eleven", method = {HttpMethod.POST, HttpMethod.GET})
+	@Handle(value = "/eleven", method = {HttpMethod.POST, HttpMethod.GET})
 	@Template
 	@Wrap("app_page")
 	public String eleven(String id, Location location) {

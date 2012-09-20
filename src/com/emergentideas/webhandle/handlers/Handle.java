@@ -22,7 +22,7 @@ public @interface Handle {
 	 * 		/users/{userId:expression}/details
 	 * </pre>
 	 */
-	public String[] path();
+	public String[] value();
 	
 	public HttpMethod[] method() default HttpMethod.ANY;
 

@@ -49,7 +49,7 @@ public class HandleAnnotationHandlerInvestigator implements HandlerInvestigator,
 		
 		Handle handle = ReflectionUtils.getAnnotationOnClass(handler.getClass(), Handle.class);
 		if(handle != null) {
-			urlPrefixPattern = handle.path();
+			urlPrefixPattern = handle.value();
 		}
 		else {
 			urlPrefixPattern = new String[] { "" };
@@ -65,7 +65,7 @@ public class HandleAnnotationHandlerInvestigator implements HandlerInvestigator,
 			}
 			
 			for(String prefix : urlPrefixPattern) {
-				for(String suffix : handle.path()) {
+				for(String suffix : handle.value()) {
 					UrlRegexOutput regex = processor.process(prefix + suffix);
 					HttpRequestCallSpec spec = new HttpRequestCallSpec();
 					spec.setFocus(handler);
