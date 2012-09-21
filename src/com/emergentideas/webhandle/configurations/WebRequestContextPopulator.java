@@ -37,8 +37,6 @@ public class WebRequestContextPopulator {
 	 */
 	public void populate(ParameterMarshal marshal, InvocationContext context) {
 		
-		context.setFoundParameter(SegmentedOutput.class, new HTML5SegmentedOutput());
-		
 		// configure the location
 		AppLocation loc = new AppLocation(context.getLocation());
 		loc.put(Constants.REQUEST_LOCATION, loc);

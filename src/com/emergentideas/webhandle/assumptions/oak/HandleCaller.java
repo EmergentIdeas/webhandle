@@ -118,6 +118,16 @@ public class HandleCaller implements ResponseLifecycleHandler {
 			e.printStackTrace();
 			marshal.getContext().setFoundParameter(EXCEPTION_PARAMETER_NAME, Exception.class, e);
 			
+			
+			for(CallSpec spec : normalHanlderFailedCalls) {
+				try {
+					callAndUnwrapException(marshal, spec);
+				}
+				catch(Exception ex) {
+					log.error("Could not call a failure interceptor.", ex);
+				}
+			}
+			
 			for(Class c : exceptionHandlers.keySet()) {
 				if(c.isAssignableFrom(e.getClass())) {
 					try {

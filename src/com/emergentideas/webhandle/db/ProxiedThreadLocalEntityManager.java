@@ -1,11 +1,17 @@
 package com.emergentideas.webhandle.db;
 
+import java.util.Map;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.metamodel.Metamodel;
 
 import com.emergentideas.webhandle.Type;
 
@@ -105,6 +111,85 @@ public class ProxiedThreadLocalEntityManager implements EntityManager {
 
 	public EntityTransaction getTransaction() {
 		return em().getTransaction();
+	}
+	
+	
+
+	public <T> T find(Class<T> entityClass, Object primaryKey,
+			Map<String, Object> properties) {
+		return em().find(entityClass, primaryKey, properties);
+	}
+
+	public <T> T find(Class<T> entityClass, Object primaryKey,
+			LockModeType lockMode) {
+		return em().find(entityClass, primaryKey, lockMode);
+	}
+
+	public <T> T find(Class<T> entityClass, Object primaryKey,
+			LockModeType lockMode, Map<String, Object> properties) {
+		return em().find(entityClass, primaryKey, lockMode, properties);
+	}
+
+	public void lock(Object entity, LockModeType lockMode,
+			Map<String, Object> properties) {
+		em().lock(entity, lockMode, properties);
+	}
+
+	public void refresh(Object entity, Map<String, Object> properties) {
+		em().refresh(entity, properties);
+	}
+
+	public void refresh(Object entity, LockModeType lockMode) {
+		em().refresh(entity, lockMode);
+	}
+
+	public void refresh(Object entity, LockModeType lockMode,
+			Map<String, Object> properties) {
+		em().refresh(entity, lockMode, properties);
+	}
+
+	public void detach(Object entity) {
+		em().detach(entity);
+	}
+
+	public LockModeType getLockMode(Object entity) {
+		return em().getLockMode(entity);
+	}
+
+	public void setProperty(String propertyName, Object value) {
+		em().setProperty(propertyName, value);
+	}
+
+	public Map<String, Object> getProperties() {
+		return em().getProperties();
+	}
+
+	public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery) {
+		return em().createQuery(criteriaQuery);
+	}
+
+	public <T> TypedQuery<T> createQuery(String qlString, Class<T> resultClass) {
+		return em().createQuery(qlString, resultClass);
+	}
+
+	public <T> TypedQuery<T> createNamedQuery(String name, Class<T> resultClass) {
+		return em().createNamedQuery(name, resultClass);
+	}
+
+	public <T> T unwrap(Class<T> cls) {
+		return em().unwrap(cls);
+	}
+
+	public EntityManagerFactory getEntityManagerFactory() {
+		return em().getEntityManagerFactory();
+	}
+
+	public CriteriaBuilder getCriteriaBuilder() {
+		return em().getCriteriaBuilder();
+	}
+
+	public Metamodel getMetamodel() {
+		return em().getMetamodel();
 	}
 
 	public EntityManagerFactory getFactory() {

@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.emergentideas.webhandle.assumptions.oak.RequestMessages;
 import com.emergentideas.webhandle.templates.TripartateFileTemplateSource;
 
 public class AppLocationTest {
@@ -36,6 +37,16 @@ public class AppLocationTest {
 		assertEquals(2, tol.size());
 		assertEquals("B2", tol.get(0).getB());
 		assertEquals("B3", tol.get(1).getB());
+		
+		
+		// test objects where there's only a getter
+		RequestMessages messages = new RequestMessages();
+		loc.put("messages", messages);
+		
+		messages.getErrorMessages().add("hello");
+		List<String> msg = loc.all("messages/errorMessages");
+		assertEquals(1, msg.size());
+		assertTrue(msg.contains("hello"));
 
 	}
 

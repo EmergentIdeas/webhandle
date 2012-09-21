@@ -20,14 +20,44 @@ public class ReflectionUtils {
 	 * @return
 	 */
 	public static boolean isSetterMethod(Method method) {
+		if(isTypedMethod("set", method) == false) {
+			return false;
+		}
+		
+		return method.getParameterTypes().length == 1;
+	}
+	
+	/**
+	 * Returns true if the method follows the rules to be a getter on a bean.
+	 * @param method
+	 * @return
+	 */
+	public static boolean isGetterMethod(Method method) {
+		if(isTypedMethod("get", method) == false) {
+			return false;
+		}
+		
+		return method.getParameterTypes().length == 0;
+	}
+	
+
+	
+	/**
+	 * Returns true if the method follows the naming rules for the type (getter/setter)
+	 * @param type
+	 * @param method
+	 * @return
+	 */
+	protected static boolean isTypedMethod(String type, Method method) {
 		String methodName = method.getName();
 		
-		if(methodName.startsWith("set") && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3)) && method.getParameterTypes().length == 1) {
+		if(methodName.startsWith(type) && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3))) {
 			return true;
 		}
 
 		return false;
 	}
+
 	
 	/**
 	 * returns the setter method if it exists for a given object and property name.  If two or more 
@@ -48,6 +78,27 @@ public class ReflectionUtils {
 		
 		return null;
 	}
+	
+	/**
+	 * returns the setter method if it exists for a given object and property name.  
+	 * @param focus
+	 * @param propertyName like address
+	 * @return
+	 */
+	public static Method getGetterMethod(Object focus, String propertyName) {
+		String methodName = "get" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
+		for(Method m : focus.getClass().getMethods()) {
+			if(m.getName().equals(methodName)) {
+				if(m.getParameterTypes().length == 0) {
+					return m;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+
 	
 	/**
 	 * Returns the property name if this is a setter method or null otherwise.

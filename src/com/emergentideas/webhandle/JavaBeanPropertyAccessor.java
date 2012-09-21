@@ -1,18 +1,19 @@
 package com.emergentideas.webhandle;
 
+import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
+import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+
+import com.emergentideas.utils.ReflectionUtils;
 
 public class JavaBeanPropertyAccessor implements PropertyAccessor {
 
 	public Object get(Object focus, String propertyName) {
 		try {
-			PropertyDescriptor pd = new PropertyDescriptor(propertyName, focus.getClass());
-			return pd.getReadMethod().invoke(focus, null);
-		}
-		catch(IntrospectionException e) {
-			e.printStackTrace();
-			// This bean doesn't seem to have that property
+			Method m = ReflectionUtils.getGetterMethod(focus, propertyName);
+			return m.invoke(focus, null);
 		}
 		catch(RuntimeException e) {
 			// This is most likely an exception coming from the accessor method itself
@@ -23,20 +24,10 @@ public class JavaBeanPropertyAccessor implements PropertyAccessor {
 			// This is most likely an exception coming from the accessor method itself
 			throw new RuntimeException(e);
 		}
-		return null;
 	}
 
 	public boolean canAccess(Object focus, String propertyName) {
-		try {
-			PropertyDescriptor pd = new PropertyDescriptor(propertyName, focus.getClass());
-			if(pd != null) {
-				return true;
-			}
-		}
-		catch(Exception e) {
-			// not a big deal, just means we can't access the property
-		}
-		return false;
+		return ReflectionUtils.getGetterMethod(focus, propertyName) != null;
 	}
 	
 	
