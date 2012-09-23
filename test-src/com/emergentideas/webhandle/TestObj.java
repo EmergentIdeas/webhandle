@@ -134,6 +134,8 @@ public class TestObj {
 		this.c = c;
 	}
 
-	
+	public void primitiveParameters(int[] values) {
+		
+	}
 	
 }

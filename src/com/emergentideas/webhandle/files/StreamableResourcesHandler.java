@@ -17,7 +17,7 @@ public class StreamableResourcesHandler {
 		this.source = source;
 	}
 	
-	@Handle(value = "/{filePath:.*}", method = HttpMethod.GET)
+	@Handle(value = "/{filePath:.+}", method = HttpMethod.GET)
 	public Object handle(String filePath) {
 		StreamableResource resource = source.get(filePath);
 		if(resource == null) {

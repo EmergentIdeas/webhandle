@@ -16,7 +16,7 @@ public class FileStreamableResourceSource implements StreamableResourceSource {
 		}
 		
 		File resource = new File(root, location);
-		if(resource.exists()) {
+		if(resource.exists() && resource.isFile()) {
 			return new FileStreamableResource(resource);
 		}
 		return null;

@@ -21,6 +21,7 @@ public class Constants {
 	
 	// locations of interesting objects
 	public static final String LOCATION_OF_REQUEST = "request";
+	public static final String LOCATION_OF_WEB_APP_CONTEXT_PATH = "webAppContextPath";
 
 	
 }

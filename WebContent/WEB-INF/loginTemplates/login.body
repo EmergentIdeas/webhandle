@@ -1,0 +1,29 @@
+<h1>Login</h1>
+__::messages__
+<form method="post" action="/login" class="form-horizontal">
+	<input type="hidden" name="forward" />
+	<div class="control-group">
+		<label class="control-label" for="inputUserName">User Name</label>
+		<div class="controls">
+			<input type="text" id="inputUserName" placeholder="Email" name="userName">
+		</div>
+	</div>
+	<div class="control-group">
+		<label class="control-label" for="inputPassword">Password</label>
+		<div class="controls">
+			<input type="password" id="inputPassword" placeholder="Password" name="password">
+		</div>
+	</div>
+	<div class="control-group">
+		<div class="controls">
+			<label class="checkbox"> <input type="checkbox">
+				Remember me
+			</label>
+		</div>
+	</div>
+	<div class="control-group">
+		<div class="controls">
+			<button type="submit" class="btn btn-primary">Sign in</button>
+		</div>
+	</div>
+</form>

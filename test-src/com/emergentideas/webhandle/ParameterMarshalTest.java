@@ -23,6 +23,7 @@ import com.emergentideas.webhandle.sources.MapValueSource;
 import com.emergentideas.webhandle.transformers.NumberToStringTransformer;
 import com.emergentideas.webhandle.transformers.StringArrayToStringTransformer;
 import com.emergentideas.webhandle.transformers.StringToDoubleTransformer;
+import com.emergentideas.webhandle.transformers.StringToIntTransformer;
 import com.emergentideas.webhandle.transformers.StringToIntegerTransformer;
 import com.emergentideas.webhandle.transformers.TransformerSpecification;
 
@@ -224,8 +225,12 @@ public class ParameterMarshalTest {
 		ParameterMarshal marshal = new ParameterMarshal();
 		marshal.getConfiguration().getTypeTransformers().add(new StringToIntegerTransformer());
 		marshal.getConfiguration().getTypeTransformers().add(new StringToDoubleTransformer());
+		marshal.getConfiguration().getTypeTransformers().add(new StringToIntTransformer());
 		
 		Integer i = (Integer)marshal.getTypedParameter(null, Integer.class, null, new String[] {"12", "15", "16.6"}, null);
+		assertEquals((Integer)12, i);
+		
+		i = (Integer)marshal.getTypedParameter(null, int.class, null, new String[] {"12"}, null);
 		assertEquals((Integer)12, i);
 		
 		marshal.getConfiguration().getTransformers().put("append", new ValueTransformer<String, String, String[]>() {
@@ -400,5 +405,14 @@ public class ParameterMarshalTest {
 		assertTrue(marshal.isSourceAllowed("hello", new String[] { "hello", "goodbye"}));
 		assertFalse(marshal.isSourceAllowed("hello", new String[] {"goodbye"}));
 
+	}
+	
+	
+	@Test
+	public void testTryConversion() throws Exception {
+		TestObj obj = new TestObj();
+		Method m = ReflectionUtils.getFirstMethod(obj.getClass(), "primitiveParameters");
+		m.invoke(obj, new int[] { new Integer(12) });
+		
 	}
 }

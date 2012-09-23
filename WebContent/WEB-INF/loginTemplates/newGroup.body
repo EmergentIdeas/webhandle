@@ -1,0 +1,15 @@
+<h1>New Group</h1>
+__::messages__
+<form method="post" action="/groups/new" class="form-horizontal">
+	<div class="control-group">
+		<label class="control-label" for="groupName">Group name</label>
+		<div class="controls">
+			<input type="text" id="groupName" placeholder="Group name" name="groupName">
+		</div>
+	</div>
+	<div class="control-group">
+		<div class="controls">
+			<button type="submit" class="btn btn-primary">Create Group</button>
+		</div>
+	</div>
+</form>

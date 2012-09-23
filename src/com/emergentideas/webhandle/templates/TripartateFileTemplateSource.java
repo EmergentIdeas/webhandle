@@ -65,7 +65,11 @@ public class TripartateFileTemplateSource implements TemplateSource {
 			int prefixLength = path.length();
 			
 			File parent = templateFile.getParentFile();
-			for(File child : parent.listFiles()) {
+			File[] siblingFiles = parent.listFiles();
+			if(siblingFiles == null) {
+				return null;
+			}
+			for(File child : siblingFiles) {
 				if(child.getAbsolutePath().startsWith(path)) {
 					// get the part name
 					String suffix = child.getAbsolutePath().substring(prefixLength + 1);

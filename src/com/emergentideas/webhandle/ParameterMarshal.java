@@ -383,6 +383,11 @@ public class ParameterMarshal {
 			transformersToRun = new TransformerSpecification[0];
 		}
 		
+		Class orgFinalType = finalType;
+		if(ReflectionUtils.isPrimitive(finalType)) {
+			finalType = (Class)ReflectionUtils.getDefault(finalType).getClass();
+		}
+		
 		Object[] startingPoint;
 		if(initial == null) {
 			startingPoint = null;
@@ -496,7 +501,7 @@ public class ParameterMarshal {
 		for(ValueTransformer transformer : configuration.getTypeTransformers()) {
 			if(canConvert(data, targetType, transformer)) {
 				result = transformer.transform(null, (Map<String, String>)null, targetType, null, data);
-				if(targetType.isArray()) {
+				if(targetType.isArray() && isArrayType(result) == false) {
 					result = makeArrayFromObject(result);
 				}
 				break;

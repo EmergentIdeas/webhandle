@@ -58,6 +58,62 @@ public class BindingUtils
 		return(s1.equals(s2));
 	}
 	
+	public static String prefixURLsWithContextRoot(String prefix, List<String> otherAllowedPrefixes, String content) {
+		if(isBlank(prefix)) {
+			return content;
+		}
+		
+		List<String> replacements = new ArrayList<String>();
+		
+		String reg = "(action=\")(/[^/].*?)(\")";
+		Pattern pat = Pattern.compile(reg);
+		Matcher m = pat.matcher(content);
+		addReplacements(m, prefix, otherAllowedPrefixes, replacements);
+		
+		reg = "(href=\")(/[^/].*?)(\")";
+		pat = Pattern.compile(reg);
+		m = pat.matcher(content);
+		addReplacements(m, prefix, otherAllowedPrefixes, replacements);
+		
+		reg = "(src=\")(/[^/].*?)(\")";
+		pat = Pattern.compile(reg);
+		m = pat.matcher(content);
+		addReplacements(m, prefix, otherAllowedPrefixes, replacements);
+		
+		return StringUtils.replaceString(content, replacements.toArray(new String[replacements.size()]));
+	}
+	
+	protected static void addReplacements(Matcher m, String prefix, List<String> otherAllowedPrefixes, List<String> replacements) {
+		while(m.find()) {
+			String start = m.group(1);
+			String url = m.group(2);
+			String end = m.group(3);
+			
+			if(startsWithAny(url, prefix, otherAllowedPrefixes) == false) {
+				url = prefix + url;
+				replacements.add(m.group(0));
+				replacements.add(start + url + end);
+			}
+		}
+	}
+	
+	protected static boolean startsWithAny(String focus, String primaryPrefix, List<String> secondaryPrefixes) {
+		
+		if(focus.startsWith(primaryPrefix)) {
+			return true;
+		}
+		
+		if(secondaryPrefixes != null) {
+			for(String secondary : secondaryPrefixes) {
+				if(focus.startsWith(secondary)) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
 	public static String addValuesToAllElementTypes(Location ds, String content) {
 		String transformed = BindingUtils.addValuesToInputElements(ds, content);
 		transformed = BindingUtils.addValuesToTextAreaElements(ds, transformed);

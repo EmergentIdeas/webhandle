@@ -1,0 +1,4 @@
+<tr class="data-table-row">
+	__values::dataTables/td__
+	__deleteURL::dataTables/deleteCell__
+</tr>

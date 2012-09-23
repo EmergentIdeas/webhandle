@@ -26,6 +26,7 @@ import com.emergentideas.webhandle.templates.SegmentedOutputTemplate;
 import com.emergentideas.webhandle.templates.StringElementProcessor;
 import com.emergentideas.webhandle.templates.TemplateSource;
 import com.emergentideas.webhandle.templates.TripartateTemplateElementProcessor;
+import com.emergentideas.webhandle.transformers.ContextRootURLRewriterTransformer;
 import com.emergentideas.webhandle.transformers.InputValuesTransformer;
 import com.emergentideas.webhandle.transformers.TemplateTransformer;
 import com.emergentideas.webhandle.transformers.WrapTransformer;
@@ -73,6 +74,9 @@ public class TemplateOutputTransformersInvestigator implements
 			
 			InputValuesTransformer ivt = new InputValuesTransformer();
 			creator.addTransformer(ReflectionUtils.getFirstMethodCallSpec(ivt, "transform"));
+			
+			ContextRootURLRewriterTransformer contextTransformer = new ContextRootURLRewriterTransformer();
+			creator.addTransformer(ReflectionUtils.getFirstMethodCallSpec(contextTransformer, "transform"));
 		}
 		if(wrap != null) {
 			WrapTransformer wt = new WrapTransformer(wrap.value(), elementStreamProcessor);

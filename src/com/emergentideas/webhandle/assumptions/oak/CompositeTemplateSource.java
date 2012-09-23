@@ -13,6 +13,11 @@ public class CompositeTemplateSource implements TemplateSource {
 
 	List<TemplateSource> sources = Collections.synchronizedList(new ArrayList<TemplateSource>());
 	
+	public CompositeTemplateSource() {
+		int i1234 = 0;
+		i1234++;
+	}
+	
 	public TemplateInstance get(String templateName) {
 		for(TemplateSource source : sources) {
 			TemplateInstance ti = source.get(templateName);

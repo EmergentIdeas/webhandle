@@ -46,7 +46,7 @@ public class WrapTransformer {
 		lts.add("contentArea", new SegmentedOutputTemplate(output, elementStreamProcessor, defaultHints));
 		
 		CompositeTemplateSource cts = new CompositeTemplateSource();
-		WebAppLocation webApp = new WebAppLocation(location);
+		WebAppLocation webApp = new WebAppLocation(location).init();
 		TemplateInstance wrapperTemplate = webApp.getTemplateSource().get(wrapperTemplateName);
 		
 		if(wrapperTemplate != null) {

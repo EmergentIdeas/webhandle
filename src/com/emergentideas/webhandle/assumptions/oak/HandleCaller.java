@@ -69,6 +69,9 @@ public class HandleCaller implements ResponseLifecycleHandler {
 		ParameterMarshalConfiguration conf = (ParameterMarshalConfiguration)webApp.getServiceByName(WebAppLocation.WEB_PARAMETER_MARSHAL_CONFIGURATION);
 		ParameterMarshal marshal = new ParameterMarshal(conf);
 		marshal.getContext().setLocation(userLocation);
+		marshal.getContext().setFoundParameter(HttpServletRequest.class, request);
+		marshal.getContext().setFoundParameter(HttpServletResponse.class, response);
+		marshal.getContext().setFoundParameter(ServletContext.class, servletContext);
 		
 		populator.populate(marshal, marshal.getContext(), request);
 		

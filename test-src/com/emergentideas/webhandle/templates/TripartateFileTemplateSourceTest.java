@@ -30,6 +30,13 @@ public class TripartateFileTemplateSourceTest {
 	}
 	
 	@Test
+	public void testLoadSub() throws Exception {
+		TripartateFileTemplateSource ts = new TripartateFileTemplateSource(new File("WebContent/WEB-INF/testTemplates"));
+		TripartateTemplate tt = (TripartateTemplate)ts.get("sub/five");
+		assertNotNull(tt);
+	}
+	
+	@Test
 	public void testRender() throws Exception {
 		TripartateFileTemplateSource ts = new TripartateFileTemplateSource(new File("WebContent/WEB-INF/testTemplates"));
 		TripartateTemplate tt = (TripartateTemplate)ts.get("two");

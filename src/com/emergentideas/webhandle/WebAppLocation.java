@@ -15,22 +15,26 @@ public class WebAppLocation {
 		
 	}
 	
-	public WebAppLocation init() {
+	protected WebAppLocation initIfNeeded() {
 		if(location.get("servicesByType") == null) {
-			location.put("servicesByType", new AppLocation());
-			location.put("servicesByName", new AppLocation());
-
+			init();
 		}
 		return this;
 	}
 	
+	public WebAppLocation init() {
+		location.put("servicesByType", new AppLocation());
+		location.put("servicesByName", new AppLocation());
+		return this;
+	}
+	
 	public void setServiceByName(String name, Object service) {
-		init();
+		initIfNeeded();
 		((Location)location.get("servicesByName")).put(name, service);
 	}
 	
 	public void setServiceByType(String type, Object service) {
-		init();
+		initIfNeeded();
 		((Location)location.get("servicesByType")).put(type, service);
 	}
 	

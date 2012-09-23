@@ -1,0 +1,12 @@
+.delete-cell {
+width: 1em;
+}
+
+.delete-cell a {
+visibility: hidden;
+}
+
+
+.data-table-row:hover .delete-cell a {
+visibility: visible;
+}

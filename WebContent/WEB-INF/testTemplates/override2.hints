@@ -1,0 +1,12 @@
+# http header name value pairs
+httpHeader=map,append
+
+# doctype spec, allows a template to set the doctype
+docType=stream,append
+
+
+# css files that should be included as part of the header
+footerLibraries=list,replace
+
+# the main content of the page
+body=stream,replace
