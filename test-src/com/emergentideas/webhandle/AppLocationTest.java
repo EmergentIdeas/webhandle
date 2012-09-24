@@ -61,6 +61,7 @@ public class AppLocationTest {
 
 		Location second = new AppLocation(base);
 		second.put("servicesByType", new AppLocation());
+		second.put("upperlevel", "upperlevel");
 		
 		WebAppLocation web2 = new WebAppLocation(second);
 		web2.setTemplateSource(new TripartateFileTemplateSource());
@@ -77,5 +78,8 @@ public class AppLocationTest {
 		assertNotNull(o1);
 		assertNotNull(o2);
 		assertTrue(o1 != o2);
+		
+		assertEquals("upperlevel", second.get("upperlevel"));
+		assertNull(base.get("upperlevel"));
 	}
 }

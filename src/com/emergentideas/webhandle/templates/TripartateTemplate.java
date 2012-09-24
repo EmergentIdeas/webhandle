@@ -11,6 +11,7 @@ import java.util.Properties;
 
 import com.emergentideas.logging.Logger;
 import com.emergentideas.logging.SystemOutLogger;
+import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.utils.StringUtils;
 import com.emergentideas.webhandle.Location;
 import com.emergentideas.webhandle.output.SegmentedOutput;
@@ -60,7 +61,7 @@ public class TripartateTemplate implements TemplateInstance {
 			
 			List<Element> elements = parser.parse(templateText);
 			
-			if(StringUtils.contains(hints, STREAM_MARKER) && StringUtils.contains(hints, APPEND_MARKER)) {
+			if(ReflectionUtils.contains(hints, STREAM_MARKER) && ReflectionUtils.contains(hints, APPEND_MARKER)) {
 				// if we're appending to the stream, we don't have to do anything because the natural
 				// behavior of our processors should do everything we want
 				processor.process(location, output, elements, sectionName, hints);
@@ -70,25 +71,25 @@ public class TripartateTemplate implements TemplateInstance {
 				// them either to replace the current text or to split it into list or map formats
 				SegmentedOutputOverlay overlay = new SegmentedOutputOverlay(output, sectionName);
 				processor.process(location, overlay, elements, sectionName, hints);
-				if(StringUtils.contains(hints, STREAM_MARKER) && StringUtils.contains(hints, REPLACE_MARKER)) {
+				if(ReflectionUtils.contains(hints, STREAM_MARKER) && ReflectionUtils.contains(hints, REPLACE_MARKER)) {
 					// easy enough
 					StringBuilder sb = output.getStream(sectionName);
 					sb.delete(0, sb.length());
 					sb.append(overlay.getStream(sectionName));
 				}
-				else if(StringUtils.contains(hints, LIST_MARKER)) {
-					if(StringUtils.contains(hints, REPLACE_MARKER)) {
+				else if(ReflectionUtils.contains(hints, LIST_MARKER)) {
+					if(ReflectionUtils.contains(hints, REPLACE_MARKER)) {
 						output.getList(sectionName).clear();
 					}
 					
 					output.getList(sectionName).addAll(parseList(overlay.getStream(sectionName).toString()));
 				}
-				else if(StringUtils.contains(hints, MAP_MARKER)) {
+				else if(ReflectionUtils.contains(hints, MAP_MARKER)) {
 					Map<String, String> newProperties = parseProperties(overlay.getStream(sectionName).toString());
-					if(StringUtils.contains(hints, REPLACE_MARKER)) {
+					if(ReflectionUtils.contains(hints, REPLACE_MARKER)) {
 						output.getPropertySet(sectionName).putAll(newProperties);
 					}
-					else if(StringUtils.contains(hints, APPEND_MARKER)) {
+					else if(ReflectionUtils.contains(hints, APPEND_MARKER)) {
 						Map<String, String> existing = output.getPropertySet(sectionName);
 						for(String key : newProperties.keySet()) {
 							String value = existing.get(key);

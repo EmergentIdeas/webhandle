@@ -16,7 +16,19 @@ public class TableDataModel {
 	// The items to use as rows in the table
 	protected List<Object> items = new ArrayList<Object>();
 	
-	protected String createNewURL = "/groups/new";
+	protected String createNewURL;
+	
+	
+	// the pattern for the edit url
+	protected int columnToLink = -1;
+	protected String editURLPrefix;
+	protected String editIdProperty;
+	protected String editURLSuffix;
+	
+	// the pattern for the delete url
+	protected String deleteURLPrefix;
+	protected String deleteIdProperty;
+	protected String deleteURLSuffix;
 	
 	public TableDataModel setHeaders(String... headers) {
 		this.headers.clear();
@@ -48,6 +60,36 @@ public class TableDataModel {
 		return this;
 	}
 	
+	/**
+	 * Configures this table to link to a URL for editing.
+	 * @param column The column of the table that will be linked.  O indexed.
+	 * @param editURLPrefix The URL portion proceeding the id.  Can be blank but not null.
+	 * @param editIdProperty the property name of the focus object that is used to generate the id.  Required
+	 * @param editURLSuffix The URL portion that follows the id.  Can be blank but not null;
+	 * @return
+	 */
+	public TableDataModel setEditURLPattern(int column, String editURLPrefix, String editIdProperty, String editURLSuffix)  {
+		this.columnToLink = column;
+		this.editURLPrefix = editURLPrefix;
+		this.editIdProperty = editIdProperty;
+		this.editURLSuffix = editURLSuffix;
+		return this;
+	}
+	
+	/**
+	 * Configures this table to link to a URL for deleting.
+	 * @param deleteURLPrefix The URL portion proceeding the id.  Can be blank but not null.
+	 * @param deleteIdProperty The property name of the focus object that is used to generate the id.  Required.
+	 * @param deleteURLSuffix The URL portion that follows the id.  Can be blank but not null.
+	 * @return
+	 */
+	public TableDataModel setDeleteURLPattern(String deleteURLPrefix, String deleteIdProperty, String deleteURLSuffix) {
+		this.deleteURLPrefix = deleteURLPrefix;
+		this.deleteIdProperty = deleteIdProperty;
+		this.deleteURLSuffix = deleteURLSuffix;
+		return this;
+	}
+	
 	public TableDataModel addItem(Object item) {
 		this.items.add(item);
 		return this;
@@ -57,6 +99,28 @@ public class TableDataModel {
 		return headers;
 	}
 	
+	protected String createDeleteURL(Object focus) {
+		return createURL(focus, deleteURLPrefix, deleteIdProperty, deleteURLSuffix);
+	}
+	
+	protected String createClickURL(Object focus) {
+		return createURL(focus, editURLPrefix, editIdProperty, editURLSuffix);
+	}
+	
+	protected String createURL(Object focus, String prefix, String idProperty, String suffix) {
+		if(focus == null) {
+			return null;
+		}
+		
+		if(prefix == null || idProperty == null || suffix == null) {
+			return null;
+		}
+		
+		AppLocation loc = new AppLocation();
+		loc.add(focus);
+		return prefix + loc.get(idProperty) + suffix;
+		
+	}
 	
 	
 	public String getCreateNewURL() {
@@ -75,10 +139,15 @@ public class TableDataModel {
 			List<Object> rowValues = new ArrayList<Object>();
 			AppLocation loc = new AppLocation();
 			loc.add(item);
-			for(String property : properties) {
-				rowValues.add(new Cell(loc.get(property)).setClickURL("/hello"));
+			for(int i = 0; i < properties.size(); i++) {
+				String property = properties.get(i);
+				Cell c = new Cell(loc.get(property));
+				if(i == columnToLink) {
+					c.setClickURL(createClickURL(item));
+				}
+				rowValues.add(c);
 			}
-			results.add(new Row(rowValues));
+			results.add(new Row(rowValues).setFocus(item));
 		}
 		
 		return results;
@@ -86,7 +155,7 @@ public class TableDataModel {
 	
 	public class Row {
 		protected List<Object> values;
-		protected String deleteURL = "deletethis";
+		protected Object focus;
 
 		public Row() {
 			values = new ArrayList<Object>();
@@ -100,24 +169,30 @@ public class TableDataModel {
 			return values;
 		}
 
-		public void setValues(List<Object> values) {
+		public Row setValues(List<Object> values) {
 			this.values = values;
+			return this;
 		}
 
 		public String getDeleteURL() {
-			return deleteURL;
+			return createDeleteURL(focus);
 		}
 
-		public void setDeleteURL(String deleteURL) {
-			this.deleteURL = deleteURL;
+		public Object getFocus() {
+			return focus;
+		}
+
+		public Row setFocus(Object focus) {
+			this.focus = focus;
+			return this;
 		}
 
 		
 	}
 	
 	public class Cell {
-		public Object value;
-		public String clickURL;
+		protected Object value;
+		protected String clickURL;
 		
 		public Cell() {}
 		

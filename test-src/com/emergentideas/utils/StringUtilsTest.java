@@ -30,16 +30,4 @@ public class StringUtilsTest {
 		return sb.toString();
 	}
 	
-	@Test
-	public void testContains() throws Exception {
-		
-		String[] list = new String[] { "one", null, "two" };
-		
-		assertTrue(contains(list, "one"));
-		assertTrue(contains(list, null));
-		assertTrue(contains(list, "two"));
-		
-		assertFalse(contains(list, "three"));
-		
-	}
 }

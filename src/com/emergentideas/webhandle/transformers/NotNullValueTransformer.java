@@ -1,10 +1,12 @@
 package com.emergentideas.webhandle.transformers;
 
 import java.lang.reflect.Array;
+import java.util.List;
 import java.util.Map;
 
 import com.emergentideas.logging.Logger;
 import com.emergentideas.logging.SystemOutLogger;
+import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.webhandle.InvocationContext;
 import com.emergentideas.webhandle.NamedTransformer;
 import com.emergentideas.webhandle.ValueTransformer;
@@ -25,6 +27,10 @@ public class NotNullValueTransformer implements ValueTransformer<Object, Object,
 			Class c = (Class)transformationProperties.get("class");
 			if(c == null) {
 				return source;
+			}
+			
+			if(List.class.isAssignableFrom(finalParameterClass)) {
+				return (Object[])Array.newInstance(c, 0);
 			}
 			
 			Object[] result = (Object[])Array.newInstance(c, 1);

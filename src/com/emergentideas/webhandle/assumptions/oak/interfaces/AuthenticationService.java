@@ -62,6 +62,15 @@ public interface AuthenticationService {
 	public void setEmail(String profileName, String email) throws IllegalArgumentException;
 	
 	/**
+	 * Sets the full name for a user.  Throws an {@link IllegalArgumentException} if no user with that
+	 * profile name exists.
+	 * @param profileName
+	 * @param fullName
+	 * @throws IllegalArgumentException
+	 */
+	public void setFullName(String profileName, String fullName) throws IllegalArgumentException;
+	
+	/**
 	 * Sets whether the profile is active or deactivated.  Throws an {@link IllegalArgumentException} if no user with that
 	 * profile name exists.
 	 * @param profileName
@@ -110,9 +119,28 @@ public interface AuthenticationService {
 	 */
 	public void removeMember(String groupName, String profileName) throws IllegalArgumentException;
 	
+	/**
+	 * Gets the list of all profile names.
+	 * @return
+	 */
 	public List<String> getProfileNames();
 	
+	/**
+	 * Gets the list of all group names.
+	 * @return
+	 */
 	public List<String> getGroupNames();
 	
+	/**
+	 * Returns the list of all profile names that belong to <code>groupName</code>.
+	 * @param groupName
+	 * @return
+	 */
 	public List<String> getProfilesInGroup(String groupName);
+	
+	/**
+	 * Returns the list of all managed users.
+	 * @return
+	 */
+	public List<User> getUsers();
 }

@@ -4,8 +4,13 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.emergentideas.webhandle.CallSpec;
 
@@ -57,6 +62,41 @@ public class ReflectionUtils {
 
 		return false;
 	}
+	
+	/**
+	 * Assuming this is a getter or setter method, return the property name.  If it is not a getter or setter, return null.
+	 * @param m
+	 * @return
+	 */
+	public static String getPropertyName(Method m) {
+		if(m == null) {
+			return null;
+		}
+		
+		String methodName = m.getName();
+		if(methodName.startsWith("get")) {
+			methodName = methodName.substring(3);
+		}
+		else if(methodName.startsWith("set")) {
+			methodName = methodName.substring(3);
+		}
+		else if(methodName.startsWith("is")) {
+			methodName = methodName.substring(2);
+		}
+		else {
+			return null;
+		}
+		
+		if(StringUtils.isBlank(methodName)) {
+			return null;
+		}
+		
+		if(Character.isUpperCase(methodName.charAt(0)) == false) {
+			return null;
+		}
+		
+		return Character.toLowerCase(methodName.charAt(0)) + methodName.substring(1);
+	}
 
 	
 	/**
@@ -95,24 +135,6 @@ public class ReflectionUtils {
 			}
 		}
 		
-		return null;
-	}
-	
-
-	
-	/**
-	 * Returns the property name if this is a setter method or null otherwise.
-	 * @param method
-	 * @return
-	 */
-	public static String getPropertyName(Method method) {
-		
-		if(isSetterMethod(method)) {
-			String methodName = method.getName();
-			String propertyName = Character.toLowerCase(methodName.charAt(3)) + methodName.substring(4);
-			return propertyName;
-		}
-
 		return null;
 	}
 	
@@ -362,4 +384,23 @@ public class ReflectionUtils {
 	public static Class getClassForName(String name) throws ClassNotFoundException {
 		return Thread.currentThread().getContextClassLoader().loadClass(name);
 	}
+	
+	public static <T> boolean contains(T[] list, T searchTerm) {
+		for(T item : list) {
+			if(searchTerm == null && item == null) {
+				return true;
+			}
+			if(searchTerm == null || item == null) {
+				continue;
+			}
+			
+			if(searchTerm.equals(item)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+
 }

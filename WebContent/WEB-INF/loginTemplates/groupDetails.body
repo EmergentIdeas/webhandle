@@ -1,0 +1,7 @@
+<h1>Group: __groupName__</h1>
+__::messages__
+Users in group:
+<br/>
+<ul>
+	__userNames::li__
+</ul>

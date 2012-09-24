@@ -220,9 +220,20 @@ public class BindingUtils
 					}
 					else if("checkbox".equals(inputType))
 					{
-						s = StringUtils.replaceString(s, "checked=\"checked\"", "", "checked", "");
-						if(valueToSet.equalsIgnoreCase("on") || valueToSet.equalsIgnoreCase("yes") || valueToSet.equalsIgnoreCase("checked")) {
-							s = addValueBeforeFirstElementTermination(s, "checked=\"checked\"");
+						String buttonValue = getAttributeValue(s, "value");
+						if(org.apache.commons.lang.StringUtils.isBlank(buttonValue)) {
+							// if the button value is blank, then we're just looking for an indication that the check box should be
+							// checked.  This indicates there is only one checkbox with this name.
+							s = StringUtils.replaceString(s, "checked=\"checked\"", "", "checked", "");
+							if(valueToSet.equalsIgnoreCase("on") || valueToSet.equalsIgnoreCase("yes") || valueToSet.equalsIgnoreCase("checked")) {
+								s = addValueBeforeFirstElementTermination(s, "checked=\"checked\"");
+							}
+						}
+						else {
+							List values = data.all(nameOfInput);
+							if(values.contains(buttonValue)) {
+								s = addValueBeforeFirstElementTermination(s, "checked=\"checked\"");
+							}
 						}
 					}
 				}

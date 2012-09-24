@@ -20,5 +20,7 @@ public class RequestObjectSetup {
 		location.put("messages", errors);
 		
 		location.put(Constants.LOCATION_OF_WEB_APP_CONTEXT_PATH, request.getContextPath());
+		
+		context.setFoundParameter(ParmManipulator.class, new ParmManipulator(context));
 	}
 }

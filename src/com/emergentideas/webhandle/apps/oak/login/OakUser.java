@@ -12,6 +12,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.emergentideas.webhandle.NoInject;
 import com.emergentideas.webhandle.assumptions.oak.interfaces.User;
 
 @Entity
@@ -52,6 +53,7 @@ public class OakUser implements User {
 		return profileName;
 	}
 
+	@NoInject
 	public void setProfileName(String profileName) {
 		this.profileName = profileName;
 	}

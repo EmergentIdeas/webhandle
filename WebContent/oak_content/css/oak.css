@@ -2,11 +2,15 @@
 width: 1em;
 }
 
-.delete-cell a {
+.delete-cell button {
 visibility: hidden;
 }
 
+.delete-cell form {
+	margin-bottom: 0px;
+}
 
-.data-table-row:hover .delete-cell a {
+.data-table-row:hover .delete-cell button {
 visibility: visible;
 }
+

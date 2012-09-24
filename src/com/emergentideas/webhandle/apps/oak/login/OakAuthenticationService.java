@@ -149,6 +149,12 @@ public class OakAuthenticationService implements AuthenticationService {
 		user.setEmail(email);
 	}
 
+	public void setFullName(String profileName, String fullName) {
+		OakUser user = getCheckedUserByProfileName(profileName);
+		
+		user.setFullName(fullName);
+	}
+
 	public void setActive(String profileName, boolean active) {
 		OakUser user = getCheckedUserByProfileName(profileName);
 		
@@ -249,11 +255,16 @@ public class OakAuthenticationService implements AuthenticationService {
 
 	public List<String> getProfileNames() {
 		List<String> names = new ArrayList<String>();
-		for(User user : (List<User>)entityManager.createQuery("Select u from OakUser u").getResultList()) {
+		for(User user : getUsers()) {
 			names.add(user.getProfileName());
 		}
 		return names;
 	}
+	
+	public List<User> getUsers() {
+		return (List<User>)entityManager.createQuery("Select u from OakUser u").getResultList();
+	}
+
 
 	public List<String> getGroupNames() {
 		List<String> names = new ArrayList<String>();
