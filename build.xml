@@ -1,0 +1,140 @@
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="webhandle" default="pub" basedir=".">
+	<description>
+        a build for the webhandle system
+    </description>
+	<!-- set global properties for this build -->
+	<property name="src" location="src"/>
+	<property name="build" location="compiled"/>
+	<property name="dist"  location="dist"/>
+
+
+	<target name="increment">
+		<propertyfile file="buildNumber.properties">
+			<entry key="build.number" type="int" operation="+" default="0" />
+		</propertyfile>
+		<property file="buildNumber.properties" />
+	</target>
+
+	<target name="init">
+		<!-- Create the time stamp -->
+		<tstamp/>
+
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${build}"/>
+		<mkdir dir="${build}/classes"/>
+	</target>
+
+	<target name="compile" depends="init"
+        description="compile the source " >
+		
+		<ivy:cachepath pathid="ivy.cachepath.dep" conf="deployment"/>
+		<ivy:cachepath pathid="ivy.cachepath.build" conf="build"/>
+
+		<path id="ivy.deps">
+			<path refid="ivy.cachepath.dep" />
+			<path refid="ivy.cachepath.build" />
+			<fileset dir="lib" >
+				<include name="*.jar"/>
+			</fileset>
+		</path>
+		<!-- Compile the java code from ${src} into ${build} -->
+		<javac nowarn="on" srcdir="${src}" destdir="${build}/classes" target="1.6" debug="true" debuglevel="lines,vars,source">
+			<classpath refid="ivy.deps" />
+		</javac>
+
+		<!-- copy properties and other non-java files from the src directory -->
+		<copy todir="${build}/classes">
+			<fileset dir="${src}" >
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="copy-templates" depends="init" >
+		<copy todir="${build}/classes/com/emergentideas/webhandle/templates/oak">
+			<fileset dir="WebContent/WEB-INF/oakTemplates" />
+			<fileset dir="WebContent/WEB-INF/loginTemplates" />
+		</copy>
+		<copy todir="${build}/classes/com/emergentideas/webhandle/resources/oak">
+			<fileset dir="WebContent/oakContent" />
+		</copy>
+	</target>
+	
+	<target name="copy-test-templates" depends="init" >
+		<copy todir="${build}/classes/com/emergentideas/webhandle/templates/oak">
+			<fileset dir="WebContent/WEB-INF/appTestTemplates" />
+		</copy>
+	</target>
+
+	
+	<target name="compile-test" depends="init"
+        description="compile the source " >
+		
+		<ivy:cachepath pathid="ivy.cachepath.dep" conf="deployment"/>
+		<ivy:cachepath pathid="ivy.cachepath.build" conf="build"/>
+		<ivy:cachepath pathid="ivy.cachepath.test" conf="test"/>
+
+		<path id="ivy.deps.test">
+			<path refid="ivy.cachepath.dep" />
+			<path refid="ivy.cachepath.build" />
+			<path refid="ivy.cachepath.test" />
+			<fileset dir="lib" >
+				<include name="*.jar"/>
+			</fileset>
+		</path>
+		<!-- Compile the java code from ${src} into ${build} -->
+		<javac nowarn="on" srcdir="test-src" destdir="${build}/classes" target="1.6" debug="true" debuglevel="lines,vars,source">
+			<classpath refid="ivy.deps.test" />
+		</javac>
+
+		<!-- copy properties and other non-java files from the src directory -->
+		<copy todir="${build}/classes">
+			<fileset dir="test-src" >
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+
+
+	<target name="dist" depends="compile"
+        description="generate the distribution" >
+		<!-- Create the distribution directory -->
+		<mkdir dir="${dist}/lib"/>
+
+		<jar jarfile="${dist}/lib/webhandle.jar" basedir="${build}/classes"/>
+	</target>
+	
+	<target name="web-app-test" depends="compile,compile-test,copy-templates,copy-test-templates" description="generate the distribution" >
+		<!-- Create the distribution directory -->
+		<mkdir dir="${dist}/lib"/>
+
+		<jar jarfile="${dist}/WEB-INF/lib/webhandle.jar" basedir="${build}/classes"/>
+	  	<ivy:retrieve pattern="${dist}/WEB-INF/lib/[artifact](-[classifier]).jar" type="jar" conf="deployment"/>
+		
+		<copy todir="${dist}/WEB-INF/lib">
+			<fileset dir="lib" >
+				<include name="*.jar"/>
+			</fileset>
+		</copy>
+
+		<copy todir="${dist}">
+			<fileset dir="WebContent" >
+			</fileset>
+		</copy>
+	</target>
+
+
+	<target name="pub" depends="dist,increment" >
+		<ivy:publish resolver="local" pubrevision="1.0.0.${build.number}" update="true" overwrite="true">
+			<artifacts pattern="${dist}/lib/[artifact].[ext]" />
+		</ivy:publish>
+	</target>
+	
+
+
+	<target name="clean" description="clean up" >
+		<!-- Delete the ${build} and ${dist} directory trees -->
+		<delete dir="${build}"/>
+		<delete dir="${dist}"/>
+	</target>
+</project>

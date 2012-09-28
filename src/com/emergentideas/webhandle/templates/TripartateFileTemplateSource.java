@@ -15,37 +15,16 @@ import com.emergentideas.utils.FileUtils;
 import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.utils.StringUtils;
 
-public class TripartateFileTemplateSource implements TemplateSource {
+public class TripartateFileTemplateSource extends TripartateTemplateSource {
 	
 	protected File root;
 	
-	protected ElementStreamProcessor elementStreamProcessor;
-	protected Properties defaultHints;
-	
-	protected Logger logger = SystemOutLogger.get(TripartateFileTemplateSource.class);
-	
-	public static final String HINTS_EXTENSION = "hints";
-	
-	
 	public TripartateFileTemplateSource() {
-		
-		List<ElementProcessor> processors = new ArrayList<ElementProcessor>();
-		processors.add(new StringElementProcessor());
-		processors.add(new TripartateTemplateElementProcessor());
-		elementStreamProcessor = new ElementStreamProcessor(processors);
-		
-		// set up the default hints that will apply if no others have been selected
-		defaultHints = new Properties();
-		try {
-			defaultHints.load(StringUtils.getStreamFromClassPathLocation("com/emergentideas/webhandle/templates/defaultTemplateHints.properties"));
-		}
-		catch(Exception e) {
-			logger.error("Could not load default tripartate template hints", e);
-		}
+		super();
 	}
 	
 	public TripartateFileTemplateSource(File root) {
-		this();
+		super();
 		this.root = root;
 	}
 	

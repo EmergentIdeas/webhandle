@@ -21,7 +21,8 @@ public class FerretTest {
 		Set<PathElement> found = scanner.scan(new ScanFilter() {
 			
 			public boolean accept(PathElement arg0) {
-				return pat.matcher(arg0.getFullPath()).matches();
+				boolean match = pat.matcher(arg0.getFullPath()).matches();
+				return false;
 			}
 		});
 		

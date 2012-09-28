@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.emergentideas.webhandle.InvocationContext;
 import com.emergentideas.webhandle.ValueSource;
 
-public class HttpBodyValueSource implements ValueSource<String[]> {
+public class HttpBodyValueSource implements ValueSource<Object> {
 
 	HttpServletRequest request;
 	
@@ -13,11 +13,21 @@ public class HttpBodyValueSource implements ValueSource<String[]> {
 		this.request = request;
 	}
 	
-	public <T> String[] get(String name, Class<T> type,
+	
+	
+//	public <T> String[] get(String name, Class<T> type,
+//			InvocationContext context) {
+//		String[] values = request.getParameterValues(name);
+//		return values;
+//	}
+
+	public <T extends Object> String[] get(String name, Class<T> type,
 			InvocationContext context) {
 		String[] values = request.getParameterValues(name);
 		return values;
 	}
+
+
 
 	public <T> boolean canGet(String name, Class<T> type,
 			InvocationContext context) {

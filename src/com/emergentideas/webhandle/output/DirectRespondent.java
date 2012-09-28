@@ -1,11 +1,14 @@
 package com.emergentideas.webhandle.output;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -49,9 +52,14 @@ public class DirectRespondent implements Respondent {
 			}
 		}
 		
+		InputStream ins = null;
+		
 		byte[] out = null;
 		if(output == null) {
 			return;
+		}
+		else if(output instanceof InputStream) {
+			ins = (InputStream)output;
 		}
 		else if(output instanceof byte[]) {
 			out = (byte[])output;
@@ -70,9 +78,19 @@ public class DirectRespondent implements Respondent {
 		}
 		
 		if(out != null) {
+			ins = new ByteArrayInputStream(out);
+		}
+		
+		if(ins != null) {
 			try {
-				response.getOutputStream().write(out);
-				response.getOutputStream().flush();
+				ServletOutputStream os = response.getOutputStream();
+				byte[] temp = new byte[10000];
+				int i;
+				while((i = ins.read(temp)) > 0) {
+					os.write(temp, 0, i);
+				}
+
+				os.flush();
 			}
 			catch(IOException e) {
 				log.error("Could not write output.", e);

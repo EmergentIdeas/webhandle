@@ -38,7 +38,7 @@ public class AcornTest extends HttpServlet {
 		
 		AppLoader loader = new AppLoader();
 		try {
-			loader.load(new File(config.getServletContext().getRealPath("/files-for-acorn-test/vhost.conf")));
+			loader.load(new File("/data/repositories/webhandle/WebContent/files-for-acorn-test/vhost.conf"));
 			WebAppLocation webApp = new WebAppLocation(loader.getLocation());
 			handle = (Respondent)webApp.getServiceByName("request-handler");
 		}

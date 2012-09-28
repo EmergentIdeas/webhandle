@@ -25,7 +25,7 @@ public class StreamableResourcesHandler {
 		}
 		
 		try {
-			return new DirectRespondent(StringUtils.readStreamBytes(resource.getContent()), 200, null);
+			return new DirectRespondent(resource.getContent(), 200, null);
 		}
 		catch(Exception e) {
 			log.error("Could not serve content for path: " + filePath, e);
