@@ -13,6 +13,7 @@ import com.emergentideas.webhandle.Location;
 import com.emergentideas.webhandle.ParameterMarshal;
 import com.emergentideas.webhandle.ParameterMarshalConfiguration;
 import com.emergentideas.webhandle.WebAppLocation;
+import com.emergentideas.webhandle.configurations.IntegratorConfiguration;
 import com.emergentideas.webhandle.configurations.WebParameterMarsahalConfiguration;
 import com.emergentideas.webhandle.sources.PropertiesValueSource;
 
@@ -38,7 +39,7 @@ public class WireProperties extends URLFocusAndPropertiesAtomizer implements Cre
 	protected ParameterMarshalConfiguration conf;
 	
 	public WireProperties() {
-		conf = new WebParameterMarsahalConfiguration();
+		conf = new IntegratorConfiguration();
 	}
 
 	public void integrate(Loader loader, Location location,

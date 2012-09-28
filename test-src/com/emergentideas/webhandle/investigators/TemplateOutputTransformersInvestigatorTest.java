@@ -50,7 +50,7 @@ public class TemplateOutputTransformersInvestigatorTest {
 		IterativeOutputCreator ioc = (IterativeOutputCreator)resp;
 		assertTrue(ioc.getTransformers().get(0).getFocus() instanceof TemplateTransformer);
 		assertTrue(ioc.getTransformers().get(1).getFocus() instanceof InputValuesTransformer);
-		assertTrue(ioc.getTransformers().get(2).getFocus() instanceof WrapTransformer);
+		assertTrue(ioc.getTransformers().get(3).getFocus() instanceof WrapTransformer);
 		
 		assertTrue(ioc.getFinalRespondent() instanceof HtmlDocRespondent);
 		

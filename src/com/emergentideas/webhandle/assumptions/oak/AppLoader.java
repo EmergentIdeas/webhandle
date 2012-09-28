@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import com.emergentideas.utils.FileUtils;
+import com.emergentideas.webhandle.AppLocation;
 import com.emergentideas.webhandle.Location;
 import com.emergentideas.webhandle.WebAppLocation;
 import com.emergentideas.webhandle.bootstrap.BasicLoader;
@@ -26,11 +27,17 @@ public class AppLoader extends BasicLoader {
 	public static final String CLASS_LOADER_NAME = "app-class-loader";
 	public static final String APPLICATION_ON_DISK_LOCATION = "application-on-disk-location";
 	
-	protected WebAppLocation webApp = new WebAppLocation(location);
+	protected WebAppLocation webApp;
 	protected ClassLoader threadClassLoader;
 	
 	public AppLoader() {
-		super();
+		this(new AppLocation());
+	}
+	
+	public AppLoader(Location location) {
+		super(location);
+		this.location = location;
+		webApp = new WebAppLocation(location);
 		webApp.setServiceByName(CLASS_LOADER_NAME, getClass().getClassLoader());
 	}
 	
@@ -87,6 +94,12 @@ public class AppLoader extends BasicLoader {
 		}
 		
 		return confLocation;
+	}
+
+	@Override
+	public void setLocation(Location location) {
+		webApp = new WebAppLocation(location);
+		super.setLocation(location);
 	}
 
 	

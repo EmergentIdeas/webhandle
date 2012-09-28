@@ -31,10 +31,14 @@ public class ResponseLifecycleIntegrator implements Integrator {
 		}
 		
 		WebAppLocation webApp = new WebAppLocation(location);
-		ResponseLifecycleHandler lifecycle = (ResponseLifecycleHandler)webApp.getServiceByName("request-handler");
-		if(lifecycle == null) {
+		Object handler = webApp.getServiceByName("request-handler");
+		if(handler == null) {
 			return;
 		}
+		if(handler instanceof ResponseLifecycleHandler == false) {
+			return;
+		}
+		ResponseLifecycleHandler lifecycle = (ResponseLifecycleHandler)handler;
 		
 		if(focus instanceof HandlerInvestigator) {
 			lifecycle.setHandlerInvestigator((HandlerInvestigator)focus);

@@ -45,17 +45,24 @@ public class BasicLoader implements Loader {
 	protected List<AtomizerConfiguration> atomizerConfigurations = new ArrayList<AtomizerConfiguration>();
 	
 	// the location which holds information for the application
-	protected Location location = new AppLocation();
+	protected Location location;
 	
 	protected Logger log = SystemOutLogger.get(BasicLoader.class);
 	
 	public BasicLoader() {
-		location.put(APP_LEVEL_LOCATION, location);
+		this(new AppLocation());
+	}
+	public BasicLoader(Location location) {
+		this.location = location;
 		
 		WebAppLocation webApp = new WebAppLocation(location);
 		webApp.setServiceByType(Location.class.getName(), location);
 		
 		loadBootstrapObjects();
+	}
+	
+	protected void setup() {
+		
 	}
 	
 	protected void loadBootstrapObjects() {

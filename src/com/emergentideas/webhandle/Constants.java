@@ -1,6 +1,6 @@
 package com.emergentideas.webhandle;
 
-public class Constants {
+public interface Constants {
 
 	// expected sources
 	public static final String USER_INFORMATION_SOURCE_NAME = "userInfo";
@@ -14,10 +14,10 @@ public class Constants {
 	public static final String HANDLER_RESPONSE = "response";
 	
 	// location locations
-	public static final String REQUEST_LOCATION = "requestLocation";
+	public static final String ENV_LOCATION = "envLocation";
 	public static final String APP_LOCATION = "appLocation";
 	public static final String SESSION_LOCATION = "sessionLocation";
-	public static final String ENV_LOCATION = "envLocation";
+	public static final String REQUEST_LOCATION = "requestLocation";
 	
 	// locations of interesting objects
 	public static final String LOCATION_OF_REQUEST = "request";

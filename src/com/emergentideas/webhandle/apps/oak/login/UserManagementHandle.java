@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
+
 import org.apache.commons.lang.StringUtils;
 
 import com.emergentideas.utils.CryptoUtils;
@@ -22,6 +24,7 @@ import com.emergentideas.webhandle.output.Show;
 import com.emergentideas.webhandle.output.Template;
 import com.emergentideas.webhandle.output.Wrap;
 
+@RolesAllowed("administrators")
 public class UserManagementHandle {
 
 	protected AuthenticationService authenticationService;

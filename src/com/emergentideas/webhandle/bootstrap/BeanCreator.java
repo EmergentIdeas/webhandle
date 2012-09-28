@@ -9,6 +9,7 @@ import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.webhandle.Location;
 import com.emergentideas.webhandle.ParameterMarshal;
 import com.emergentideas.webhandle.ParameterMarshalConfiguration;
+import com.emergentideas.webhandle.configurations.IntegratorConfiguration;
 import com.emergentideas.webhandle.configurations.WebParameterMarsahalConfiguration;
 
 @Create({"", "class"})
@@ -18,7 +19,7 @@ public class BeanCreator implements Creator {
 	protected Logger log = SystemOutLogger.get(BeanCreator.class);
 	
 	public BeanCreator() {
-		conf = new WebParameterMarsahalConfiguration();
+		conf = new IntegratorConfiguration();
 	}
 
 	public Object create(Loader loader, Location location, ConfigurationAtom atom) {

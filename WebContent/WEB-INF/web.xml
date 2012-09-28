@@ -3,7 +3,7 @@
 	<display-name>webhandle</display-name>
 	<servlet>
 		<servlet-name>RootServlet</servlet-name>
-		<servlet-class>com.emergentideas.webhandle.LoginTest</servlet-class>
+		<servlet-class>com.emergentideas.webhandle.AcornTest</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 

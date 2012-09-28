@@ -402,5 +402,47 @@ public class ReflectionUtils {
 		return false;
 	}
 	
+	/**
+	 * If one class can be assigned from the other, it gets the distance between the 
+	 * two in terms of how many class definitions are between the two classes.
+	 * @param one
+	 * @param two
+	 * @return
+	 */
+	public static Integer findClassDistance(Class one, Class two) {
+		Class base;
+		Class extension;
+		
+		if(one.equals(two)) {
+			return 0;
+		}
+		else if(one.isAssignableFrom(two)) {
+			base = one;
+			extension = two;
+		}
+		else if(two.isAssignableFrom(one)) {
+			base = two;
+			extension = one;
+		}
+		else {
+			return null;
+		}
+		
+		int distance = Integer.MAX_VALUE;
+		Integer possible = findClassDistance(base, extension.getSuperclass());
+		if(possible != null && possible < distance) {
+			distance = possible;
+		}
+		
+		for(Class inter : extension.getInterfaces()) {
+			possible = findClassDistance(base, inter);
+			if(possible != null && possible < distance) {
+				distance = possible;
+			}
+		}
+		
+		return distance + 1;
+	}
+	
 
 }

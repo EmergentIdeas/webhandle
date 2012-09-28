@@ -12,6 +12,7 @@ import com.emergentideas.webhandle.Wire;
 import com.emergentideas.webhandle.composites.db.Db;
 import com.emergentideas.webhandle.exceptions.CouldNotHandleException;
 import com.emergentideas.webhandle.exceptions.TransformationException;
+import com.emergentideas.webhandle.exceptions.UserRequiredException;
 import com.emergentideas.webhandle.output.Template;
 import com.emergentideas.webhandle.output.Wrap;
 
@@ -53,6 +54,11 @@ public class Handler1 {
 	@Handle(value = "/five")
 	public String five(String id) {
 		throw new SecurityException();
+	}
+	
+	@Handle(value = "/twelve")
+	public String twelve(String id) {
+		throw new UserRequiredException();
 	}
 	
 	@Handle(value = "/six")

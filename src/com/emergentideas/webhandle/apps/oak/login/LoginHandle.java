@@ -4,8 +4,10 @@ import org.apache.commons.lang.StringUtils;
 
 import com.emergentideas.webhandle.Location;
 import com.emergentideas.webhandle.Wire;
+import com.emergentideas.webhandle.assumptions.oak.Constants;
 import com.emergentideas.webhandle.assumptions.oak.RequestMessages;
 import com.emergentideas.webhandle.assumptions.oak.interfaces.AuthenticationService;
+import com.emergentideas.webhandle.assumptions.oak.interfaces.User;
 import com.emergentideas.webhandle.handlers.Handle;
 import com.emergentideas.webhandle.handlers.HttpMethod;
 import com.emergentideas.webhandle.output.Show;
@@ -40,12 +42,28 @@ public class LoginHandle {
 			return "login";
 		}
 		
+		// adds the User object to the session location
+		User user = authenticationService.getUserByProfileName(userName);
+		((Location)location.get(Constants.SESSION_LOCATION)).put(Constants.CURRENT_USER_OBJECT, user);
+		
+		// loading the object so it doesn't have a lazy init exception
+		user.getGroupNames();
+		
 		if(StringUtils.isBlank(forward) == false) {
 			return new Show(forward);
 		}
 		else {
 			return new Show(successURL);
 		}
+	}
+	
+	@Handle("/logout")
+	@Template
+	@Wrap("public_page")
+	public Object logout(Location location, RequestMessages messages) {
+		messages.getSuccessMessages().add("You have logged out.");
+		((Location)location.get(Constants.SESSION_LOCATION)).put(Constants.CURRENT_USER_OBJECT, null);
+		return "login";
 	}
 
 	protected boolean isValidLogin(String userName, String password) {

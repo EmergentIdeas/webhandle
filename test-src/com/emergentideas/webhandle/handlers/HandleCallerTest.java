@@ -21,6 +21,7 @@ import com.emergentideas.webhandle.assumptions.oak.HandleCaller;
 import com.emergentideas.webhandle.configurations.WebParameterMarsahalConfiguration;
 import com.emergentideas.webhandle.configurations.WebRequestContextPopulator;
 import com.emergentideas.webhandle.exceptions.TransformationException;
+import com.emergentideas.webhandle.exceptions.UserRequiredException;
 import com.emergentideas.webhandle.investigators.TemplateOutputTransformersInvestigator;
 
 public class HandleCallerTest {
@@ -71,6 +72,7 @@ public class HandleCallerTest {
 		// add the exception handlers
 		caller.getExceptionHandlers().put(SecurityException.class, ReflectionUtils.getFirstMethodCallSpec(this, "securityException"));
 		caller.getExceptionHandlers().put(TransformationException.class, ReflectionUtils.getFirstMethodCallSpec(this, "transformationException"));
+		caller.getExceptionHandlers().put(UserRequiredException.class, ReflectionUtils.getFirstMethodCallSpec(this, "userRequiredException"));
 
 		// test a security exception
 		when(request.getServletPath()).thenReturn("/five");
@@ -93,6 +95,19 @@ public class HandleCallerTest {
 		
 		written = new String(out4.toByteArray(), "UTF-8");
 		assertEquals("transformation exception", written);
+		
+		
+		// test be sure that the exception with the minimum distance is chosen
+		when(request.getServletPath()).thenReturn("/twelve");
+		final ByteArrayOutputStream out5 = new ByteArrayOutputStream();
+		response = mock(HttpServletResponse.class);
+		when(response.getOutputStream()).thenReturn(new TestServletOutputStream(out5));
+		
+		caller.call(null, request, response, marshal);
+		
+		written = new String(out5.toByteArray(), "UTF-8");
+		assertEquals("user required exception", written);
+
 	}
 	
 	
@@ -103,6 +118,11 @@ public class HandleCallerTest {
 	public String transformationException() {
 		return "transformation exception";
 	}
+	
+	public String userRequiredException() {
+		return "user required exception";
+	}
+
 }
 
 class TestServletOutputStream extends ServletOutputStream {

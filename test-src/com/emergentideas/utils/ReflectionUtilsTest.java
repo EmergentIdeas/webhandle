@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -100,5 +101,9 @@ public class ReflectionUtilsTest {
 		
 	}
 
-		
+	@Test
+	public void testClassDistance() throws Exception {
+		assertEquals((Integer)1, ReflectionUtils.findClassDistance(List.class, ArrayList.class));
+		assertEquals((Integer)2, ReflectionUtils.findClassDistance(List.class, new ArrayList() {}.getClass()));
+	}
 }

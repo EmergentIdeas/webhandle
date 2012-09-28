@@ -12,6 +12,9 @@ import com.emergentideas.webhandle.CallSpec;
 import com.emergentideas.webhandle.Constants;
 import com.emergentideas.webhandle.ObjectorInvestigator;
 import com.emergentideas.webhandle.Source;
+import com.emergentideas.webhandle.assumptions.oak.interfaces.User;
+import com.emergentideas.webhandle.exceptions.UnauthorizedAccessException;
+import com.emergentideas.webhandle.exceptions.UserRequiredException;
 
 /**
  * Looks for the {@link RolesAllowed} annotation on the class and on the method being called to
@@ -24,10 +27,10 @@ public class RolesAllowedObjectorInvestigator implements
 
 	public CallSpec determineObjector(Object focus, Method method) {
 		
-		RolesAllowed rg = ReflectionUtils.getAnnotationOnClass(getClassToExamine(focus, method), RolesAllowed.class);
+		RolesAllowed rg = ReflectionUtils.getAnnotation(method, RolesAllowed.class); 
 		
 		if(rg == null) {
-			rg = ReflectionUtils.getAnnotation(method, RolesAllowed.class);
+			rg = ReflectionUtils.getAnnotationOnClass(getClassToExamine(focus, method), RolesAllowed.class);
 		}
 		
 		if(rg != null) {
@@ -59,13 +62,17 @@ public class RolesAllowedObjectorInvestigator implements
 	 * @param userRoles The roles as user has
 	 * @param rolesAllowed The set of roles that a user must have one of.
 	 */
-	public boolean hasGroup(@Source(Constants.USER_INFORMATION_SOURCE_NAME) List<String> userRoles, @Source(Constants.ANNOTATION_PROPERTIES_SOURCE_NAME)List<String> rolesAllowed) {
+	public boolean hasGroup(@Source(Constants.USER_INFORMATION_SOURCE_NAME) List<String> userRoles, @Source(Constants.ANNOTATION_PROPERTIES_SOURCE_NAME)List<String> rolesAllowed,
+			User user) {
 		if(rolesAllowed == null || rolesAllowed.size() == 0) {
 			return true;
 		}
 		
-		if(userRoles == null) {
-			throw new SecurityException("The user has no roles (may not be signed in) and so is not authorized to perform this function.");
+		if(user == null) {
+			throw new UserRequiredException();
+		}
+		if(userRoles == null || userRoles.isEmpty()) {
+			throw new UnauthorizedAccessException();
 		}
 		for(String allowed : rolesAllowed) {
 			if(userRoles.contains(allowed)) {
@@ -73,7 +80,7 @@ public class RolesAllowedObjectorInvestigator implements
 			}
 		}
 		
-		throw new SecurityException("The user does not have the needed roles and so is not authorized to perform this function.");
+		throw new UnauthorizedAccessException();
 	}
 
 }

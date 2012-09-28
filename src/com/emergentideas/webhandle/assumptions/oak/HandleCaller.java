@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.emergentideas.logging.Logger;
 import com.emergentideas.logging.SystemOutLogger;
+import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.webhandle.AppLocation;
 import com.emergentideas.webhandle.CallSpec;
 import com.emergentideas.webhandle.Constants;
@@ -131,17 +132,26 @@ public class HandleCaller implements ResponseLifecycleHandler {
 				}
 			}
 			
+			int distance = Integer.MAX_VALUE;
+			Class exceptionClassForLowestDistance = null;
 			for(Class c : exceptionHandlers.keySet()) {
 				if(c.isAssignableFrom(e.getClass())) {
-					try {
-						result = callAndUnwrapException(marshal, exceptionHandlers.get(c));
-						called = exceptionHandlers.get(c);
-						break;
+					Integer possible = ReflectionUtils.findClassDistance(c, e.getClass());
+					if(possible != null && possible < distance) {
+						distance = possible;
+						exceptionClassForLowestDistance = c;
 					}
-					catch(Exception ex) {
-						// so, we're probably f'd
-						log.error("Problem executing an exception handler for exception type: " + c.getName(), ex);
-					}
+				}
+			}
+			
+			if(exceptionClassForLowestDistance != null) {
+				try {
+					result = callAndUnwrapException(marshal, exceptionHandlers.get(exceptionClassForLowestDistance));
+					called = exceptionHandlers.get(exceptionClassForLowestDistance);
+				}
+				catch(Exception ex) {
+					// so, we're probably f'd
+					log.error("Problem executing an exception handler for exception type: " + exceptionClassForLowestDistance.getName(), ex);
 				}
 			}
 		}

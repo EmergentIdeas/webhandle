@@ -9,10 +9,11 @@ import com.emergentideas.logging.SystemOutLogger;
 import com.emergentideas.webhandle.Location;
 import com.emergentideas.webhandle.WebAppLocation;
 import com.emergentideas.webhandle.bootstrap.ConfigurationAtom;
+import com.emergentideas.webhandle.bootstrap.Integrate;
 import com.emergentideas.webhandle.bootstrap.Integrator;
 import com.emergentideas.webhandle.bootstrap.Loader;
 
-
+@Integrate
 public class ClassFileIntegrator implements Integrator {
 	
 	protected Logger log = SystemOutLogger.get(ClassFileIntegrator.class);

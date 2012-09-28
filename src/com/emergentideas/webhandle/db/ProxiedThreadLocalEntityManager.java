@@ -199,6 +199,13 @@ public class ProxiedThreadLocalEntityManager implements EntityManager {
 	public void setFactory(EntityManagerFactory factory) {
 		this.factory = factory;
 	}
+	
+	public boolean isReady() {
+		if(factory == null) {
+			return false;
+		}
+		return true;
+	}
 
 	protected EntityManager em() {
 		if(factory == null) {
