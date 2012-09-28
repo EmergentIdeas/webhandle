@@ -13,7 +13,7 @@
 	<div class="control-group">
 		<label class="control-label">Assigned groups</label>
 		<div class="controls">
-			__groupNames::groupCheckBox__
+			__groupNames::login/groupCheckBox__
 		</div>
 	</div>
 	

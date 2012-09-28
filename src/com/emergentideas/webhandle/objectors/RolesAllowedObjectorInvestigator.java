@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletRequest;
 
 import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.webhandle.CallSpec;
@@ -63,13 +64,13 @@ public class RolesAllowedObjectorInvestigator implements
 	 * @param rolesAllowed The set of roles that a user must have one of.
 	 */
 	public boolean hasGroup(@Source(Constants.USER_INFORMATION_SOURCE_NAME) List<String> userRoles, @Source(Constants.ANNOTATION_PROPERTIES_SOURCE_NAME)List<String> rolesAllowed,
-			User user) {
+			User user, HttpServletRequest request) {
 		if(rolesAllowed == null || rolesAllowed.size() == 0) {
 			return true;
 		}
 		
 		if(user == null) {
-			throw new UserRequiredException();
+			throw new UserRequiredException(request.getRequestURL().toString());
 		}
 		if(userRoles == null || userRoles.isEmpty()) {
 			throw new UnauthorizedAccessException();

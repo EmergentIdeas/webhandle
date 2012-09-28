@@ -119,7 +119,6 @@ public class HandleCaller implements ResponseLifecycleHandler {
 			}
 		}
 		catch(Exception e) {
-			e.printStackTrace();
 			marshal.getContext().setFoundParameter(EXCEPTION_PARAMETER_NAME, Exception.class, e);
 			
 			

@@ -15,7 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import com.emergentideas.logging.Logger;
 import com.emergentideas.logging.SystemOutLogger;
 
-public class HtmlDocRespondent implements Respondent {
+public class HtmlDocRespondent extends DirectRespondent {
 
 	protected SegmentedOutput output;
 	protected Logger log = SystemOutLogger.get(HtmlDocRespondent.class);
@@ -46,7 +46,7 @@ public class HtmlDocRespondent implements Respondent {
 				response.addHeader(key, headers.get(key));
 			}
 			
-			OutputStream os = response.getOutputStream();
+			OutputStream os = createOutputStream(servletContext, request, response);
 			
 			// get the doc type and html element created
 			write(os, output.getStream("docType"), true);

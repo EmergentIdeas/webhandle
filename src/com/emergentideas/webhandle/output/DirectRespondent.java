@@ -3,6 +3,7 @@ package com.emergentideas.webhandle.output;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +44,45 @@ public class DirectRespondent implements Respondent {
 	
 	public void respond(ServletContext servletContext,
 			HttpServletRequest request, HttpServletResponse response) {
+		InputStream ins = transformUserObjectToInputStream(output);
+		writeToOutputStream(servletContext, request, response, ins);
+	}
+	
+	protected InputStream transformUserObjectToInputStream(Object useObject) {
+		InputStream ins = null;
 		
+		byte[] out = null;
+		if(useObject == null) {
+			return null;
+		}
+		else if(useObject instanceof InputStream) {
+			ins = (InputStream)useObject;
+		}
+		else if(useObject instanceof byte[]) {
+			out = (byte[])useObject;
+		}
+		else if(useObject instanceof String == false) {
+			useObject = useObject.toString();
+		}
+		
+		try {
+			if(useObject instanceof String) {
+				out = ((String)useObject).getBytes(encoding);
+			}
+		}
+		catch(UnsupportedEncodingException e) {
+			log.error("Could not convert: " + useObject, e);
+		}
+		
+		if(out != null) {
+			ins = new ByteArrayInputStream(out);
+		}
+		
+		return ins;
+	}
+	
+	protected void writeToOutputStream(ServletContext servletContext, HttpServletRequest request, 
+			HttpServletResponse response, InputStream userMessage) {
 		response.setStatus(responseStatus);
 		
 		if(headers != null) {
@@ -52,50 +91,27 @@ public class DirectRespondent implements Respondent {
 			}
 		}
 		
-		InputStream ins = null;
-		
-		byte[] out = null;
-		if(output == null) {
-			return;
-		}
-		else if(output instanceof InputStream) {
-			ins = (InputStream)output;
-		}
-		else if(output instanceof byte[]) {
-			out = (byte[])output;
-		}
-		else if(output instanceof String == false) {
-			output = output.toString();
-		}
-		
-		try {
-			if(output instanceof String) {
-				out = ((String)output).getBytes(encoding);
-			}
-		}
-		catch(UnsupportedEncodingException e) {
-			log.error("Could not convert: " + output, e);
-		}
-		
-		if(out != null) {
-			ins = new ByteArrayInputStream(out);
-		}
-		
-		if(ins != null) {
+		if(userMessage != null) {
 			try {
-				ServletOutputStream os = response.getOutputStream();
+				OutputStream os = createOutputStream(servletContext, request, response);
 				byte[] temp = new byte[10000];
 				int i;
-				while((i = ins.read(temp)) > 0) {
+				while((i = userMessage.read(temp)) > 0) {
 					os.write(temp, 0, i);
 				}
-
+	
 				os.flush();
 			}
 			catch(IOException e) {
 				log.error("Could not write output.", e);
 			}
 		}
+	}
+	
+	protected OutputStream createOutputStream(ServletContext servletContext, HttpServletRequest request, 
+			HttpServletResponse response) throws IOException {
+		ServletOutputStream os = response.getOutputStream();
+		return os;
 	}
 
 	public String getEncoding() {

@@ -7,7 +7,7 @@ __::messages__
 			<input type="text" id="profileName" placeholder="Profile name" name="profileName">
 		</div>
 	</div>
-	__::userProperties__
+	__::login/userProperties__
 	<div class="control-group">
 		<label class="control-label" for="newPassword">Initial password</label>
 		<div class="controls">

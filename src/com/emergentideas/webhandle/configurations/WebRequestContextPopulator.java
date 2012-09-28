@@ -13,6 +13,7 @@ import com.emergentideas.webhandle.output.OutputCreator;
 import com.emergentideas.webhandle.output.Respondent;
 import com.emergentideas.webhandle.output.SegmentedOutput;
 import com.emergentideas.webhandle.sources.HttpBodyValueSource;
+import com.emergentideas.webhandle.sources.HttpHeaderValueSource;
 
 public class WebRequestContextPopulator {
 
@@ -26,6 +27,7 @@ public class WebRequestContextPopulator {
 		populate(marshal, context);
 		
 		marshal.getSources().put(Constants.REQUEST_BODY_SOURCE_NAME, new HttpBodyValueSource(request));
+		marshal.getSources().put(Constants.REQUEST_HEADER_SOURCE_NAME, new HttpHeaderValueSource(request));
 		context.getLocation().put(Constants.LOCATION_OF_REQUEST, request);
 	}
 	

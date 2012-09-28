@@ -40,7 +40,7 @@ public class TripartateClasspathTemplateSource extends TripartateTemplateSource 
 		
 		classpathPrefix = classpathPrefix.replace('/', '.');
 		
-		final Pattern pat = Pattern.compile(".*(" + Pattern.quote(classpathPrefix) + "(.*?)\\.([^.]*))$");
+		final Pattern pat = Pattern.compile(".*(" + Pattern.quote(classpathPrefix) + ")(.*?)\\.([^.]*)$");
 		
 		
 		Reflections reflections = new Reflections("com", new Scanner() {
@@ -111,15 +111,18 @@ public class TripartateClasspathTemplateSource extends TripartateTemplateSource 
 
 	}
 	
-	protected void addElement(String templateName, String suffix, String wholeLocation) throws Exception {
+	protected void addElement(String templateName, String suffix, String wholeLocationPrefix) throws Exception {
+		wholeLocationPrefix = wholeLocationPrefix.replace('.', '/');
+		templateName = templateName.replace('.', '/');
+		String classPathLocation = wholeLocationPrefix + templateName + "." + suffix;
 		if(HINTS_EXTENSION.equals(suffix)) {
 			Properties hints = new Properties(defaultHints);
-			hints.load(StringUtils.getStreamFromClassPathLocation(wholeLocation));
+			hints.load(StringUtils.getStreamFromClassPathLocation(classPathLocation));
 			hintsByTemplateName.put(templateName, hints);
 		}
 		else {
 			Map<String, String> parts = getPartsMap(templateName);
-			parts.put(suffix, StringUtils.getStringFromClassPathLocation(wholeLocation));
+			parts.put(suffix, StringUtils.getStringFromClassPathLocation(classPathLocation));
 		}
 	}
 	

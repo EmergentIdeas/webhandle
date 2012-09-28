@@ -66,6 +66,7 @@ public class VirtualHost implements Respondent {
 		URLFocusAndPropertiesAtomizer atomizer = new URLFocusAndPropertiesAtomizer();
 		
 		try {
+			currentAtoms.clear();
 			List<ConfigurationAtom> atoms = new FlatFileConfigurationParser().parse(new FileInputStream(configurationsLocation));
 			List<String> newValues = new ArrayList<String>();
 			
@@ -76,9 +77,7 @@ public class VirtualHost implements Respondent {
 			
 			for(String key : configValuesToPatterns.keySet()) {
 				if(newValues.contains(key) == false) {
-					Pattern pat = configValuesToPatterns.get(key);
-					configValuesToPatterns.remove(key);
-					hostHandlers.remove(pat);
+					removeHandlersForConfig(key);
 				}
 			}
 			
@@ -88,6 +87,7 @@ public class VirtualHost implements Respondent {
 					continue;
 				}
 				FocusAndPropertiesAtom parsed = atomizer.atomize(atom.getType(), atom.getValue());
+				currentAtoms.add(parsed);
 				load(parsed);
 			}
 			
@@ -97,8 +97,17 @@ public class VirtualHost implements Respondent {
 		}
 	}
 	
-	protected void load(FocusAndPropertiesAtom conf) {
+	protected void removeHandlersForConfig(String conf) {
+		Pattern pat = configValuesToPatterns.get(conf);
+		configValuesToPatterns.remove(conf);
+		hostHandlers.remove(pat);
+	}
+	
+	public void load(FocusAndPropertiesAtom conf) {
 		try {
+			
+			removeHandlersForConfig(conf.getValue());
+			
 			AppLocation appLocation = new AppLocation(location);
 			WebAppLocation webApp = new WebAppLocation(appLocation);
 			webApp.init();

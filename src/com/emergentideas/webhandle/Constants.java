@@ -6,6 +6,7 @@ public interface Constants {
 	public static final String USER_INFORMATION_SOURCE_NAME = "userInfo";
 	public static final String ANNOTATION_PROPERTIES_SOURCE_NAME = "annotationProperties";
 	public static final String REQUEST_BODY_SOURCE_NAME = "requestBody";
+	public static final String REQUEST_HEADER_SOURCE_NAME = "requestHeader";
 
 	// expected transformers
 	public static final String DB_TO_OBJECT_TRANSFORMER_NAME_DEFAULT = "dbObjectSourceTransformer";

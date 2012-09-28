@@ -3,6 +3,7 @@ package com.emergentideas.webhandle.apps.oak.login;
 import org.apache.commons.lang.StringUtils;
 
 import com.emergentideas.webhandle.Location;
+import com.emergentideas.webhandle.Type;
 import com.emergentideas.webhandle.Wire;
 import com.emergentideas.webhandle.assumptions.oak.Constants;
 import com.emergentideas.webhandle.assumptions.oak.RequestMessages;
@@ -14,6 +15,7 @@ import com.emergentideas.webhandle.output.Show;
 import com.emergentideas.webhandle.output.Template;
 import com.emergentideas.webhandle.output.Wrap;
 
+@Type("com.emergentideas.webhandle.apps.oak.login.LoginHandle")
 public class LoginHandle {
 	
 	protected String successURL = "menu";
@@ -61,7 +63,7 @@ public class LoginHandle {
 	@Template
 	@Wrap("public_page")
 	public Object logout(Location location, RequestMessages messages) {
-		messages.getSuccessMessages().add("You have logged out.");
+		messages.getSuccessMessages().add("You have logged out.  Hope to see you again soon.");
 		((Location)location.get(Constants.SESSION_LOCATION)).put(Constants.CURRENT_USER_OBJECT, null);
 		return "login";
 	}

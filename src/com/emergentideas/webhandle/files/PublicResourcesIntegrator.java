@@ -14,7 +14,7 @@ import com.emergentideas.webhandle.bootstrap.Integrator;
 import com.emergentideas.webhandle.bootstrap.Loader;
 import com.emergentideas.webhandle.handlers.HandlerInvestigator;
 
-@Create("public-resource")
+@Create({"public-resource", "classpath-public-resource"})
 @Integrate
 public class PublicResourcesIntegrator implements Creator, Integrator {
 
@@ -22,11 +22,12 @@ public class PublicResourcesIntegrator implements Creator, Integrator {
 	
 	public void integrate(Loader loader, Location location,
 			ConfigurationAtom atom, Object focus) {
-		if(focus == null || focus instanceof StreamableResourceSource == false || "public-resource".equals(atom.getType()) == false) {
-			return;
+		if(focus != null && focus instanceof StreamableResourceSource) {
+			if("public-resource".equals(atom.getType()) || "classpath-public-resource".equals(atom.getType())) {
+				handlerInvestigator.analyzeObject(new StreamableResourcesHandler((StreamableResourceSource)focus));
+			}
 		}
 
-		handlerInvestigator.analyzeObject(new StreamableResourcesHandler((StreamableResourceSource)focus));
 	}
 
 	public Object create(Loader loader, Location location,
@@ -37,8 +38,15 @@ public class PublicResourcesIntegrator implements Creator, Integrator {
 			return null;
 		}
 		
-		File root = new File(new File(appLocation), atom.getValue());
-		return new FileStreamableResourceSource(root);
+		if("public-resource".equals(atom.getType())) {
+			File root = new File(new File(appLocation), atom.getValue());
+			return new FileStreamableResourceSource(root);
+		}
+		if("classpath-public-resource".equals(atom.getType())) {
+			return new ClasspathFileStreamableResourceSource(atom.getValue());
+		}
+		
+		return null;
 	}
 
 	public HandlerInvestigator getHandlerInvestigator() {
