@@ -3,6 +3,7 @@ package com.emergentideas.utils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 public class StringUtils {
 
@@ -76,14 +77,22 @@ public class StringUtils {
 	 * @param source
 	 * @param replacements
 	 */
-	public static void replaceString(StringBuffer source, String ... replacements ) {
+	public static void replaceString(StringBuilder source, String ... replacements ) {
 		for(int i = 0; i + 1 < replacements.length; i += 2)
 		{
 			String target = replacements[i];
 			String replacement = replacements[i + 1];
 			replaceString(source, target, replacement);
 		}
-	}	
+	}
+	
+	public static String replaceString(String source, Map<String, String> replacements) {
+		StringBuilder sb = new StringBuilder(source);
+		for(Map.Entry<String, String> entry : replacements.entrySet()) {
+			replaceString(sb, entry.getKey(), entry.getValue());
+		}
+		return sb.toString();
+	}
 	
 	/**
 	 * Replaces text in source using the arguments passed where the arguments after 
@@ -92,7 +101,7 @@ public class StringUtils {
 	 * @param replacements
 	 */
 	public static String replaceString(String source, String ... replacements ) {
-		StringBuffer sb = new StringBuffer(source);
+		StringBuilder sb = new StringBuilder(source);
 		replaceString(sb, replacements);
 		return sb.toString();
 	}	
@@ -104,7 +113,7 @@ public class StringUtils {
 	 * @param replacement
 	 * @return
 	 */
-	public static void replaceString(StringBuffer source, String target, String replacement) {
+	public static void replaceString(StringBuilder source, String target, String replacement) {
 		if(target == null)
 		{
 			return;
@@ -134,7 +143,7 @@ public class StringUtils {
 			replacement = "";
 		}
 		
-		StringBuffer sb = new StringBuffer(source);
+		StringBuilder sb = new StringBuilder(source);
 		replaceString(sb, target, replacement);
 		return sb.toString();
 	}

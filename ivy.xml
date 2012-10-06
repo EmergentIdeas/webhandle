@@ -16,6 +16,7 @@
 		<dependency org="org.apache.commons" name="commons-email" rev="1.2" conf="deployment"/>
 		
 		<dependency org="org.apache.httpcomponents" name="httpclient" rev="4.2.1" conf="deployment"/>
+		<dependency org="org.apache.commons" name="commons-jexl" rev="2.1.1" conf="deployment" />
 		
 		
 		<dependency org="mysql" name="mysql-connector-java" rev="5.1.21" conf="deployment"/>

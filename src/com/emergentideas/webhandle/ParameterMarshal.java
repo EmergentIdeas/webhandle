@@ -338,8 +338,8 @@ public class ParameterMarshal {
 				}
 				catch(InvocationTargetException e) {
 					Throwable cause = e.getCause();
-					if(cause instanceof SecurityException) {
-						throw (SecurityException)cause;
+					if(cause instanceof RuntimeException) {
+						throw (RuntimeException)cause;
 					}
 					throw e;
 				}

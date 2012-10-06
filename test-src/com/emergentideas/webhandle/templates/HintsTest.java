@@ -17,6 +17,8 @@ public class HintsTest {
 	@Test
 	public void testHints() throws Exception {
 		TripartateFileTemplateSource ts = new TripartateFileTemplateSource(new File("WebContent/WEB-INF/testTemplates"));
+		ts.setExpressionFactory(new JexlExpressionFactory());
+		ts.init();
 		
 		Location loc = new AppLocation();
 		WebAppLocation web = new WebAppLocation(loc);

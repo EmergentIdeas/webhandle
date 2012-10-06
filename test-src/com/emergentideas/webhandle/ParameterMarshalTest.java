@@ -13,6 +13,7 @@ import com.emergentideas.webhandle.Constants;
 import com.emergentideas.webhandle.InvocationContext;
 import com.emergentideas.webhandle.ParameterMarshal;
 import com.emergentideas.webhandle.ValueTransformer;
+import com.emergentideas.webhandle.apps.oak.login.OakUser;
 import com.emergentideas.webhandle.composites.db.DbInvestigator;
 import com.emergentideas.webhandle.configurations.WebParameterMarsahalConfiguration;
 import com.emergentideas.webhandle.exceptions.ParameterNotFoundException;
@@ -204,6 +205,7 @@ public class ParameterMarshalTest {
 		}
 		
 		values.put("userRoles", new String[] { "admin", "normal-user" });
+		values.put("user", new OakUser());
 		try {
 			marshal.call(obj, m);
 			fail("Ooops.  We shouldn't be able to call this.");

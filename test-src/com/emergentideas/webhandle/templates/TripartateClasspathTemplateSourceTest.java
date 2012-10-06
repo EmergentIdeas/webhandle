@@ -9,6 +9,8 @@ public class TripartateClasspathTemplateSourceTest {
 	@Test
 	public void testLoad() throws Exception {
 		TripartateClasspathTemplateSource source = new TripartateClasspathTemplateSource("com.emergentideas.webhandle.templates.testTemplates");
+		source.setExpressionFactory(new JexlExpressionFactory());
+		source.init();
 		TripartateTemplate tt = (TripartateTemplate)source.get("one");
 		assertEquals("one body", tt.sections.get("body"));
 		assertEquals("stream,replace", tt.hints.getProperty("title"));

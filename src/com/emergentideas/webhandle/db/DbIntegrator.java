@@ -15,7 +15,10 @@ import java.util.Vector;
 
 import javax.persistence.Entity;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.emergentideas.utils.ReflectionUtils;
+import com.emergentideas.webhandle.Constants;
 import com.emergentideas.webhandle.Location;
 import com.emergentideas.webhandle.WebAppLocation;
 import com.emergentideas.webhandle.assumptions.oak.AppLoader;
@@ -33,7 +36,7 @@ public class DbIntegrator implements Integrator {
 			return;
 		}
 		
-		WebAppLocation webApp = new WebAppLocation(location);
+		final WebAppLocation webApp = new WebAppLocation(location);
 		Class c = null;
 		
 		if(focus instanceof DbConfiguration) {
@@ -62,7 +65,7 @@ public class DbIntegrator implements Integrator {
 											@Override
 											public InputStream getInputStream()
 													throws IOException {
-												InputStream is = new ByteArrayInputStream(generatePersistenceXml(conf).getBytes());
+												InputStream is = new ByteArrayInputStream(generatePersistenceXml(conf, webApp).getBytes());
 												return is;
 											}
 										};
@@ -100,12 +103,18 @@ public class DbIntegrator implements Integrator {
 	}
 	
 	
-	protected String generatePersistenceXml(DbConfiguration conf) {
+	protected String generatePersistenceXml(DbConfiguration conf, WebAppLocation webApp) {
+		
+		String unitName = conf.getUnitName();
+		if(StringUtils.isBlank(unitName) || "*automatic".equals(unitName)) {
+			unitName = (String)webApp.getServiceByName(Constants.NAME_OF_PERSISTENCE_UNIT);
+		}
+		
 		final StringBuilder data = new StringBuilder("<persistence xmlns=\"http://java.sun.com/xml/ns/persistence\"\n" + 
 				"	xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + 
 				"	xsi:schemaLocation=\"http://java.sun.com/xml/ns/persistence persistence_1_0.xsd\"\n" + 
 				"	version=\"1.0\">\n" + 
-				"	<persistence-unit name=\"" + conf.getUnitName() + "\" transaction-type=\"RESOURCE_LOCAL\">\n" + 
+				"	<persistence-unit name=\"" + unitName + "\" transaction-type=\"RESOURCE_LOCAL\">\n" + 
 				"		<provider>" + conf.getProvider() + "</provider>\n" );
 		
 		for(String className : conf.getClassNames()) {

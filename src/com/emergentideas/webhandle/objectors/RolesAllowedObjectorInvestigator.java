@@ -70,7 +70,7 @@ public class RolesAllowedObjectorInvestigator implements
 		}
 		
 		if(user == null) {
-			throw new UserRequiredException(request.getRequestURL().toString());
+			throw new UserRequiredException(request == null ? null : request.getRequestURL().toString());
 		}
 		if(userRoles == null || userRoles.isEmpty()) {
 			throw new UnauthorizedAccessException();

@@ -23,6 +23,9 @@ public interface Constants {
 	// locations of interesting objects
 	public static final String LOCATION_OF_REQUEST = "request";
 	public static final String LOCATION_OF_WEB_APP_CONTEXT_PATH = "webAppContextPath";
+	
+	// names of interesting objects/data
+	public static final String NAME_OF_PERSISTENCE_UNIT = "persistenceUnitName";
 
 	
 }

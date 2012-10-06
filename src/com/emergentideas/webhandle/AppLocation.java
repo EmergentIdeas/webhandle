@@ -54,7 +54,7 @@ public class AppLocation implements Location {
 	}
 
 	public List<Object> all(String path, InvocationContext context) {
-		if("$this".equals(path)) {
+		if("$this".equals(path) || "this".equals(path)) {
 			if(currentObjects == null) {
 				if(parent != null) {
 					return parent.all(path, context);

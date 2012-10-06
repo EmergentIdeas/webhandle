@@ -21,6 +21,7 @@ import com.emergentideas.webhandle.bootstrap.Integrator;
 import com.emergentideas.webhandle.bootstrap.Loader;
 import com.emergentideas.webhandle.configurations.IntegratorConfiguration;
 import com.emergentideas.webhandle.configurations.WebParameterMarsahalConfiguration;
+import com.emergentideas.webhandle.db.ProxiedThreadLocalEntityManager;
 
 @Integrate
 public class InitIntegrator implements Integrator {
@@ -53,22 +54,36 @@ public class InitIntegrator implements Integrator {
 				continue;
 			}
 			
+			boolean ready = isReady(entityManager);
+			
 			try {
-				if(entityManager != null) {
+				if(ready) {
 					entityManager.getTransaction().begin();
 				}
 				marshal.call(focus, m);
-				if(entityManager != null) {
+				if(ready) {
 					entityManager.getTransaction().commit();
 				}
 			}
 			catch(Exception e) {
-				if(entityManager != null) {
+				if(ready) {
 					entityManager.getTransaction().rollback();
 				}
 				logger.error("Could not init method " + m.getName() + " on object of class " + focus.getClass().getName(), e);
 			}
 		}
+	}
+	
+	protected boolean isReady(EntityManager entityManager) {
+		if(entityManager == null) {
+			return false;
+		}
+		
+		if(entityManager instanceof ProxiedThreadLocalEntityManager) {
+			return ((ProxiedThreadLocalEntityManager)entityManager).isReady();
+		}
+		
+		return true;
 	}
 
 	public EntityManager getEntityManager() {

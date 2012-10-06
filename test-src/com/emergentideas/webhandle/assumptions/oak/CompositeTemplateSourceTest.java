@@ -14,6 +14,7 @@ import com.emergentideas.webhandle.TestObj;
 import com.emergentideas.webhandle.WebAppLocation;
 import com.emergentideas.webhandle.assumptions.oak.CompositeTemplateSource;
 import com.emergentideas.webhandle.output.SegmentedOutput;
+import com.emergentideas.webhandle.templates.JexlExpressionFactory;
 import com.emergentideas.webhandle.templates.TemplateInstance;
 import com.emergentideas.webhandle.templates.TripartateFileTemplateSource;
 import com.emergentideas.webhandle.templates.TripartateTemplate;
@@ -24,6 +25,8 @@ public class CompositeTemplateSourceTest {
 	@Test
 	public void testRender() throws Exception {
 		TripartateFileTemplateSource ts = new TripartateFileTemplateSource(new File("WebContent/WEB-INF/testTemplates"));
+		ts.setExpressionFactory(new JexlExpressionFactory());
+		ts.init();
 		Location loc = new AppLocation();
 		WebAppLocation web = new WebAppLocation(loc);
 		web.init();

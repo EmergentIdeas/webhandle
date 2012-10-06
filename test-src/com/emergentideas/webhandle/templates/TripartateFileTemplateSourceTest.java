@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -39,6 +40,8 @@ public class TripartateFileTemplateSourceTest {
 	@Test
 	public void testRender() throws Exception {
 		TripartateFileTemplateSource ts = new TripartateFileTemplateSource(new File("WebContent/WEB-INF/testTemplates"));
+		ts.setExpressionFactory(new JexlExpressionFactory());
+		ts.init();
 		TripartateTemplate tt = (TripartateTemplate)ts.get("two");
 		Location loc = new AppLocation();
 		WebAppLocation web = new WebAppLocation(loc);
@@ -77,5 +80,52 @@ public class TripartateFileTemplateSourceTest {
 		assertTrue(body.contains("manyChildren is:B2B3"));
 		
 	}
+	
+	@Test
+	public void testVariableTemplateName() throws Exception {
+		TripartateFileTemplateSource ts = new TripartateFileTemplateSource(new File("WebContent/WEB-INF/testTemplates"));
+		ts.setExpressionFactory(new JexlExpressionFactory());
+		ts.init();
+		TripartateTemplate tt = (TripartateTemplate)ts.get("variableTemplateName");
+		Location loc = new AppLocation();
+		WebAppLocation web = new WebAppLocation(loc);
+		web.init();
+		web.setTemplateSource(ts);
+		
+		loc.put("theTemplateName", "one");
+		
+		SegmentedOutput out = new SegmentedOutput();
+		tt.render(out, loc, null, null);
+		
+		
+		
+		String body = out.getStream("body").toString();
+		assertEquals("hello there", body);
+	}
+	
+	@Test
+	public void testIteratorCount() throws Exception {
+		TripartateFileTemplateSource ts = new TripartateFileTemplateSource(new File("WebContent/WEB-INF/testTemplates"));
+		ts.setExpressionFactory(new JexlExpressionFactory());
+		ts.init();
+		TripartateTemplate tt = (TripartateTemplate)ts.get("outerIterator");
+		Location loc = new AppLocation();
+		WebAppLocation web = new WebAppLocation(loc);
+		web.init();
+		web.setTemplateSource(ts);
+		
+		
+		
+		loc.put("listOf5", Arrays.asList(new String[] { "hello", "there", "to", "you", "world" }));
+		
+		SegmentedOutput out = new SegmentedOutput();
+		tt.render(out, loc, null, null);
+		
+		
+		
+		String body = out.getStream("body").toString();
+		assertEquals("01234", body);
+	}
+
 	
 }

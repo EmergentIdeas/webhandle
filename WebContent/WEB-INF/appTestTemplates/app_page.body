@@ -1,4 +1,4 @@
 <div class="container">
-__::contentArea__
+__::$contentArea__
 </div>
 __::testing__
