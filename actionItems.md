@@ -23,17 +23,14 @@ To make this work, you'll need the following js files included:
 Action Items require a node which contains the objects that can be created or edit.  An example would
 be:
 
-<code>
 <pre>
 	<div id="listItems">
 </pre>
-</code>
 
 Each item must share a given class (like todo-item) and be marked with the action-item class.  Additionally,
 each action-item must have an attribute "data-id" that tells the system what id should be used for restful
 handlers.  An example would be:
 
-<code>
 <pre>
 <div class="todo-item action-item" data-id="26">
 	<span title="remove"><i class="icon-remove"></i></span>
@@ -41,24 +38,23 @@ handlers.  An example would be:
 	this is what I have to do
 </div>
 </pre>
-</code>
 
 Each type of item should have urls for create, edit, and delete.  These urls are registered with with a piece
 of javascript like:
 
-<code>
+<pre>
 $(function() {
 	urlCreator.registerEdit('todo-item', todoEditUrl);
 	urlCreator.registerDelete('todo-item', todoDeleteUrl);
 	urlCreator.registerCreate('todo-item', todoCreateUrl);
 	urlCreator.registerParentSelector('todo-item', '#listItems');
 });
-</code>
+</pre>
 
 In the above case, the "todo-item' class has a function registered for each of edit, create, and delete.  These
 methods look like:
 
-<code>
+<pre>
 function todoEditUrl(actionNode, focusNode) {
 	return "/list-item/" + actionNode.attr('data-id') + "/edit";
 }
@@ -68,7 +64,7 @@ function todoDeleteUrl(actionNode, focusNode) {
 function todoCreateUrl(itemType, parentId) {
 	return "/list/" + parentId + "/item/create";
 }
-</code>
+</pre>
 
 Here, the edit and delete url generators are passed the node with the class action-item as well as the focusNode, which is
 the node that has the registered click listener.  The create url is passed the object type as well as the id of the parent
@@ -77,7 +73,6 @@ object (which may have no representation on the page).
 The handlers at the the create and edit urls should respond to a GET 
 request with a bare form that allows the editing of the selected item.  An example would be:
 
-<code>
 <pre>
 <form method="post" action="/web2/list-item/33/edit">
 	<label for="todoText">Thing to do</label>
@@ -85,7 +80,6 @@ request with a bare form that allows the editing of the selected item.  An examp
 	<button type="submit" class="btn btn-primary">Save</button>
 </form>
 </pre>
-</code>
 
 Notice that the above is a valid form.  The action attribute contains the url that the info will be submitted to.  The Action
 Items script takes care of capturing the submit event, submitting the post with an xhr, and stopping the default submit action.
@@ -105,20 +99,20 @@ Notice that the createActionItem function is passed the class of the object to b
 
 Since there are probably many edit/delete links/buttons, I've added added listeners to those like:
 
-<code>
+<pre>
 $(function() {
 	var listItems = $('#listItems');
 	listItems.on('click', '.icon-remove', deleteActionItem);
 	listItems.on('click', '.icon-edit', editActionItem);
 });
-</code>
+</pre>
 
 The editActionItem and deleteActionItem methods will automatically climb the tree to find the node with the action-item class 
 to determine which object type should be edited or deleted and what the id of that item is.
 
 Putting all my script pieces together, I've got:
 
-<code>
+<pre>
 function todoEditUrl(actionNode, focusNode) {
 	return "/list-item/" + actionNode.attr('data-id') + "/edit";
 }
@@ -141,15 +135,4 @@ $(function() {
 	listItems.on('click', '.icon-remove', deleteActionItem);
 	listItems.on('click', '.icon-edit', editActionItem);
 });
-</code>
-
-
-
-
-
-
-
-
-
-
-
+</pre>
