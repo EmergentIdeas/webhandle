@@ -14,11 +14,11 @@ and the html on page updated but have the server do all of the controller code a
 
 To make this work, you'll need the following js files included:
 
-<code>
+<pre>
 	//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.js
 	//ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js
 	/js/actionItems.js
-</code>
+</pre>
 
 Action Items require a node which contains the objects that can be created or edit.  An example would
 be:
