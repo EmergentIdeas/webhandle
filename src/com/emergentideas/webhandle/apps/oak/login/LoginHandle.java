@@ -30,7 +30,7 @@ public class LoginHandle {
 			location.put("forward", forward);
 		}
 		
-		return "login";
+		return "login/login";
 	}
 	
 	@Handle(value = "/login", method = HttpMethod.POST)
@@ -41,7 +41,7 @@ public class LoginHandle {
 		if(isValidLogin(userName, password) == false) {
 			location.put("userName", userName);
 			messages.getErrorMessages().add("A user with that name and password could not be found.");
-			return "login";
+			return "login/login";
 		}
 		
 		// adds the User object to the session location
@@ -65,7 +65,7 @@ public class LoginHandle {
 	public Object logout(Location location, RequestMessages messages) {
 		messages.getSuccessMessages().add("You have logged out.  Hope to see you again soon.");
 		((Location)location.get(Constants.SESSION_LOCATION)).put(Constants.CURRENT_USER_OBJECT, null);
-		return "login";
+		return "login/login";
 	}
 
 	protected boolean isValidLogin(String userName, String password) {

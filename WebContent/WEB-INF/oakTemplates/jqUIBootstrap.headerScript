@@ -1,0 +1,2 @@
+webAppContextPath = '__webAppContextPath__';
+document.getElementsByTagName('html')[0].removeAttribute('class');

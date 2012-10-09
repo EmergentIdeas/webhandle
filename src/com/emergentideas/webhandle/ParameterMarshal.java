@@ -330,7 +330,7 @@ public class ParameterMarshal {
 	
 	protected void checkAuthorizationToCall(Object focus, Method method) throws InvocationTargetException, IllegalAccessException {
 		for(ObjectorInvestigator inv : configuration.getObjectorInvestigators()) {
-			CallSpec spec = inv.determineObjector(focus, method);
+			CallSpec spec = inv.determineObjector(focus, method, context);
 			if(spec != null) {
 				CallSpecValueSource source = new CallSpecValueSource(spec);
 				try {

@@ -44,14 +44,14 @@ public class UserManagementHandle {
 		}
 		location.put("groups", table);
 		
-		return "groups";
+		return "login/groups";
 	}
 	
 	@Handle(value = "/groups/new", method = HttpMethod.GET)
 	@Template
 	@Wrap("app_page")
 	public String newGroupGet() {
-		return "newGroup";
+		return "login/newGroup";
 	}
 	
 	@Handle(value = "/groups/new", method = HttpMethod.POST)
@@ -61,7 +61,7 @@ public class UserManagementHandle {
 		if(authenticationService.doesGroupExist(groupName) == true) {
 			message.getErrorMessages().add("A group with that name already exists.  Please select another.");
 			location.put("groupName", groupName);
-			return "newGroup";
+			return "login/newGroup";
 		}
 		
 		authenticationService.createGroup(groupName);
@@ -84,7 +84,7 @@ public class UserManagementHandle {
 	public Object showGroup(Location location, String groupName) {
 		location.put("groupName", groupName);
 		location.put("userNames", authenticationService.getProfilesInGroup(groupName));
-		return "groupDetails";
+		return "login/groupDetails";
 	}
 	
 	@Handle("/users")
@@ -100,7 +100,7 @@ public class UserManagementHandle {
 			.setItems(authenticationService.getUsers().toArray());
 		location.put("users", table);
 		
-		return "users";
+		return "login/users";
 	}
 	
 	@Handle(value = "/users/{profileName}/info", method = HttpMethod.GET)
@@ -115,7 +115,7 @@ public class UserManagementHandle {
 		location.add(found);
 		location.put("groupNames", authenticationService.getGroupNames());
 		location.put("assignedGroups", new ArrayList<String>(found.getGroupNames()));
-		return "editUser";
+		return "login/editUser";
 	}
 
 	@Handle(value = "/users/{profileName}/info", method = HttpMethod.POST)
@@ -201,7 +201,7 @@ public class UserManagementHandle {
 	@Wrap("app_page")
 	public String newUserGet(Location location) {
 		location.put("groupNames", authenticationService.getGroupNames());
-		return "newUser";
+		return "login/newUser";
 	}
 
 	public AuthenticationService getAuthenticationService() {

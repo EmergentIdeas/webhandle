@@ -9,6 +9,7 @@ import com.emergentideas.webhandle.investigators.DebugInfoParameterNameInvestiga
 import com.emergentideas.webhandle.investigators.NameAnnotationPropertyNameInvestigator;
 import com.emergentideas.webhandle.investigators.SourceAnnotationSourceSetInvestigator;
 import com.emergentideas.webhandle.investigators.TransformersAnnotationTransformersInvestigator;
+import com.emergentideas.webhandle.objectors.PreCallObjectorInvestegator;
 import com.emergentideas.webhandle.objectors.RolesAllowedObjectorInvestigator;
 import com.emergentideas.webhandle.transformers.NumberToStringTransformer;
 import com.emergentideas.webhandle.transformers.StringToBooleanTransformer;
@@ -22,5 +23,6 @@ public class WebParameterMarsahalConfiguration extends
 
 	protected void addObjectorInvestigators() {
 		getObjectorInvestigators().add(new RolesAllowedObjectorInvestigator());
+		getObjectorInvestigators().add(new PreCallObjectorInvestegator());
 	}
 }

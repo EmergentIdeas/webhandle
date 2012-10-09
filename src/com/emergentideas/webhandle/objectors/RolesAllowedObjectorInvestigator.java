@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.webhandle.CallSpec;
 import com.emergentideas.webhandle.Constants;
+import com.emergentideas.webhandle.InvocationContext;
 import com.emergentideas.webhandle.ObjectorInvestigator;
 import com.emergentideas.webhandle.Source;
 import com.emergentideas.webhandle.assumptions.oak.interfaces.User;
@@ -26,7 +27,7 @@ import com.emergentideas.webhandle.exceptions.UserRequiredException;
 public class RolesAllowedObjectorInvestigator implements
 		ObjectorInvestigator {
 
-	public CallSpec determineObjector(Object focus, Method method) {
+	public CallSpec determineObjector(Object focus, Method method, InvocationContext context) {
 		
 		RolesAllowed rg = ReflectionUtils.getAnnotation(method, RolesAllowed.class); 
 		

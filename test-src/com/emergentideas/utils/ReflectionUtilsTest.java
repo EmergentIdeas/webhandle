@@ -106,4 +106,13 @@ public class ReflectionUtilsTest {
 		assertEquals((Integer)1, ReflectionUtils.findClassDistance(List.class, ArrayList.class));
 		assertEquals((Integer)2, ReflectionUtils.findClassDistance(List.class, new ArrayList() {}.getClass()));
 	}
+	
+	@Test
+	public void testGetIdType() throws Exception {
+		Class c = ReflectionUtils.determineIdClass(TestObj.class);
+		assertEquals(String.class, c);
+		
+		c = ReflectionUtils.determineIdClass(TestObj2.class);
+		assertEquals(Integer.class, c);
+	}
 }

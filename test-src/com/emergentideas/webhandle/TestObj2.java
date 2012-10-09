@@ -1,5 +1,7 @@
 package com.emergentideas.webhandle;
 
+import javax.persistence.Id;
+
 @Wire
 public class TestObj2 {
 	
@@ -8,6 +10,8 @@ public class TestObj2 {
 	protected String c;
 	protected TestObj inner;
 	
+	@Id
+	protected int id;
 	
 	public String getA() {
 		return a;

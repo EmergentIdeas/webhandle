@@ -3,6 +3,7 @@ package com.emergentideas.webhandle.output;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,7 +28,7 @@ public class SegmentedOutput {
 	public Map<String, String> getPropertySet(String name) {
 		Map<String, String> props = namedPropertySets.get(name);
 		if(props == null) {
-			props = new HashMap<String, String>();
+			props = new LinkedHashMap<String, String>();
 			namedPropertySets.put(name, props);
 		}
 		return props;

@@ -4,6 +4,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.webhandle.Constants;
 import com.emergentideas.webhandle.NamedTransformer;
 import com.emergentideas.webhandle.Wire;
@@ -20,7 +21,17 @@ public class DbObjectTransformer extends DbIdToObjectTransformer {
 			return null;
 		}
 		try {
-			Object o = entityManager.find(finalParameterClass, id);
+			Class c = ReflectionUtils.determineIdClass(finalParameterClass);
+			Object idObj = id;
+			
+			
+			if(c != null) {
+				if(c == Integer.class) {
+					idObj = Integer.parseInt(id);
+				}
+			}
+			
+			Object o = entityManager.find(finalParameterClass, idObj);
 			return o;
 		}
 		catch(Exception e) {

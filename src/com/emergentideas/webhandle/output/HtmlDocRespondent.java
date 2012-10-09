@@ -41,6 +41,8 @@ public class HtmlDocRespondent extends DirectRespondent {
 				log.error("Could not convert status code to a number: " + output.getStream("status").toString(), ex);
 			}
 			
+			addDefaultHeaders();
+			
 			Map<String,String> headers = output.getPropertySet("httpHeader");
 			for(String key : headers.keySet()) {
 				response.addHeader(key, headers.get(key));
@@ -109,6 +111,20 @@ public class HtmlDocRespondent extends DirectRespondent {
 		catch(IOException e) {
 			log.error("Could not write document output.", e);
 		}
+	}
+	
+	protected void addDefaultHeaders() {
+		Map<String,String> headers = output.getPropertySet("httpHeader");
+		if(headers.containsKey("Content-Type") == false) {
+			headers.put("Content-Type", "text/html; charset=" + characterSet.toLowerCase());
+		}
+		if(headers.containsKey("Cache-Control") == false) {
+			headers.put("Cache-Control", "no-cache");
+		}
+		if(headers.containsKey("Pragma") == false) {
+			headers.put("Pragma", "no-cache");
+		}
+
 	}
 	
 	protected void addJavascriptLibraries(OutputStream os, List<String> libraries) throws UnsupportedEncodingException, IOException  {

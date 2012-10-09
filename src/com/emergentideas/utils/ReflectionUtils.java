@@ -2,6 +2,7 @@ package com.emergentideas.utils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -9,6 +10,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import javax.persistence.Id;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -220,6 +223,22 @@ public class ReflectionUtils {
 		
 		return null;
 	}
+	
+	/** Returns the annotation of the specified type if it exists on the field.
+	 * @param f
+	 * @param type
+	 * @return
+	 */
+	public static <T> T getAnnotation(Field f, Class<T> type) {
+		for(Annotation anno : f.getAnnotations()) {
+			if(type.isAssignableFrom(anno.getClass())) {
+				return (T)anno;
+			}
+		}
+		
+		return null;
+	}
+
 	
 	/**
 	 * Returns the annotation of the specified type if it exists on the class itself.
@@ -442,6 +461,20 @@ public class ReflectionUtils {
 		}
 		
 		return distance + 1;
+	}
+	
+	public static Class<?> determineIdClass(Class entity) {
+		for(Field f : entity.getDeclaredFields()) {
+			if(getAnnotation(f, Id.class) != null) {
+				Class result = f.getType();
+				if(isPrimitive(result)) {
+					return getDefault(result).getClass();
+				}
+				return result;
+			}
+		}
+		
+		return null;
 	}
 	
 

@@ -4,6 +4,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.webhandle.Init;
 import com.emergentideas.webhandle.InvocationContext;
@@ -14,6 +16,7 @@ import com.emergentideas.webhandle.WebAppLocation;
 import com.emergentideas.webhandle.Wire;
 import com.emergentideas.webhandle.assumptions.oak.CompositeTemplateSource;
 import com.emergentideas.webhandle.assumptions.oak.LibraryTemplateSource;
+import com.emergentideas.webhandle.output.BodyRespondent;
 import com.emergentideas.webhandle.output.DirectRespondent;
 import com.emergentideas.webhandle.output.HtmlDocRespondent;
 import com.emergentideas.webhandle.output.IterativeOutputCreator;
@@ -46,6 +49,10 @@ public class TemplateOutputTransformersInvestigator implements
 	protected ElementStreamProcessor elementStreamProcessor;
 	protected ExpressionFactory expressionFactory;
 	
+	public static final String RESPONSE_WRAPPER_PARAMETER_NAME = "response-wrapper";
+	public static final String RESPONSE_PACKAGE_PARAMETER_NAME = "response-package";
+	
+	
 	public TemplateOutputTransformersInvestigator() {
 	}
 	
@@ -67,6 +74,11 @@ public class TemplateOutputTransformersInvestigator implements
 		
 		Template template = ReflectionUtils.getAnnotation(method, Template.class);
 		Wrap wrap = ReflectionUtils.getAnnotation(method, Wrap.class);
+		
+		HttpServletRequest request = context.getFoundParameter(HttpServletRequest.class);
+		if("none".equalsIgnoreCase(request.getParameter(RESPONSE_WRAPPER_PARAMETER_NAME))) {
+			wrap = null;
+		}
 		
 		if(template == null && wrap == null) {
 			return new DirectRespondent(response);
@@ -100,7 +112,12 @@ public class TemplateOutputTransformersInvestigator implements
 			creator.addTransformer(ReflectionUtils.getFirstMethodCallSpec(contextTransformer, "transform"));
 		}
 		
-		creator.setFinalRespondent(new HtmlDocRespondent(output));
+		if("body-only".equalsIgnoreCase(request.getParameter(RESPONSE_PACKAGE_PARAMETER_NAME))) {
+			creator.setFinalRespondent(new BodyRespondent(output));
+		}
+		else {
+			creator.setFinalRespondent(new HtmlDocRespondent(output));
+		}
 		
 		return creator;
 	}

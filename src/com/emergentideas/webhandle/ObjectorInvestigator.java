@@ -10,5 +10,5 @@ import java.lang.reflect.Method;
  */
 public interface ObjectorInvestigator {
 
-	public CallSpec determineObjector(Object focus, Method method);
+	public CallSpec determineObjector(Object focus, Method method, InvocationContext context);
 }
