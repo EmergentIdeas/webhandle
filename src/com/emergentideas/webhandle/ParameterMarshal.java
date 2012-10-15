@@ -186,7 +186,7 @@ public class ParameterMarshal {
 	 */
 	protected Object getTypedParameter(Object focus, Method method, int argumentIndex, boolean failOnMissingParameters) {
 		
-		Annotation[] parameterAnnotations = method.getParameterAnnotations()[argumentIndex];
+		Annotation[] parameterAnnotations = configuration.getParameterAnnotations(method)[argumentIndex];
 		Class parameterClass = determineParameterClass(focus, method, argumentIndex);
 		Type parameterType = determineParameterType(focus, method, argumentIndex);
 		String parameterName = determineParameterName(focus, method, parameterClass, parameterAnnotations, argumentIndex);
@@ -578,7 +578,7 @@ public class ParameterMarshal {
 		
 		Class argClass = null;
 		
-		Type argType = method.getGenericParameterTypes()[TRANSFORMER_SOURCE_DATA_ARG_POSITION];
+		Type argType = configuration.getGenericParameterTypes(method)[TRANSFORMER_SOURCE_DATA_ARG_POSITION];
 		
 		if(argType instanceof Class) {
 			argClass = (Class)argType;
@@ -604,7 +604,7 @@ public class ParameterMarshal {
 			return false;
 		}
 		
-		Type returnTypeType = method.getGenericReturnType();
+		Type returnTypeType = configuration.getGenericReturnType(method);
 		Class argClass = null;
 		if(returnTypeType instanceof Class) {
 			argClass = (Class)returnTypeType;

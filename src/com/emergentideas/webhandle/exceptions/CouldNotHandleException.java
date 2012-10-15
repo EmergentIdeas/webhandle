@@ -10,6 +10,6 @@ package com.emergentideas.webhandle.exceptions;
  * @author kolz
  *
  */
-public class CouldNotHandleException extends RuntimeException {
+public class CouldNotHandleException extends RuntimeException implements CouldNotHandle {
 
 }

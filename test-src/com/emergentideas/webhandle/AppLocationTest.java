@@ -11,6 +11,26 @@ import com.emergentideas.webhandle.assumptions.oak.RequestMessages;
 import com.emergentideas.webhandle.templates.TripartateFileTemplateSource;
 
 public class AppLocationTest {
+	
+	@Test
+	public void testPathToParts() {
+		AppLocation loc = new AppLocation();
+		String[] parts = loc.splitPathToParts("hello");
+		assertEquals(1, parts.length);
+		assertEquals("hello", parts[0]);
+		
+		parts = loc.splitPathToParts("/hello");
+		assertEquals(1, parts.length);
+		assertEquals("hello", parts[0]);
+		
+		parts = loc.splitPathToParts("hello/there");
+		assertEquals(2, parts.length);
+		assertEquals("hello", parts[0]);
+		assertEquals("there", parts[1]);
+		
+		
+
+	}
 
 	@Test
 	public void testGet() throws Exception {

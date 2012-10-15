@@ -52,5 +52,13 @@ public interface User {
 	 */
 	public boolean isActive();
 
+	/**
+	 * Returns the authorization system used to store the password for this user.  Many times this is 
+	 * {@link AuthenticationService.LOCAL_AUTHENTICATION_SYSTEM} to signify that the password is stored locally.  Other
+	 * times this is "Google", "Yahoo", etc.
+	 * @return
+	 */
+	public String getAuthenticationSystem();
+
 
 }

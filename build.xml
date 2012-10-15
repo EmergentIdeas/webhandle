@@ -104,6 +104,8 @@
 		<jar jarfile="${dist}/lib/webhandle.jar" basedir="${build}/classes"/>
 	</target>
 	
+	
+	
 	<target name="web-app-test" depends="compile,compile-test,copy-templates,copy-test-templates" description="generate the distribution" >
 		<!-- Create the distribution directory -->
 		<mkdir dir="${dist}/lib"/>
@@ -123,6 +125,29 @@
 		</copy>
 	</target>
 
+	<target name="web-app-acorn" depends="compile,copy-templates,copy-test-templates" description="generate the distribution" >
+		<!-- Create the distribution directory -->
+		<mkdir dir="${dist}/lib"/>
+
+		<jar jarfile="${dist}/WEB-INF/lib/webhandle.jar" basedir="${build}/classes"/>
+	  	<ivy:retrieve pattern="${dist}/WEB-INF/lib/[artifact](-[classifier]).jar" type="jar" conf="deployment"/>
+		
+		<copy todir="${dist}/WEB-INF/lib">
+			<fileset dir="lib" >
+				<include name="*.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="${dist}">
+			<fileset dir="AcornWebContent" >
+			</fileset>
+		</copy>
+
+	</target>
+	
+	<target name="web-app-acorn-war" depends="clean,web-app-acorn" >
+	    <zip destfile="webhandle.war" basedir="${dist}" />
+	</target>
+
 
 	<target name="pub" depends="dist,increment" >
 		<ivy:publish resolver="local" pubrevision="1.0.0.${build.number}" update="true" overwrite="true">
@@ -136,5 +161,6 @@
 		<!-- Delete the ${build} and ${dist} directory trees -->
 		<delete dir="${build}"/>
 		<delete dir="${dist}"/>
+		<delete file="webhandle.war" />
 	</target>
 </project>

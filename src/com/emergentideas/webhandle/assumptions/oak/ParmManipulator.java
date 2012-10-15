@@ -86,7 +86,7 @@ public class ParmManipulator {
 	/**
 	 * Adds the parameters from the request to the location.
 	 * @param location
-	 * @param allowedParameterNames  If not null, this are the only parameters that will be added
+	 * @param allowedParameterNames  If not null, these are the only parameters that will be added
 	 */
 	public void addRequestParameters(Location location, String... allowedParameterNames) {
 		HttpServletRequest request = context.getFoundParameter(HttpServletRequest.class);
@@ -112,5 +112,75 @@ public class ParmManipulator {
 				location.put(name, Arrays.asList(values));
 			}
 		}
+	}
+	
+	/**
+	 * Takes an application absolute url and prefixes the protocol, server, port, and context. 
+	 * @param url
+	 * @return 
+	 */
+	public String serverQualifyUrl(String url) {
+		HttpServletRequest request = context.getFoundParameter(HttpServletRequest.class);
+		if(request == null) {
+			throw new NullPointerException("HttpServletRequest was null");
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		String scheme = request.getScheme();
+		int port = request.getServerPort();
+		sb.append(scheme);
+		sb.append("://");
+		sb.append(request.getServerName());
+		if(shouldIncludePort(scheme, port)) {
+			// So, we don't have a standard port here
+			sb.append(":" + port);
+		}
+		
+		sb.append(request.getContextPath());
+		sb.append(url);
+		return sb.toString();
+	}
+	
+	/**
+	 * Creates a realm identifier like the type needed for Open ID.  For example, if the server name is
+	 * www.emergentideas.com, then the realm will be http://*.emergentideas.com
+	 * @return
+	 */
+	public String getCurrentRealm() {
+		HttpServletRequest request = context.getFoundParameter(HttpServletRequest.class);
+		if(request == null) {
+			throw new NullPointerException("HttpServletRequest was null");
+		}
+		
+		String scheme = request.getScheme();
+		int port = request.getServerPort();
+		StringBuilder sb = new StringBuilder();
+		sb.append(scheme);
+		sb.append("://");
+		
+		boolean first = true;
+		for(String part : request.getServerName().toLowerCase().split("\\.")) {
+			if(first == false) {
+				sb.append('.');
+			}
+			first = false;
+			if("www".equals(part)) {
+				sb.append("*");
+			}
+			else {
+				sb.append(part);
+			}
+		}
+		
+		if(shouldIncludePort(scheme, port)) {
+			// So, we don't have a standard port here
+			sb.append(":" + port);
+		}
+
+		return sb.toString();
+	}
+	
+	protected boolean shouldIncludePort(String scheme, int port) {
+		return !(("https".equals(scheme) && port == 443) || ("http".equals(scheme) && port == 80));
 	}
 }

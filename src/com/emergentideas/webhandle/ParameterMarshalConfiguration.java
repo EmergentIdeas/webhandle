@@ -1,5 +1,8 @@
 package com.emergentideas.webhandle;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,7 +29,24 @@ public class ParameterMarshalConfiguration {
 	protected List<ObjectorInvestigator> objectorInvestigators = Collections.synchronizedList(new ArrayList<ObjectorInvestigator>());
 	
 	protected TransformerParameterDataTransformer transformerPropertiesDataTransformer = new URLPropertiesTransformerPropertyDataTransformer();
+	
+	/**
+	 * Holds the cached generic method arguments which are moderately expensive to calculate
+	 */
+	protected Map<Method, Type[]> cachedMethodArgumentTypes = Collections.synchronizedMap(new HashMap<Method, Type[]>());
 
+	/**
+	 * Holds the cached generic method return types which are moderately expensive to calculate
+	 */
+	protected Map<Method, Type> cachedMethodReturnType = Collections.synchronizedMap(new HashMap<Method, Type>());
+	
+	/**
+	 * Holds the cached parameter annotations which are moderately expensive to calculate
+	 */
+	protected Map<Method, Annotation[][]> cachedParameterAnnotations = Collections.synchronizedMap(new HashMap<Method, Annotation[][]>());
+	
+	
+	
 	public Map<String, ValueTransformer<?, ?, ?>> getTransformers() {
 		return transformers;
 	}
@@ -60,5 +80,38 @@ public class ParameterMarshalConfiguration {
 		return objectorInvestigators;
 	}
 	
+	/**
+	 * Returns the generic types for a method.  This is a relatively expensive call, so results are cached in the
+	 * configuration.
+	 * @param m
+	 * @return
+	 */
+	public java.lang.reflect.Type[] getGenericParameterTypes(Method m) {
+		Type[] result = cachedMethodArgumentTypes.get(m);
+		if(result == null) {
+			result = m.getGenericParameterTypes();
+			cachedMethodArgumentTypes.put(m, result);
+		}
+		return result;
+	}
+	
+	public Type getGenericReturnType(Method m) {
+		Type result = cachedMethodReturnType.get(m);
+		if(result == null) {
+			result = m.getGenericReturnType();
+			cachedMethodReturnType.put(m, result);
+		}
+		
+		return result;
+	}
+	
+	public Annotation[][] getParameterAnnotations(Method m) {
+		Annotation[][] result = cachedParameterAnnotations.get(m);
+		if(result == null) {
+			result = m.getParameterAnnotations();
+			cachedParameterAnnotations.put(m, result);
+		}
+		return result;
+	}
 
 }

@@ -9,6 +9,8 @@ import java.util.List;
  */
 public interface AuthenticationService {
 
+	public static final String LOCAL_AUTHENTICATION_SYSTEM = "local";
+	
 	/**
 	 * Returns a user as known to by the its primary key in the database.  This method will return null if
 	 * no user with that id exists.
@@ -60,6 +62,23 @@ public interface AuthenticationService {
 	 * @param email
 	 */
 	public void setEmail(String profileName, String email) throws IllegalArgumentException;
+	
+	/**
+	 * Sets the authentication system for a user.  The default is {@link LOCAL_AUTHENTICATION_SYSTEM} which means
+	 * the password credentials are managed by this system.  Anything else indicates they are a user that 
+	 * we first authenticated through Google, Yahoo, etc.
+	 * @param profileName
+	 * @param authenticationSystem
+	 */
+	public void setAuthenticationSystem(String profileName, String authenticationSystem);
+	
+	/**
+	 * Returns the authority name which knows how to authenticate this profile.  If we've stored their password, then
+	 * the system will be {@link LOCAL_AUTHENTICATION_SYSTEM}.  Otherwise it will be Google, Yahoo, etc.
+	 * @param profileName
+	 * @return
+	 */
+	public String getAuthenticationSystem(String profileName);
 	
 	/**
 	 * Sets the full name for a user.  Throws an {@link IllegalArgumentException} if no user with that

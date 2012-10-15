@@ -22,7 +22,17 @@ public class DbWebSessionInterceptor {
 				return;
 			}
 			entityManager.getTransaction().begin();
-		}catch(Exception e) { log.error("Entity manager problem", e); }
+		}catch(Exception e) { 
+			log.error("Entity manager problem, trying to cleanup", e);
+			if(entityManager instanceof ProxiedThreadLocalEntityManager) {
+				ProxiedThreadLocalEntityManager proxy = (ProxiedThreadLocalEntityManager)entityManager;
+				proxy.wipeClean();
+				
+				try {
+					entityManager.getTransaction().begin();
+				}catch(Exception ex) { log.error("Entity manager problem even after cleanup attempt.", ex); }
+			}
+		}
 	}
 	
 	@PreResponse

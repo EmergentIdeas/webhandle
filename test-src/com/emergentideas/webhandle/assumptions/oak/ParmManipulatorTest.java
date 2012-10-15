@@ -40,4 +40,9 @@ public class ParmManipulatorTest {
 		assertNull(obj.getB());
 		
 	}
+	
+	@Test
+	public void testCreateRealm() {
+		
+	}
 }

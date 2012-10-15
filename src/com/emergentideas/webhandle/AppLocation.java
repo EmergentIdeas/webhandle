@@ -8,6 +8,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.StringTokenizer;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.emergentideas.logging.Logger;
 import com.emergentideas.logging.SystemOutLogger;
@@ -317,16 +320,25 @@ public class AppLocation implements Location {
 	 * @return
 	 */
 	protected String stackToPath(Stack<String> parts) {
-		String path = "";
 		if(parts.isEmpty()) {
-			return path;
+			return "";
 		}
 		
-		for(String part : parts) {
-			path = "/" + part + path;
+		int size = parts.size(); 
+		if(size == 1) {
+			return parts.get(0);
 		}
 		
-		return path.substring(1);
+		StringBuilder sb = new StringBuilder();
+		
+		for(int i = 0; i < size; i++) {
+			if(i != 0) {
+				sb.append('/');
+			}
+			sb.append(parts.get(i));
+		}
+		
+		return sb.toString();
 	}
 	
 	/**
@@ -335,7 +347,31 @@ public class AppLocation implements Location {
 	 * @return
 	 */
 	protected String[] splitPathToParts(String path) {
-		return path.split("/");
+		if(path.charAt(0) == '/') {
+			path = path.substring(1);
+		}
+		
+		int[] splits = new int[20];
+		splits[0] = -1;
+		int splitLoc = 1;
+		for(int i = 0; i < path.length(); i++) {
+			if(path.charAt(i) == '/') {
+				splits[splitLoc++] = i;
+			}
+		}
+		
+		if(splitLoc == 1) {
+			return new String[] { path };
+		}
+		
+		splits[splitLoc] = path.length();
+		String[] result = new String[splitLoc];
+		
+		for(int i = 0; i < splitLoc; i++) {
+			result[i] = path.substring(splits[i] + 1, splits[i + 1]);
+		}
+		
+		return result;
 	}
 
 	public void put(String key, Object value) {

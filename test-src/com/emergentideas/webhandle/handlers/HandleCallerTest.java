@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 
 import javax.servlet.ServletOutputStream;
@@ -20,6 +21,8 @@ import com.emergentideas.webhandle.ParameterMarshal;
 import com.emergentideas.webhandle.assumptions.oak.HandleCaller;
 import com.emergentideas.webhandle.configurations.WebParameterMarsahalConfiguration;
 import com.emergentideas.webhandle.configurations.WebRequestContextPopulator;
+import com.emergentideas.webhandle.exceptions.CouldNotHandle;
+import com.emergentideas.webhandle.exceptions.CouldNotHandleException;
 import com.emergentideas.webhandle.exceptions.TransformationException;
 import com.emergentideas.webhandle.exceptions.UserRequiredException;
 import com.emergentideas.webhandle.investigators.TemplateOutputTransformersInvestigator;
@@ -52,6 +55,9 @@ public class HandleCallerTest {
 		
 		HttpServletResponse response = mock(HttpServletResponse.class);
 		when(response.getOutputStream()).thenReturn(new TestServletOutputStream(out));
+		
+		context.setFoundParameter(HttpServletRequest.class, request);
+		context.setFoundParameter(HttpServletResponse.class, response);
 
 		caller.call(null, request, response, marshal);
 		
@@ -107,6 +113,76 @@ public class HandleCallerTest {
 		
 		written = new String(out5.toByteArray(), "UTF-8");
 		assertEquals("user required exception", written);
+
+	}
+	
+	@Test
+	public void testThrowTimes() throws Exception {
+		
+		int iterations = 100000;
+		long start = System.currentTimeMillis();
+		for(int i = 0; i < iterations; i++) {
+			try {
+				throw new CouldNotHandleException();
+			}
+			catch(CouldNotHandleException e) {
+				
+			}
+		}
+		
+		long stop = System.currentTimeMillis();
+		
+		System.out.println("Throw time (ms): " + (stop - start));
+		
+		start = System.currentTimeMillis();
+		for(int i = 0; i < iterations; i++) {
+			try {
+				new CouldNotHandleException();
+			}
+			catch(CouldNotHandleException e) {
+				
+			}
+		}
+		
+		stop = System.currentTimeMillis();
+		
+		System.out.println("Create and catch but no throw time (ms): " + (stop - start));
+
+		start = System.currentTimeMillis();
+		for(int i = 0; i < iterations; i++) {
+			new CouldNotHandleException();
+		}
+		
+		stop = System.currentTimeMillis();
+		
+		System.out.println("Create no catch, no throw time (ms): " + (stop - start));
+
+		start = System.currentTimeMillis();
+		for(int i = 0; i < iterations; i++) {
+			new CouldNotHandle() {
+			};
+		}
+		
+		stop = System.currentTimeMillis();
+		
+		System.out.println("Create could not handle time (ms): " + (stop - start));
+
+		start = System.currentTimeMillis();
+		for(int i = 0; i < iterations; i++) {
+			new ArrayList();
+		}
+		
+		stop = System.currentTimeMillis();
+		
+		System.out.println("Create array list time (ms): " + (stop - start));
+
+		start = System.currentTimeMillis();
+		for(int i = 0; i < iterations; i++) {
+		}
+		
+		stop = System.currentTimeMillis();
+		
+		System.out.println("Raw loop time (ms): " + (stop - start));
 
 	}
 	

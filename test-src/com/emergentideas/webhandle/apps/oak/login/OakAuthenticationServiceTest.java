@@ -207,6 +207,14 @@ public class OakAuthenticationServiceTest {
 		
 	}
 	
+	@Test
+	public void testAuthSystem() throws Exception {
+		auth.createUser("userName", "a@a.com", null);
+		auth.setAuthenticationSystem("userName", "Google");
+		assertEquals("Google", auth.getAuthenticationSystem("userName"));
+		assertFalse(auth.isAuthenticated("userName", null));
+	}
+	
 	@After
 	public void after() throws Exception {
 		manager.flush();

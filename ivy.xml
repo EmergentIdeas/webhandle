@@ -6,23 +6,44 @@
     	<conf name="test" />
     </configurations>
     <dependencies>
+    
+    	<!-- Needed for the j2ee anotations and interfaces -->
     	<dependency org="tomcat" name="servlet-api" rev="5.5.23"/>
     	<dependency org="org.apache.tomcat" name="catalina" rev="6.0.35"/>
+    	
+    	<!-- common utils -->
     	<dependency org="commons-lang" name="commons-lang" rev="2.6" conf="deployment" />
-		<dependency org="junit" name="junit" rev="4.10" conf="test" />
+    	
+    	<!-- an expression parser and evaluator for tripartate templates -->
+		<dependency org="org.apache.commons" name="commons-jexl" rev="2.1.1" conf="deployment" />
+    	
+    	<!-- converts date/time strings into dates without needed to specify format -->
 		<dependency org="org.pojava" name="pojava" rev="2.8.1" conf="deployment"/>
+		
+		<!-- reads the names of method arguments -->
 		<dependency org="com.thoughtworks.paranamer" name="paranamer" rev="2.5" conf="deployment"/>
-		<dependency org="org.mockito" name="mockito-all" rev="1.9.5-rc1" conf="test"/>
+		
+		<!-- sends email -->
 		<dependency org="org.apache.commons" name="commons-email" rev="1.2" conf="deployment"/>
 		
 		<dependency org="org.apache.httpcomponents" name="httpclient" rev="4.2.1" conf="deployment"/>
-		<dependency org="org.apache.commons" name="commons-jexl" rev="2.1.1" conf="deployment" />
 		
-		
+		<!-- allows connection to mysql databases -->
 		<dependency org="mysql" name="mysql-connector-java" rev="5.1.21" conf="deployment"/>
+		
+		<!-- provides the jpa container -->
 		<dependency org="org.hibernate" name="hibernate-entitymanager" rev="latest.integration" conf="deployment"/>
 		
+		<!-- finds all files of a certain name on the class path, needed for class path based templates -->
 		<dependency org="org.reflections" name="reflections" rev="0.9.8" conf="deployment" />
+		
+		<!-- a toolkit for openId operations -->
+		<dependency org="org.expressme" name="JOpenId" rev="1.08" conf="deployment" />
+		
+		<!-- For testing code -->
+		<dependency org="org.mockito" name="mockito-all" rev="1.9.5-rc1" conf="test"/>
+		<dependency org="junit" name="junit" rev="4.10" conf="test" />
+		
             
     </dependencies>
 </ivy-module>

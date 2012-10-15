@@ -8,6 +8,8 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.emergentideas.logging.Logger;
 import com.emergentideas.logging.SystemOutLogger;
 import com.emergentideas.webhandle.Type;
@@ -29,12 +31,15 @@ public class OakAuthenticationService implements AuthenticationService {
 	}
 
 	public User getUserByProfileName(String profileName) {
-		return entityManager.find(OakUser.class, profileName);
+		List<?> l = entityManager.createQuery("from OakUser where profileName = ?1").setParameter(1, profileName).getResultList();
+		if(l.size() == 0) {
+			return null;
+		}
+		return (User)l.get(0);
 	}
 
 	public boolean isAuthenticated(String profileName, String password) {
 		User user = getUserByProfileName(profileName);
-		OakPassword pass = getPassword(profileName);
 		
 		if(user == null) {
 			return false;
@@ -44,6 +49,11 @@ public class OakAuthenticationService implements AuthenticationService {
 			return false;
 		}
 		
+		if(LOCAL_AUTHENTICATION_SYSTEM.equals(user.getAuthenticationSystem()) == false) {
+			return false;
+		}
+		
+		OakPassword pass = getPassword(profileName);
 		if(pass == null) {
 			return false;
 		}
@@ -284,6 +294,23 @@ public class OakAuthenticationService implements AuthenticationService {
 			names.add(user.getProfileName());
 		}
 		return names;
+	}
+	
+	
+
+	public void setAuthenticationSystem(String profileName,
+			String authenticationSystem) {
+		OakUser user = getCheckedUserByProfileName(profileName);
+		user.setAuthenticationSystem(authenticationSystem);
+		
+	}
+
+	public String getAuthenticationSystem(String profileName) {
+		String system = getCheckedUserByProfileName(profileName).getAuthenticationSystem();
+		if(StringUtils.isBlank(system)) {
+			return LOCAL_AUTHENTICATION_SYSTEM;
+		}
+		return system;
 	}
 
 	public EntityManager getEntityManager() {

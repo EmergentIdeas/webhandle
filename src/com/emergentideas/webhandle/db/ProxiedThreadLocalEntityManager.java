@@ -206,6 +206,16 @@ public class ProxiedThreadLocalEntityManager implements EntityManager {
 		}
 		return true;
 	}
+	
+	/**
+	 * In case we get in some weird state, this will wipe out the entity manager for this thread
+	 * so we can acquire a new one.
+	 */
+	public void wipeClean() {
+		if(currentManager.get() != null) {
+			currentManager.remove();
+		}
+	}
 
 	protected EntityManager em() {
 		if(factory == null) {

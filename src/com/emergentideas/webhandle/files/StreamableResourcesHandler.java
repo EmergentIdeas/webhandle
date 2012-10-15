@@ -10,7 +10,7 @@ import com.emergentideas.logging.Logger;
 import com.emergentideas.logging.SystemOutLogger;
 import com.emergentideas.utils.DateUtils;
 import com.emergentideas.webhandle.Name;
-import com.emergentideas.webhandle.exceptions.CouldNotHandleException;
+import com.emergentideas.webhandle.exceptions.CouldNotHandle;
 import com.emergentideas.webhandle.handlers.Handle;
 import com.emergentideas.webhandle.handlers.HttpMethod;
 import com.emergentideas.webhandle.output.DirectRespondent;
@@ -39,7 +39,7 @@ public class StreamableResourcesHandler {
 	public Object handle(String filePath, ServletContext servletContext, @Name("If-None-Match") String existingETag) {
 		StreamableResource resource = source.get(filePath);
 		if(resource == null) {
-			throw new CouldNotHandleException();
+			return new CouldNotHandle() {};
 		}
 		
 		Calendar c = Calendar.getInstance();

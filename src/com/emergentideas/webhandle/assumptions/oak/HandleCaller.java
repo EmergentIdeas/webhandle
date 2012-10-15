@@ -27,6 +27,7 @@ import com.emergentideas.webhandle.Type;
 import com.emergentideas.webhandle.WebAppLocation;
 import com.emergentideas.webhandle.Wire;
 import com.emergentideas.webhandle.configurations.WebRequestContextPopulator;
+import com.emergentideas.webhandle.exceptions.CouldNotHandle;
 import com.emergentideas.webhandle.exceptions.CouldNotHandleException;
 import com.emergentideas.webhandle.handlers.HandlerInvestigator;
 import com.emergentideas.webhandle.handlers.HttpMethod;
@@ -104,6 +105,12 @@ public class HandleCaller implements ResponseLifecycleHandler {
 			for(CallSpec spec : handlerInvestigator.determineHandlers(getUrl(request), getMethod(request))) {
 				try {
 					result = callAndUnwrapException(marshal, spec);
+					if(result != null && result instanceof CouldNotHandle) {
+						// We can either catch the exception or handle it as a returned value.  Either way, it just
+						// means that even though the handler was registered to handle these type of URLs, it couldn't,
+						// and another handler should get a crack at it.
+						continue;
+					}
 					called = spec;
 					break;
 				}
