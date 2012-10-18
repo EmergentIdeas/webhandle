@@ -11,7 +11,7 @@ public class FileStreamableResourceSource implements StreamableResourceSource {
 	}
 	
 	public StreamableResource get(String location) {
-		if(location.contains("..") || location.contains("~")) {
+		if(isPathAcceptable(location) == false) {
 			return null;
 		}
 		
@@ -20,6 +20,10 @@ public class FileStreamableResourceSource implements StreamableResourceSource {
 			return new FileStreamableResource(resource);
 		}
 		return null;
+	}
+	
+	protected boolean isPathAcceptable(String path) {
+		return ! (path.contains("..") || path.contains("~"));
 	}
 
 }

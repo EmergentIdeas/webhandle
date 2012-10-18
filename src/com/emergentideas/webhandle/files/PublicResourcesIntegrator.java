@@ -1,6 +1,7 @@
 package com.emergentideas.webhandle.files;
 
 import java.io.File;
+import java.util.Map;
 
 import com.emergentideas.webhandle.Location;
 import com.emergentideas.webhandle.WebAppLocation;
@@ -9,12 +10,14 @@ import com.emergentideas.webhandle.assumptions.oak.AppLoader;
 import com.emergentideas.webhandle.bootstrap.ConfigurationAtom;
 import com.emergentideas.webhandle.bootstrap.Create;
 import com.emergentideas.webhandle.bootstrap.Creator;
+import com.emergentideas.webhandle.bootstrap.FocusAndPropertiesConfigurationAtom;
 import com.emergentideas.webhandle.bootstrap.Integrate;
 import com.emergentideas.webhandle.bootstrap.Integrator;
 import com.emergentideas.webhandle.bootstrap.Loader;
+import com.emergentideas.webhandle.bootstrap.PropertiesConfigurationAtom;
 import com.emergentideas.webhandle.handlers.HandlerInvestigator;
 
-@Create({"public-resource", "classpath-public-resource"})
+@Create({"public-resource", "classpath-public-resource", "resource-sink"})
 @Integrate
 public class PublicResourcesIntegrator implements Creator, Integrator {
 
@@ -44,6 +47,17 @@ public class PublicResourcesIntegrator implements Creator, Integrator {
 		}
 		if("classpath-public-resource".equals(atom.getType())) {
 			return new ClasspathFileStreamableResourceSource(atom.getValue());
+		}
+		if("resource-sink".equals(atom.getType())) {
+			File root = new File(new File(appLocation), ((FocusAndPropertiesConfigurationAtom)atom).getFocus());
+			
+			Object o = new FileStreamableResourceSink(root);
+			Map<String, String> props = ((PropertiesConfigurationAtom)atom).getProperties();
+			if(props.containsKey("name")) {
+				webApp.setServiceByName(props.get("name"), o);
+			}
+			
+			return o;
 		}
 		
 		return null;

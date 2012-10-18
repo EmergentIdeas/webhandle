@@ -109,6 +109,7 @@ public class HandleCaller implements ResponseLifecycleHandler {
 						// We can either catch the exception or handle it as a returned value.  Either way, it just
 						// means that even though the handler was registered to handle these type of URLs, it couldn't,
 						// and another handler should get a crack at it.
+						result = null;
 						continue;
 					}
 					called = spec;

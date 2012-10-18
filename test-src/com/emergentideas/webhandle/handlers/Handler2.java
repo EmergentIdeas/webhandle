@@ -14,4 +14,8 @@ public class Handler2 {
 	}
 
 
+	@Handle(value = "/two", method = {HttpMethod.POST, HttpMethod.GET})
+	public void five(String id) {
+		
+	}
 }

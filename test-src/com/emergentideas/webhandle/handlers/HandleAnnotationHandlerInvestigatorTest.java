@@ -3,6 +3,7 @@ package com.emergentideas.webhandle.handlers;
 import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -66,5 +67,25 @@ public class HandleAnnotationHandlerInvestigatorTest {
 		specs = investigator.determineHandlers("/one", HttpMethod.POST);
 		assertEquals(1, specs.length);
 		assertEquals(two, specs[0].getMethod());
+	}
+	
+	@Test
+	public void testFindMostRecentMethodForUrl() throws Exception {
+		HandleAnnotationHandlerInvestigator investigator = new HandleAnnotationHandlerInvestigator();
+		investigator.analyzeObject(new Handler3());
+		
+		CallSpec[] specs = investigator.determineHandlers("/1/two", HttpMethod.GET); 
+		assertEquals(1, specs.length);
+		
+
+		
+	}
+	
+	@Test
+	public void testMethodOrder() throws Exception {
+		HandleAnnotationHandlerInvestigator investigator = new HandleAnnotationHandlerInvestigator();
+		List<Method> methods = investigator.getMethodsInInheritenceOrder(Handler3.class);
+		
+		assertTrue(methods.get(0).getName().equals("six"));
 	}
 }

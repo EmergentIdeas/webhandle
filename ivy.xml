@@ -21,12 +21,16 @@
 		<dependency org="org.pojava" name="pojava" rev="2.8.1" conf="deployment"/>
 		
 		<!-- reads the names of method arguments -->
-		<dependency org="com.thoughtworks.paranamer" name="paranamer" rev="2.5" conf="deployment"/>
+		<dependency org="com.thoughtworks.paranamer" name="paranamer" rev="2.5.1" conf="deployment"/>
 		
 		<!-- sends email -->
 		<dependency org="org.apache.commons" name="commons-email" rev="1.2" conf="deployment"/>
 		
 		<dependency org="org.apache.httpcomponents" name="httpclient" rev="4.2.1" conf="deployment"/>
+		
+		<!-- helps process file uploads -->
+		<dependency org="commons-fileupload" name="commons-fileupload" rev="1.2.2" conf="deployment"/>
+		<dependency org="commons-io" name="commons-io" rev="2.4" conf="deployment" />
 		
 		<!-- allows connection to mysql databases -->
 		<dependency org="mysql" name="mysql-connector-java" rev="5.1.21" conf="deployment"/>

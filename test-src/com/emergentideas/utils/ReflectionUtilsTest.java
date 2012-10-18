@@ -3,6 +3,7 @@ package com.emergentideas.utils;
 import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -13,6 +14,7 @@ import org.junit.Test;
 import com.emergentideas.webhandle.NoInject;
 import com.emergentideas.webhandle.TestObj;
 import com.emergentideas.webhandle.TestObj2;
+import com.emergentideas.webhandle.TestObj5;
 
 import static com.emergentideas.utils.ReflectionUtils.*;
 
@@ -114,5 +116,17 @@ public class ReflectionUtilsTest {
 		
 		c = ReflectionUtils.determineIdClass(TestObj2.class);
 		assertEquals(Integer.class, c);
+	}
+	
+	@Test
+	public void testGetParameterizedArgumentType() throws Exception {
+		TestObj5 obj = new TestObj5();
+		Method method = getFirstMethod(obj.getClass(), "plus2");
+		Type parameterType = method.getGenericParameterTypes()[0];
+		
+		Class c = determineParameterizedArgumentType(parameterType, obj);
+		
+		assertEquals(Integer.class, c);
+
 	}
 }

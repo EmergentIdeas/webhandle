@@ -15,6 +15,9 @@ public class HttpHeaderValueSource implements ValueSource<Object> {
 	
 	public <T extends Object> String[] get(String name, Class<T> type,
 			InvocationContext context) {
+		if(name == null) {
+			return null;
+		}
 		String value = request.getHeader(name);
 		return new String[] { value };
 	}
@@ -23,6 +26,9 @@ public class HttpHeaderValueSource implements ValueSource<Object> {
 
 	public <T> boolean canGet(String name, Class<T> type,
 			InvocationContext context) {
+		if(name == null) {
+			return false;
+		}
 		String value = request.getHeader(name);
 		if(value != null) {
 			return true;

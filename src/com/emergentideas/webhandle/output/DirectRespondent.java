@@ -23,6 +23,7 @@ public class DirectRespondent implements Respondent {
 	protected Map<String, String> headers = new HashMap<String, String>();
 	protected int responseStatus;
 	
+	
 	protected Logger log = SystemOutLogger.get(DirectRespondent.class);
 	
 	public DirectRespondent() {
@@ -91,20 +92,23 @@ public class DirectRespondent implements Respondent {
 			}
 		}
 		
-		if(userMessage != null) {
-			try {
-				OutputStream os = createOutputStream(servletContext, request, response);
+		try {
+			OutputStream os = createOutputStream(servletContext, request, response);
+			if(userMessage != null) {
 				byte[] temp = new byte[10000];
 				int i;
 				while((i = userMessage.read(temp)) > 0) {
 					os.write(temp, 0, i);
 				}
-	
+			}
+			
+			if(os != null) {
 				os.flush();
+				os.close();
 			}
-			catch(IOException e) {
-				log.error("Could not write output.", e);
-			}
+		}
+		catch(IOException e) {
+			log.error("Could not write output.", e);
 		}
 	}
 	

@@ -115,9 +115,7 @@ public class HtmlDocRespondent extends DirectRespondent {
 	
 	protected void addDefaultHeaders() {
 		Map<String,String> headers = output.getPropertySet("httpHeader");
-		if(headers.containsKey("Content-Type") == false) {
-			headers.put("Content-Type", "text/html; charset=" + characterSet.toLowerCase());
-		}
+		headers.put("Content-Type", "text/html; charset=" + characterSet.toLowerCase());
 		if(headers.containsKey("Cache-Control") == false) {
 			headers.put("Cache-Control", "no-cache");
 		}
@@ -129,6 +127,9 @@ public class HtmlDocRespondent extends DirectRespondent {
 	
 	protected void addJavascriptLibraries(OutputStream os, List<String> libraries) throws UnsupportedEncodingException, IOException  {
 		for(String library : libraries) {
+			if(StringUtils.isBlank(library)) {
+				continue;
+			}
 			write(os, "<script type=\"text/javascript\" src=\"" + library + "\"></script>", true);
 		}
 	}

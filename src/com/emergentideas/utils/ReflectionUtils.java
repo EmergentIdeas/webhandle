@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -129,8 +130,12 @@ public class ReflectionUtils {
 	 * @return
 	 */
 	public static Method getGetterMethod(Object focus, String propertyName) {
+		return getGetterMethodFromClass(focus.getClass(), propertyName);
+	}
+	
+	public static Method getGetterMethodFromClass(Class focus, String propertyName) {
 		String methodName = "get" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
-		for(Method m : focus.getClass().getMethods()) {
+		for(Method m : focus.getMethods()) {
 			if(m.getName().equals(methodName)) {
 				if(m.getParameterTypes().length == 0) {
 					return m;
@@ -474,6 +479,29 @@ public class ReflectionUtils {
 			}
 		}
 		
+		return null;
+	}
+	
+	public static Class<?> determineParameterizedArgumentType(Type parameterType, Object objBeingCalled) {
+		if(parameterType != null && parameterType instanceof TypeVariable) {
+			TypeVariable type = (TypeVariable)parameterType;
+			TypeVariable[] classTypes = type.getGenericDeclaration().getTypeParameters();
+			
+			int index = -1;
+			
+			for(int i = 0; i < classTypes.length; i++) {
+				if(classTypes[i].getName().equals(type.getName())) {
+					index = i;
+					break;
+				}
+			}
+			
+			Type[] types = ((ParameterizedType)objBeingCalled.getClass().getGenericSuperclass()).getActualTypeArguments();
+			
+			if(index >= 0) {
+				return (Class)types[index];
+			}
+		}
 		return null;
 	}
 	

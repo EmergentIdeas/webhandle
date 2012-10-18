@@ -30,7 +30,7 @@ public class HTML5SegmentedOutput extends SegmentedOutput {
 			
 			// add default cache control information
 			getPropertySet("httpHeader").put("Cache-Control", "public, must-revalidate, max-age=0");
-			getPropertySet("httpHeader").put("Context-Type", "text/html");
+			getPropertySet("httpHeader").put("Content-Type", "text/html");
 			getPropertySet("httpHeader").put("Expires", DateUtils.htmlExpiresDateFormat().format(c.getTime()));
 		}
 		catch(Exception e) {

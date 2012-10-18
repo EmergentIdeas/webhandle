@@ -27,6 +27,9 @@ public class JavaBeanPropertyAccessor implements PropertyAccessor {
 	}
 
 	public boolean canAccess(Object focus, String propertyName) {
+		if(focus == null || propertyName == null) {
+			return false;
+		}
 		return ReflectionUtils.getGetterMethod(focus, propertyName) != null;
 	}
 	

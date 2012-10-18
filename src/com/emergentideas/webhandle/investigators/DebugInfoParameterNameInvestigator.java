@@ -26,6 +26,7 @@ public class DebugInfoParameterNameInvestigator implements
 			}
 		}
 		catch(ParameterNamesNotFoundException e) {
+			e.printStackTrace();
 			// no debug info :(
 		}
 		

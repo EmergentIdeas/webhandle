@@ -5,8 +5,12 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.webhandle.CallSpec;
@@ -47,6 +51,8 @@ public class HandleAnnotationHandlerInvestigator implements HandlerInvestigator,
 	public void analyzeObject(Object handler) {
 		String[] urlPrefixPattern;
 		
+		Set<String> definedUrlMethodCombos = new HashSet<String>(); 
+		
 		Handle handle = ReflectionUtils.getAnnotationOnClass(handler.getClass(), Handle.class);
 		if(handle != null) {
 			urlPrefixPattern = handle.value();
@@ -55,7 +61,7 @@ public class HandleAnnotationHandlerInvestigator implements HandlerInvestigator,
 			urlPrefixPattern = new String[] { "" };
 		}
 		
-		for(Method method : handler.getClass().getMethods()) {
+		for(Method method : getMethodsInInheritenceOrder(handler.getClass())) {
 			handle = ReflectionUtils.getAnnotation(method, Handle.class);
 			if(ReflectionUtils.isPublic(method) == false) {
 				continue;
@@ -66,7 +72,13 @@ public class HandleAnnotationHandlerInvestigator implements HandlerInvestigator,
 			
 			for(String prefix : urlPrefixPattern) {
 				for(String suffix : handle.value()) {
-					UrlRegexOutput regex = processor.process(prefix + suffix);
+					String url = prefix + suffix;
+					String urlAndMethod = url + createHttpMethodsString(handle.method());
+					if(definedUrlMethodCombos.contains(urlAndMethod)) {
+						continue;
+					}
+					definedUrlMethodCombos.add(urlAndMethod);
+					UrlRegexOutput regex = processor.process(url);
 					HttpRequestCallSpec spec = new HttpRequestCallSpec();
 					spec.setFocus(handler);
 					spec.setMethod(method);
@@ -76,6 +88,36 @@ public class HandleAnnotationHandlerInvestigator implements HandlerInvestigator,
 				}
 			}
 		}
+	}
+	
+	
+	protected String createHttpMethodsString(HttpMethod[] methods) {
+		List<String> list = new ArrayList<String>();
+		for(HttpMethod m : methods) {
+			list.add(m.name());
+		}
+		
+		Collections.sort(list);
+		return StringUtils.join(list, ',');
+	}
+	
+	/**
+	 * Returns the method method of a class with the one from the actual type coming first,
+	 * then the methods from the super class, then its superclass, etc.
+	 * @param c
+	 * @return
+	 */
+	protected List<Method> getMethodsInInheritenceOrder(Class<?> c) {
+		List<Method> result = new ArrayList<Method>();
+		
+		while(c != null) {
+			for(Method m : c.getDeclaredMethods()) {
+				result.add(m);
+			}
+			c = c.getSuperclass();
+		}
+		
+		return result;
 	}
 	
 	

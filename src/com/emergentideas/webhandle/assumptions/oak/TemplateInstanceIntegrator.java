@@ -37,7 +37,9 @@ public class TemplateInstanceIntegrator implements Integrator {
 			return;
 		}
 		
-		lts.add(def.value(), (TemplateInstance)focus);
+		for(String name : def.value()) {
+			lts.add(name, (TemplateInstance)focus);
+		}
 		
 	}
 

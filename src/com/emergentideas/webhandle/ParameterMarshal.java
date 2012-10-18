@@ -189,6 +189,15 @@ public class ParameterMarshal {
 		Annotation[] parameterAnnotations = configuration.getParameterAnnotations(method)[argumentIndex];
 		Class parameterClass = determineParameterClass(focus, method, argumentIndex);
 		Type parameterType = determineParameterType(focus, method, argumentIndex);
+		
+		Object o = null;
+		if(parameterType != null && parameterType instanceof TypeVariable) {
+			Class<?> c = determineParameterizedArgumentType(parameterType, focus);
+			if(c != null) {
+				parameterClass = c;
+			}
+		}
+		
 		String parameterName = determineParameterName(focus, method, parameterClass, parameterAnnotations, argumentIndex);
 		
 		// Let's see if we've already got it in the context

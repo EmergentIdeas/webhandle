@@ -17,7 +17,12 @@ public class TemplateTransformer {
 			log.error("Could not find template: " + response);
 		}
 		else {
-			ti.render(output, location, null, null);
+			try {
+				ti.render(output, location, null, null);
+			}
+			catch(Exception e) {
+				log.error("Some unknown exception when rendering template: " + response, e);
+			}
 		}
 	}
 

@@ -16,6 +16,12 @@ public class TableDataModel {
 	// The items to use as rows in the table
 	protected List<Object> items = new ArrayList<Object>();
 	
+	// For each column, the template to use to display the data
+	protected List<String> templates = new ArrayList<String>();
+	
+	// The template to use when none is specified
+	protected String defaultTemplateName = "esc";
+	
 	protected String createNewURL;
 	
 	
@@ -49,6 +55,17 @@ public class TableDataModel {
 		
 		return this;
 	}
+	
+	public TableDataModel setTemplates(String... templates) {
+		this.templates.clear();
+		
+		for(String template : templates) {
+			this.templates.add(template);
+		}
+		
+		return this;
+	}
+
 	
 	public TableDataModel setItems(Object... items) {
 		this.items.clear();
@@ -141,7 +158,7 @@ public class TableDataModel {
 			loc.add(item);
 			for(int i = 0; i < properties.size(); i++) {
 				String property = properties.get(i);
-				Cell c = new Cell(loc.get(property));
+				Cell c = new Cell(loc.get(property), i);
 				if(i == columnToLink) {
 					c.setClickURL(createClickURL(item));
 				}
@@ -152,6 +169,14 @@ public class TableDataModel {
 		
 		return results;
 	}
+	
+	protected String getTemplateName(int columnNumber) {
+		if(columnNumber <= templates.size() - 1) {
+			return templates.get(columnNumber);
+		}
+		return defaultTemplateName;
+	}
+
 	
 	public class Row {
 		protected List<Object> values;
@@ -193,10 +218,11 @@ public class TableDataModel {
 	public class Cell {
 		protected Object value;
 		protected String clickURL;
+		protected int columnNumber;
 		
 		public Cell() {}
 		
-		public Cell(Object value) {
+		public Cell(Object value, int columnNumber) {
 			this.value = value;
 		}
 		
@@ -216,6 +242,26 @@ public class TableDataModel {
 			return this;
 		}
 		
+		public String getTemplateName() {
+			return TableDataModel.this.getTemplateName(columnNumber);
+		}
+		
+		public String getPropertyName() {
+			return properties.get(columnNumber);
+		}
+		
+		public String getLabel() {
+			return headers.get(columnNumber);
+		}
+		
+		public int getColumnNumber() {
+			return columnNumber;
+		}
+
+		public void setColumnNumber(int columnNumber) {
+			this.columnNumber = columnNumber;
+		}
+
 		public String toString() {
 			if(value != null) {
 				return value.toString();
@@ -223,5 +269,14 @@ public class TableDataModel {
 			return "";
 		}
 	}
+
+	public String getDeleteURLPrefix() {
+		return deleteURLPrefix;
+	}
+
+	public void setDeleteURLPrefix(String deleteURLPrefix) {
+		this.deleteURLPrefix = deleteURLPrefix;
+	}
+	
 	
 }

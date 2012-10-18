@@ -222,7 +222,11 @@ public class OakAuthenticationService implements AuthenticationService {
 	 * @return
 	 */
 	protected OakGroup getGroup(String groupName) {
-		return entityManager.find(OakGroup.class, groupName);
+		List<OakGroup> result = entityManager.createQuery("from OakGroup g where groupName = ?1").setParameter(1, groupName).getResultList();
+		if(result.size() > 0) {
+			return result.get(0);
+		}
+		return null;
 	}
 
 	public void deleteGroup(String groupName) {

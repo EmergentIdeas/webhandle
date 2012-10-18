@@ -179,6 +179,33 @@ public class ParameterMarshalTest {
 		
 		
 	}
+	
+	@Test
+	public void testParameterizedCalls() throws Exception {
+		ParameterMarshal marshal = new ParameterMarshal(new WebParameterMarsahalConfiguration());
+		
+		// Test that we can convert a bunch of strings to a list of integers and sum them
+		TestObj3 obj = new TestObj3();
+		Method m = ReflectionUtils.getFirstMethod(TestObj3.class, "sum");
+		
+		Map<String, Object> values = new HashMap<String, Object>();
+		values.put("values", new String[] {"2", "3", "4"});
+		
+		MapValueSource source = new MapValueSource(values);
+		marshal.getSources().put("request", source);
+		
+		Integer i = (Integer)marshal.call(obj, m);
+		assertEquals((Integer)9, i);
+		
+		// Test that we can convert to a String to the parameterized argument type
+		TestObj5 obj5 = new TestObj5();
+		m = ReflectionUtils.getFirstMethod(TestObj5.class, "plus2");
+		values.put("num", new String[] {"2", "3", "4"});
+		
+		String s = (String)marshal.call(obj5, m);
+		assertEquals("4", s);
+		
+	}
 
 	@Test
 	public void testSecuredCall() throws Exception {

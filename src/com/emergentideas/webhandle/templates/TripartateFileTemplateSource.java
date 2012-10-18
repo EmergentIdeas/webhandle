@@ -49,9 +49,18 @@ public class TripartateFileTemplateSource extends TripartateTemplateSource {
 				return null;
 			}
 			for(File child : siblingFiles) {
+				if(child.isDirectory()) {
+					continue;
+				}
+				
 				if(child.getAbsolutePath().startsWith(path)) {
 					// get the part name
-					String suffix = child.getAbsolutePath().substring(prefixLength + 1);
+					String suffix = child.getAbsolutePath();
+					if(suffix.length() == prefixLength) {
+						// This file doesn't have suffix, so I'm not sure what to do with it
+						continue;
+					}
+					suffix = suffix.substring(prefixLength + 1);
 					
 					if(HINTS_EXTENSION.equals(suffix)) {
 						hints = new Properties(hints);
