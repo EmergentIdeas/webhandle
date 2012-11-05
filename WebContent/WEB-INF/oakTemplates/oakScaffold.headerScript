@@ -1,2 +1,12 @@
 webAppContextPath = '__webAppContextPath__';
-document.getElementsByTagName('html')[0].removeAttribute('class');
+var htmlElement = document.getElementsByTagName('html')[0];
+if(htmlElement.removeAttribute) { 
+	htmlElement.removeAttribute('class');
+}
+if(htmlElement.classList) {
+	htmlElement.classList.add('js');
+}
+else if(htmlElement.setAttribute) {
+	htmlElement.setAttribute('class', 'js');
+	htmlElement.setAttribute('className', 'js');
+}

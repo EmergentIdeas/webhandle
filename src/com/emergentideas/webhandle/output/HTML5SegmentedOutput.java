@@ -25,6 +25,8 @@ public class HTML5SegmentedOutput extends SegmentedOutput {
 				getStream(key).append(defaults.get(key).toString());
 			}
 			
+			getPropertySet("httpHeader").put("X-UA-Compatible", "IE=edge");
+			
 			Calendar c = Calendar.getInstance();
 			c.add(Calendar.HOUR, -1);
 			

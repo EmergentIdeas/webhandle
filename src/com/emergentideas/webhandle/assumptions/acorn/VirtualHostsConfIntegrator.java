@@ -11,6 +11,8 @@ import com.emergentideas.webhandle.bootstrap.ConfigurationAtom;
 import com.emergentideas.webhandle.bootstrap.Integrate;
 import com.emergentideas.webhandle.bootstrap.Integrator;
 import com.emergentideas.webhandle.bootstrap.Loader;
+import static com.emergentideas.webhandle.Constants.*;
+
 
 @Integrate
 public class VirtualHostsConfIntegrator implements Integrator {
@@ -28,7 +30,7 @@ public class VirtualHostsConfIntegrator implements Integrator {
 			virtualHost.setLocation(location);
 			File hostsFile = new File(atom.getValue());
 			if(hostsFile.isAbsolute() == false) {
-				File root = new File((String)new WebAppLocation(location).getServiceByName(AppLoader.APPLICATION_ON_DISK_LOCATION));
+				File root = new File((String)new WebAppLocation(location).getServiceByName(APPLICATION_ON_DISK_LOCATION));
 				hostsFile = new File(root, atom.getValue());
 			}
 			virtualHost.setConfigurationsLocation(hostsFile);

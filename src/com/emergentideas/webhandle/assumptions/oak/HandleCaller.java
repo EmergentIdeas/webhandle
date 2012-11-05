@@ -34,6 +34,9 @@ import com.emergentideas.webhandle.handlers.HttpMethod;
 import com.emergentideas.webhandle.handlers.ResponseLifecycleHandler;
 import com.emergentideas.webhandle.output.Respondent;
 
+import static com.emergentideas.webhandle.Constants.*;
+
+
 @Name("request-handler")
 @Type("com.emergentideas.webhandle.handlers.ResponseLifecycleHandler")
 public class HandleCaller implements ResponseLifecycleHandler {
@@ -67,17 +70,28 @@ public class HandleCaller implements ResponseLifecycleHandler {
 		setupUserSession(request, response);
 		Location userLocation = (Location)request.getSession().getAttribute(handlerLocationIdentifier);
 		
+		
 		WebAppLocation webApp = new WebAppLocation(userLocation);
-		ParameterMarshalConfiguration conf = (ParameterMarshalConfiguration)webApp.getServiceByName(WebAppLocation.WEB_PARAMETER_MARSHAL_CONFIGURATION);
-		ParameterMarshal marshal = new ParameterMarshal(conf);
-		marshal.getContext().setLocation(userLocation);
-		marshal.getContext().setFoundParameter(HttpServletRequest.class, request);
-		marshal.getContext().setFoundParameter(HttpServletResponse.class, response);
-		marshal.getContext().setFoundParameter(ServletContext.class, servletContext);
+		ClassLoader clOld = Thread.currentThread().getContextClassLoader();
 		
-		populator.populate(marshal, marshal.getContext(), request);
-		
-		call(servletContext, request, response, marshal);
+		ClassLoader clApp = (ClassLoader)webApp.getServiceByName(CLASS_LOADER_NAME);
+		Thread.currentThread().setContextClassLoader(clApp);
+		try {
+	
+			ParameterMarshalConfiguration conf = (ParameterMarshalConfiguration)webApp.getServiceByName(WebAppLocation.WEB_PARAMETER_MARSHAL_CONFIGURATION);
+			ParameterMarshal marshal = new ParameterMarshal(conf);
+			marshal.getContext().setLocation(userLocation);
+			marshal.getContext().setFoundParameter(HttpServletRequest.class, request);
+			marshal.getContext().setFoundParameter(HttpServletResponse.class, response);
+			marshal.getContext().setFoundParameter(ServletContext.class, servletContext);
+			
+			populator.populate(marshal, marshal.getContext(), request);
+			
+			call(servletContext, request, response, marshal);
+		}
+		finally {
+			Thread.currentThread().setContextClassLoader(clOld);
+		}
 	}
 	
 	protected void setupUserSession(HttpServletRequest request, HttpServletResponse response) {
@@ -210,12 +224,17 @@ public class HandleCaller implements ResponseLifecycleHandler {
 	}
 	
 	protected HttpMethod getMethod(HttpServletRequest request) {
-		HttpMethod method = HttpMethod.valueOf(request.getMethod().toUpperCase());
-		if(method == null) {
-			method = HttpMethod.UNKNOWN;
+		try {
+			HttpMethod method = HttpMethod.valueOf(request.getMethod().toUpperCase());
+			if(method == null) {
+				method = HttpMethod.UNKNOWN;
+			}
+			
+			return method;
 		}
-		
-		return method;
+		catch(IllegalArgumentException e) {
+			return HttpMethod.UNKNOWN;
+		}
 	}
 
 

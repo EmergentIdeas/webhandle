@@ -17,6 +17,9 @@ import com.emergentideas.webhandle.bootstrap.Loader;
 import com.emergentideas.webhandle.bootstrap.PropertiesConfigurationAtom;
 import com.emergentideas.webhandle.handlers.HandlerInvestigator;
 
+import static com.emergentideas.webhandle.Constants.*;
+
+
 @Create({"public-resource", "classpath-public-resource", "resource-sink"})
 @Integrate
 public class PublicResourcesIntegrator implements Creator, Integrator {
@@ -36,7 +39,7 @@ public class PublicResourcesIntegrator implements Creator, Integrator {
 	public Object create(Loader loader, Location location,
 			ConfigurationAtom atom) {
 		WebAppLocation webApp = new WebAppLocation(location);
-		String appLocation = (String)webApp.getServiceByName(AppLoader.APPLICATION_ON_DISK_LOCATION);
+		String appLocation = (String)webApp.getServiceByName(APPLICATION_ON_DISK_LOCATION);
 		if(appLocation == null) {
 			return null;
 		}

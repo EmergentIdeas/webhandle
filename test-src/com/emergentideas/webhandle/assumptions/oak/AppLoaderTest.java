@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.catalina.session.StandardSession;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -24,6 +23,9 @@ import com.emergentideas.webhandle.HttpMockUtils;
 import com.emergentideas.webhandle.WebAppLocation;
 import com.emergentideas.webhandle.output.Respondent;
 
+import static com.emergentideas.webhandle.Constants.*;
+
+
 public class AppLoaderTest {
 
 	@Test
@@ -32,7 +34,7 @@ public class AppLoaderTest {
 		appLoader.load(new File("appLoaderTest.conf"));
 		
 		WebAppLocation webApp = new WebAppLocation(appLoader.getLocation());
-		ClassLoader cl = (ClassLoader)webApp.getServiceByName(AppLoader.CLASS_LOADER_NAME);
+		ClassLoader cl = (ClassLoader)webApp.getServiceByName(CLASS_LOADER_NAME);
 		Class c = cl.loadClass("com.emergentideas.webhandle.TestObjNoSource");
 		
 		assertNotNull(c);

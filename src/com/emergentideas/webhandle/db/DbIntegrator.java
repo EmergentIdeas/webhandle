@@ -27,6 +27,8 @@ import com.emergentideas.webhandle.bootstrap.Integrate;
 import com.emergentideas.webhandle.bootstrap.Integrator;
 import com.emergentideas.webhandle.bootstrap.Loader;
 
+import static com.emergentideas.webhandle.Constants.*;
+
 @Integrate
 public class DbIntegrator implements Integrator {
 
@@ -42,7 +44,7 @@ public class DbIntegrator implements Integrator {
 		if(focus instanceof DbConfiguration) {
 			
 			final DbConfiguration conf = (DbConfiguration)focus;
-			ClassLoader oldClassLoader = (ClassLoader)webApp.getServiceByName(AppLoader.CLASS_LOADER_NAME);
+			ClassLoader oldClassLoader = (ClassLoader)webApp.getServiceByName(CLASS_LOADER_NAME);
 			if(oldClassLoader == null) {
 				oldClassLoader = Thread.currentThread().getContextClassLoader();
 			}
@@ -79,7 +81,7 @@ public class DbIntegrator implements Integrator {
 
 			};
 			Thread.currentThread().setContextClassLoader(classloader);
-			webApp.setServiceByName(AppLoader.CLASS_LOADER_NAME, classloader);
+			webApp.setServiceByName(CLASS_LOADER_NAME, classloader);
 			
 			return;
 		}

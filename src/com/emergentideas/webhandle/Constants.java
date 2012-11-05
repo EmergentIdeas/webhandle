@@ -26,6 +26,13 @@ public interface Constants {
 	
 	// names of interesting objects/data
 	public static final String NAME_OF_PERSISTENCE_UNIT = "persistenceUnitName";
+	
+	// the name of the app's class loader
+	public static final String CLASS_LOADER_NAME = "app-class-loader";
+	
+	// the name of the string which is the apps root on disk
+	public static final String APPLICATION_ON_DISK_LOCATION = "application-on-disk-location";
+
 
 	
 }

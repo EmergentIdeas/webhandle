@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -37,8 +38,10 @@ public class DefaultServlet extends HttpServlet {
 			}
 
 			if(conf != null) {
-				loader.load(conf);
 				WebAppLocation webApp = new WebAppLocation(loader.getLocation());
+				webApp.setServiceByType(ServletConfig.class.getName(), config);
+				webApp.setServiceByType(ServletContext.class.getName(), getServletContext());
+				loader.load(conf);
 				handle = (Respondent)webApp.getServiceByName("request-handler");
 			}
 			else {

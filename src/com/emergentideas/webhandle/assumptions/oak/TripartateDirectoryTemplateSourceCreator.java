@@ -10,13 +10,15 @@ import com.emergentideas.webhandle.bootstrap.Creator;
 import com.emergentideas.webhandle.bootstrap.Loader;
 import com.emergentideas.webhandle.templates.TripartateFileTemplateSource;
 
+import static com.emergentideas.webhandle.Constants.*;
+
 @Create("template-directory")
 public class TripartateDirectoryTemplateSourceCreator implements Creator {
 
 	public Object create(Loader loader, Location location,
 			ConfigurationAtom atom) {
 		WebAppLocation webApp = new WebAppLocation(location);
-		String appLocation = (String)webApp.getServiceByName(AppLoader.APPLICATION_ON_DISK_LOCATION);
+		String appLocation = (String)webApp.getServiceByName(APPLICATION_ON_DISK_LOCATION);
 		if(appLocation == null) {
 			return null;
 		}
