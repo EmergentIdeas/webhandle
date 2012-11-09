@@ -83,11 +83,11 @@ public class VirtualHost implements Respondent {
 			
 			// Add new configurations
 			for(ConfigurationAtom atom : atoms) {
+				FocusAndPropertiesAtom parsed = atomizer.atomize(atom.getType(), atom.getValue());
+				currentAtoms.add(parsed);
 				if(configValuesToPatterns.containsKey(atom.getValue())) {
 					continue;
 				}
-				FocusAndPropertiesAtom parsed = atomizer.atomize(atom.getType(), atom.getValue());
-				currentAtoms.add(parsed);
 				load(parsed);
 			}
 			
