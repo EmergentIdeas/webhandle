@@ -24,6 +24,7 @@ public class StringToDateTransformer implements ValueTransformer<String, String,
 	protected static final String sWidgetTimeFormat4 = "H:mm";
 	
 	protected static final String sWidgetTimeFormat5 = "h:mma";
+	protected static final String sWidgetTimeFormat6 = "h:mm a";
 	
 	protected static final String sWholeFormat = "yyyy-MM-dd HH:mm:ss";
 	protected static final String sWholeFormat2 = "yyyy.MM.dd HH:mm:ss";
@@ -35,6 +36,13 @@ public class StringToDateTransformer implements ValueTransformer<String, String,
 	protected DateFormat dfDateOnly2 = new SimpleDateFormat(sWidgetDateFormat2);
 	protected DateFormat dfDateOnly3 = new SimpleDateFormat(sWidgetDateFormat3);
 	protected DateFormat dfDateOnly4 = new SimpleDateFormat(sWidgetDateFormat4);
+	
+	protected DateFormat dfTimeOnly1 = new SimpleDateFormat(sWidgetTimeFormat);
+	protected DateFormat dfTimeOnly2 = new SimpleDateFormat(sWidgetTimeFormat2);
+	protected DateFormat dfTimeOnly3 = new SimpleDateFormat(sWidgetTimeFormat3);
+	protected DateFormat dfTimeOnly4 = new SimpleDateFormat(sWidgetTimeFormat4);
+	protected DateFormat dfTimeOnly5 = new SimpleDateFormat(sWidgetTimeFormat5);
+	protected DateFormat dfTimeOnly6 = new SimpleDateFormat(sWidgetTimeFormat6);
 
 	protected DateFormat[] allFormats = {
 			dfDateAndTime,
@@ -42,7 +50,13 @@ public class StringToDateTransformer implements ValueTransformer<String, String,
 			dfDateOnly,
 			dfDateOnly2,
 			dfDateOnly3,
-			dfDateOnly4
+			dfDateOnly4,
+			dfTimeOnly1,
+			dfTimeOnly2,
+			dfTimeOnly3,
+			dfTimeOnly4,
+			dfTimeOnly5,
+			dfTimeOnly6
 	};
 	
 	public Date[] transform(InvocationContext context, Map<String, String> transformationProperties, 

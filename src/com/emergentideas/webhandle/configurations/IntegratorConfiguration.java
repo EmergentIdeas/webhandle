@@ -5,6 +5,7 @@ import com.emergentideas.webhandle.composites.db.DbInvestigator;
 import com.emergentideas.webhandle.investigators.BeanPropertyNameAndDbTransformerInvestigator;
 import com.emergentideas.webhandle.investigators.DebugInfoParameterNameInvestigator;
 import com.emergentideas.webhandle.investigators.NameAnnotationPropertyNameInvestigator;
+import com.emergentideas.webhandle.investigators.ResourceAnnotationPropertyNameInvestigator;
 import com.emergentideas.webhandle.investigators.SourceAnnotationSourceSetInvestigator;
 import com.emergentideas.webhandle.investigators.TransformersAnnotationTransformersInvestigator;
 import com.emergentideas.webhandle.transformers.NumberToStringTransformer;
@@ -60,6 +61,8 @@ public class IntegratorConfiguration extends ParameterMarshalConfiguration {
 	}
 	
 	protected void addBeanPropertyInvestigators() {
+		getParameterNameInvestigators().add(new ResourceAnnotationPropertyNameInvestigator());
+
 		// add the investigator for populating the members of a bean
 		BeanPropertyNameAndDbTransformerInvestigator beanDbInvestigator = new BeanPropertyNameAndDbTransformerInvestigator();
 		getParameterNameInvestigators().add(beanDbInvestigator);

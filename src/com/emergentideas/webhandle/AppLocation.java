@@ -331,8 +331,8 @@ public class AppLocation implements Location {
 		
 		StringBuilder sb = new StringBuilder();
 		
-		for(int i = 0; i < size; i++) {
-			if(i != 0) {
+		for(int i = size - 1; i >= 0 ; i--) {
+			if(i != size - 1) {
 				sb.append('/');
 			}
 			sb.append(parts.get(i));

@@ -5,12 +5,16 @@
     	<conf name="deployment" />
     	<conf name="test" />
     </configurations>
+    
+    <publications>
+    	<artifact name="webhandle" type="jar" />
+    </publications>
     <dependencies>
     
     	<!-- Needed for the j2ee anotations and interfaces -->
     	<dependency org="tomcat" name="servlet-api" rev="5.5.23"/>
     	<dependency org="javax.annotation" name="jsr250-api" rev="1.0"/>
-    	<dependency org="javax.ws.rs" name="jsr311-api" rev="1.1.1"/>
+    	<dependency org="javax.ws.rs" name="jsr311-api" rev="1.1.1" conf="deployment"/>
     	<dependency org="org.apache.geronimo.specs" name="geronimo-atinject_1.0_spec" rev="1.0"/>
     	
     	<!-- common utils -->

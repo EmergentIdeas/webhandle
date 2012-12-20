@@ -1,0 +1,40 @@
+Configuring Objects
+===================
+
+==@Resource
+Any field which has a Resource annotation will be wired by the name and type specified in
+the annotation or, if they are not specified, by the name and type of the field.
+
+An method which has a Resource annotation will be called with the parameter assumed to be
+the name specified in the Resource annotation or named according to the regular rules if
+no name is specified in the annotation.
+
+Any class which has a resource annotation will be added as a service with the name and type
+specified in the annotation or the simple name of the class (first letter lower case) if no
+name is specified and with a type of the type of the class if no type is specified.
+
+==@Wire
+Any method with a Wire annotation will be called and parameters used based on the normal
+parameter naming investigators.
+
+If a class has a wire method it is a shorthand way of putting the wire annotation on all
+the setters of that class.
+
+
+Handling Web Requests
+=====================
+
+==@Handle
+
+@Handle is the webhandle specific annotation that let's you declare path, path variables
+and request type
+
+
+==J2EE Annotations
+
+J2EE6 Annotations can also be used.
+@Path will declare the path and path variables.  An example is: @Path("/to/resource/{id:\\d+}")
+
+J2EE6 also uses the annotations @GET, @POST, @HEAD, @PUT, @DELETE, @OPTIONS.  Using one or more of
+these on a method in combination with a @Path will restrict the request to only those HTTP methods.
+If no HTTP method is defined, then all methods will be assumed to be acceptable.

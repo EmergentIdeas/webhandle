@@ -42,6 +42,7 @@ public class TripartateFileTemplateSource extends TripartateTemplateSource {
 		try {
 			String path = templateFile.getAbsolutePath();
 			int prefixLength = path.length();
+			path += '.';
 			
 			File parent = templateFile.getParentFile();
 			File[] siblingFiles = parent.listFiles();

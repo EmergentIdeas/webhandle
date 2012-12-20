@@ -29,6 +29,9 @@ public class DbObjectTransformer extends DbIdToObjectTransformer {
 				if(c == Integer.class) {
 					idObj = Integer.parseInt(id);
 				}
+				else if(c == Long.class) {
+					idObj = Long.parseLong(id);
+				}
 			}
 			
 			Object o = entityManager.find(finalParameterClass, idObj);

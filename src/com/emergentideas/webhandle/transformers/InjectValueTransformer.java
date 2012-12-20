@@ -22,8 +22,11 @@ public class InjectValueTransformer extends CommandValueTransformer implements V
 		List<Method> result = new ArrayList<Method>();
 		
 		for(Method m : type.getMethods()) {
+			
 			if(ReflectionUtils.isSetterMethod(m) && 
-					ReflectionUtils.isPublic(m) && ReflectionUtils.hasAnnotation(m, NoInject.class) == false) {
+					ReflectionUtils.isPublic(m) && 
+					ReflectionUtils.hasAnnotation(m, NoInject.class) == false &&
+					m.getName().equals(ReflectionUtils.getIdSetterMethodName(type)) == false) {
 				
 				Entity e = ReflectionUtils.getAnnotationOnClass(m.getParameterTypes()[0], Entity.class);
 				

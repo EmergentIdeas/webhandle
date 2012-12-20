@@ -1,0 +1,31 @@
+<?xml version="1.0"  ?>
+<ivysettings>
+	<include url="${ivy.default.settings.dir}/ivysettings-public.xml" />
+	<include url="${ivy.default.settings.dir}/ivysettings-shared.xml" />
+	<include url="${ivy.default.settings.dir}/ivysettings-local.xml" />
+	<include url="${ivy.default.settings.dir}/ivysettings-main-chain.xml" />
+	<include url="${ivy.default.settings.dir}/ivysettings-default-chain.xml" />
+	
+	<settings defaultResolver="eico-chain" />
+
+	<resolvers>
+
+		<filesystem name="eico_local">
+			<artifact pattern="/data/repositories/ivyrepo/release/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+		</filesystem>
+		
+		<chain name="eico-chain">
+			<reslover ref="eico_local" />
+			<reslover ref="public" />
+<!-- 			<url name="com.emergentideas.public">
+				<ivy pattern="https://github.com/EmergentIdeas/ivyrepo/raw/master/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+				<artifact pattern="https://github.com/EmergentIdeas/ivyrepo/raw/master/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+			</url>
+			 -->
+			<ibiblio name="ibiblio" m2compatible="true" />
+		</chain>
+		
+	</resolvers>
+	
+	
+</ivysettings>

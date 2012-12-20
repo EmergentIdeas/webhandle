@@ -10,6 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
+import javax.ws.rs.OPTIONS;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+
 import org.apache.commons.lang.StringUtils;
 
 import com.emergentideas.utils.ReflectionUtils;
@@ -49,47 +57,92 @@ public class HandleAnnotationHandlerInvestigator implements HandlerInvestigator,
 
 
 	public void analyzeObject(Object handler) {
-		String[] urlPrefixPattern;
+		String[] urlPrefixPattern = null;
 		
 		Set<String> definedUrlMethodCombos = new HashSet<String>(); 
 		
 		Handle handle = ReflectionUtils.getAnnotationOnClass(handler.getClass(), Handle.class);
+		Path path = ReflectionUtils.getAnnotationOnClass(handler.getClass(), Path.class);
+		
 		if(handle != null) {
 			urlPrefixPattern = handle.value();
 		}
-		else {
+		else if(path != null) {
+			urlPrefixPattern = new String[] { path.value() };
+		}
+		
+		if(urlPrefixPattern == null) {
 			urlPrefixPattern = new String[] { "" };
 		}
 		
 		for(Method method : getMethodsInInheritenceOrder(handler.getClass())) {
-			handle = ReflectionUtils.getAnnotation(method, Handle.class);
 			if(ReflectionUtils.isPublic(method) == false) {
 				continue;
 			}
-			if(handle == null) {
+			
+			handle = ReflectionUtils.getAnnotation(method, Handle.class);
+			path = ReflectionUtils.getAnnotation(method, Path.class);
+			if(handle == null && path == null) {
 				continue;
 			}
 			
 			for(String prefix : urlPrefixPattern) {
-				for(String suffix : handle.value()) {
-					String url = prefix + suffix;
-					String urlAndMethod = url + createHttpMethodsString(handle.method());
+				if(handle != null) {
+					for(String suffix : handle.value()) {
+						String url = prefix + suffix;
+						String urlAndMethod = url + createHttpMethodsString(handle.method());
+						if(definedUrlMethodCombos.contains(urlAndMethod)) {
+							continue;
+						}
+						definedUrlMethodCombos.add(urlAndMethod);
+						addHandlerToLists(handler, method, handle.method(), url);
+					}
+				}
+				else if(path != null) {
+					String url = prefix + path.value();
+					HttpMethod[] allowedMethods = extractMethods(method);
+					String urlAndMethod = url + createHttpMethodsString(allowedMethods);
 					if(definedUrlMethodCombos.contains(urlAndMethod)) {
 						continue;
 					}
 					definedUrlMethodCombos.add(urlAndMethod);
-					UrlRegexOutput regex = processor.process(url);
-					HttpRequestCallSpec spec = new HttpRequestCallSpec();
-					spec.setFocus(handler);
-					spec.setMethod(method);
-					spec.setAllowedMethods(handle.method());
-					handlerRegexs.add(regex);
-					handlerCalls.put(regex, spec);
+					addHandlerToLists(handler, method, allowedMethods, url);
 				}
 			}
 		}
 	}
 	
+	protected void addHandlerToLists(Object handler, Method method, HttpMethod[] allowedMethods, String url) {
+		UrlRegexOutput regex = processor.process(url);
+		HttpRequestCallSpec spec = new HttpRequestCallSpec();
+		spec.setFocus(handler);
+		spec.setMethod(method);
+		spec.setAllowedMethods(allowedMethods);
+		handlerRegexs.add(0, regex);
+		handlerCalls.put(regex, spec);
+	}
+	
+	protected HttpMethod[] extractMethods(Method m) {
+		List<HttpMethod> methods = new ArrayList<HttpMethod>();
+		addIfPresent(m, GET.class, methods, HttpMethod.GET);
+		addIfPresent(m, POST.class, methods, HttpMethod.POST);
+		addIfPresent(m, PUT.class, methods, HttpMethod.PUT);
+		addIfPresent(m, DELETE.class, methods, HttpMethod.DELETE);
+		addIfPresent(m, OPTIONS.class, methods, HttpMethod.OPTIONS);
+		addIfPresent(m, HEAD.class, methods, HttpMethod.HEAD);
+		
+		if(methods.size() == 0) {
+			methods.add(HttpMethod.ANY);
+		}
+		
+		return methods.toArray(new HttpMethod[methods.size()]);
+	}
+	
+	protected void addIfPresent(Method m, Class annotationClass, List<HttpMethod> methods, HttpMethod httpMethod) {
+		if(ReflectionUtils.getAnnotation(m, annotationClass) != null) {
+			methods.add(httpMethod);
+		}
+	}
 	
 	protected String createHttpMethodsString(HttpMethod[] methods) {
 		List<String> list = new ArrayList<String>();

@@ -128,7 +128,8 @@ public class DbIntegrator implements Integrator {
 				"			<property name=\"javax.persistence.jdbc.driver\" value=\"" + conf.getDriver() + "\" />\n" + 
 				"			<property name=\"javax.persistence.jdbc.url\" value=\"" + conf.getUrl() + "\" />\n" + 
 				"			<property name=\"javax.persistence.jdbc.user\" value=\"" + conf.getUser() + "\" />\n" + 
-				"			<property name=\"javax.persistence.jdbc.password\" value=\"" + conf.getPassword() + "\" />\n");
+				"			<property name=\"javax.persistence.jdbc.password\" value=\"" + conf.getPassword() + "\" />\n"
+				);
 		
 		for(Entry<String, String> entry : conf.getArbitraryProperties().entrySet()) {
 			data.append("			<property name=\"" + entry.getKey() + "\" value=\"" + entry.getValue() + "\"/>\n");

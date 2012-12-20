@@ -7,6 +7,7 @@
 	<property name="build" location="compiled"/>
 	<property name="dist"  location="dist"/>
 
+	<ivy:settings file="settings.xml" />
 
 	<target name="increment">
 		<propertyfile file="buildNumber.properties">
@@ -19,6 +20,8 @@
 		<!-- Create the time stamp -->
 		<tstamp/>
 
+		<property file="buildNumber.properties" />
+		
 		<!-- Create the build directory structure used by compile -->
 		<mkdir dir="${build}"/>
 		<mkdir dir="${build}/classes"/>
@@ -96,13 +99,6 @@
 	</target>
 
 
-	<target name="dist" depends="compile"
-        description="generate the distribution" >
-		<!-- Create the distribution directory -->
-		<mkdir dir="${dist}/lib"/>
-
-		<jar jarfile="${dist}/lib/webhandle.jar" basedir="${build}/classes"/>
-	</target>
 	
 	
 	
@@ -125,7 +121,7 @@
 		</copy>
 	</target>
 
-	<target name="web-app-acorn" depends="compile,copy-templates,copy-test-templates" description="generate the distribution" >
+	<target name="web-app-acorn" depends="compile,copy-templates,copy-test-templates" description="generates a war usable for acorns" >
 		<!-- Create the distribution directory -->
 		<mkdir dir="${dist}/lib"/>
 
@@ -147,10 +143,19 @@
 	<target name="web-app-acorn-war" depends="clean,web-app-acorn" >
 	    <zip destfile="webhandle.war" basedir="${dist}" />
 	</target>
+	
+	<target name="dist" depends="web-app-acorn" description="generate the distribution" >
+		<!-- Create the distribution directory -->
+		<mkdir dir="${dist}/lib"/>
+
+		<copy tofile="${dist}/lib/com.emergentideas-webhandle.jar" file="${dist}/WEB-INF/lib/webhandle.jar" />
+	</target>
+
+	
 
 
-	<target name="pub" depends="dist,increment" >
-		<ivy:publish resolver="local" pubrevision="1.0.0.${build.number}" update="true" overwrite="true">
+	<target name="pub" depends="dist" >
+		<ivy:publish resolver="eico_local" pubrevision="1.0.0.${build.number}" update="true" overwrite="true">
 			<artifacts pattern="${dist}/lib/[artifact].[ext]" />
 		</ivy:publish>
 	</target>

@@ -43,6 +43,9 @@ public class HandleCallerTest {
 		
 		Handler1 handler = new Handler1();
 		handlerInvestigator.analyzeObject(handler);
+		Handler1 handler2 = new Handler1();
+		handler2.setCalledOnce(true);
+		handlerInvestigator.analyzeObject(handler2);
 		
 		HandleCaller caller = new HandleCaller();
 		caller.setHandlerInvestigator(handlerInvestigator);
@@ -114,6 +117,42 @@ public class HandleCallerTest {
 		written = new String(out5.toByteArray(), "UTF-8");
 		assertEquals("user required exception", written);
 
+	}
+	
+	@Test
+	public void testEnsureHandlersAddedLaterAreCalledFirst() throws Exception {
+		final ByteArrayOutputStream out = new ByteArrayOutputStream();
+		InvocationContext context = new InvocationContext();
+		ParameterMarshal marshal = new ParameterMarshal(new WebParameterMarsahalConfiguration(), context);
+		new WebRequestContextPopulator().populate(marshal, context);
+		
+		TemplateOutputTransformersInvestigator outputInvestigator = new TemplateOutputTransformersInvestigator();
+		HandleAnnotationHandlerInvestigator handlerInvestigator = new HandleAnnotationHandlerInvestigator();
+		
+		Handler1 handler = new Handler1();
+		handlerInvestigator.analyzeObject(handler);
+		Handler2 handler2 = new Handler2();
+		handlerInvestigator.analyzeObject(handler2);
+		
+		HandleCaller caller = new HandleCaller();
+		caller.setHandlerInvestigator(handlerInvestigator);
+		caller.setOutputInvestigator(outputInvestigator);
+		
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		
+		when(request.getServletPath()).thenReturn("/1/fourteen");
+		when(request.getMethod()).thenReturn("GET");
+		
+		HttpServletResponse response = mock(HttpServletResponse.class);
+		when(response.getOutputStream()).thenReturn(new TestServletOutputStream(out));
+		
+		context.setFoundParameter(HttpServletRequest.class, request);
+		context.setFoundParameter(HttpServletResponse.class, response);
+
+		caller.call(null, request, response, marshal);
+		
+		String written = new String(out.toByteArray(), "UTF-8");
+		assertEquals("handler2", written);
 	}
 	
 	@Test

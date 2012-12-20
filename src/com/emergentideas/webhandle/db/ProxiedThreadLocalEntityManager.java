@@ -13,6 +13,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.metamodel.Metamodel;
 
+import com.emergentideas.logging.Logger;
+import com.emergentideas.logging.SystemOutLogger;
 import com.emergentideas.webhandle.Type;
 
 @Type({"javax.persistence.EntityManager", "com.emergentideas.webhandle.db.ProxiedThreadLocalEntityManager"})
@@ -20,6 +22,14 @@ public class ProxiedThreadLocalEntityManager implements EntityManager {
 
 	protected EntityManagerFactory factory;
 	protected ThreadLocal<EntityManager> currentManager = new ThreadLocal<EntityManager>();
+	
+	// The length of time in ms that we should spend trying to obtain a good connection
+	protected int testForGoodConnectionTimeout = 3000;
+	
+	// An SQL to test that the connection is active
+	protected String testConnectionSQL = "select 1";
+	
+	protected Logger log = SystemOutLogger.get(ProxiedThreadLocalEntityManager.class);
 	
 	public void persist(Object entity) {
 		em().persist(entity);
@@ -200,6 +210,22 @@ public class ProxiedThreadLocalEntityManager implements EntityManager {
 		this.factory = factory;
 	}
 	
+	public int getTestForGoodConnectionTimeout() {
+		return testForGoodConnectionTimeout;
+	}
+
+	public void setTestForGoodConnectionTimeout(int testForGoodConnectionTimeout) {
+		this.testForGoodConnectionTimeout = testForGoodConnectionTimeout;
+	}
+
+	public String getTestConnectionSQL() {
+		return testConnectionSQL;
+	}
+
+	public void setTestConnectionSQL(String testConnectionSQL) {
+		this.testConnectionSQL = testConnectionSQL;
+	}
+
 	public boolean isReady() {
 		if(factory == null) {
 			return false;
@@ -222,8 +248,26 @@ public class ProxiedThreadLocalEntityManager implements EntityManager {
 			throw new UnsupportedOperationException();
 		}
 		if(currentManager.get() == null) {
-			currentManager.set(factory.createEntityManager());
+			long start = System.currentTimeMillis();
+			do {
+				EntityManager em = factory.createEntityManager();
+				if(isConnectionAlive(em)) {
+					currentManager.set(em);
+					break;
+				}
+			}
+			while((System.currentTimeMillis() - start) < testForGoodConnectionTimeout);
 		}
 		return currentManager.get();
+	}
+	
+	protected boolean isConnectionAlive(EntityManager em) {
+		try {
+			em.createNativeQuery(testConnectionSQL).getResultList();
+			return true;
+		}
+		catch(Throwable t) {
+			return false;
+		}
 	}
 }

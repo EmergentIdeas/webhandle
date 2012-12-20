@@ -27,4 +27,16 @@ public class BeanCreatorTest {
 		assertEquals("world", o.getB());
 		
 	}
+	
+	@Test
+	public void testCreateMultipleObjects() throws Exception {
+		BeanCreator creator = new BeanCreator();
+		
+		FocusAndPropertiesConfigurationAtom atom = new FocusAndPropertiesConfigurationAtom();
+		
+		atom.setFocus("com.emergentideas.webhandle.TestObj.*");
+		
+		AtomAndObject[] atomsAndObjects = (AtomAndObject[])creator.create(null, null, atom);
+		assertEquals(8, atomsAndObjects.length);
+	}
 }

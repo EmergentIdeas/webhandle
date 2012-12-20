@@ -26,7 +26,7 @@ public class EscapedExpression implements com.emergentideas.webhandle.templates.
 	protected Map<String, String> replacements = Collections.synchronizedMap(new HashMap<String, String>());
 	protected Expression jExpression;
 	
-	protected static Pattern variablePattern = Pattern.compile("[a-zA-Z]([a-zA-Z0-9\\-]*?/[a-zA-Z0-9]+)+?");
+	protected static Pattern variablePattern = Pattern.compile("([a-zA-Z]([a-zA-Z0-9\\-]*?/)+[a-zA-Z0-9]+)+?");
 	protected static Pattern doubleQuoteLiteralPattern = Pattern.compile("([\"'])(.*?[^\\\\])\\1");
 	protected static String variableReplacementPrefix = "locationVariable";
 	protected static String literalReplacementPrefix = "literalValue";

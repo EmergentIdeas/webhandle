@@ -4,7 +4,10 @@ import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.webhandle.CallSpec;
@@ -34,7 +37,7 @@ public class TemplateOutputTransformersInvestigatorTest {
 		Handler1 handler = new Handler1();
 		Method handlerMethod = ReflectionUtils.getFirstMethod(Handler1.class, "one");
 		
-		
+		context.setFoundParameter(HttpServletRequest.class, Mockito.mock(HttpServletRequest.class));
 		Respondent resp = investigator.determineTransformers(context, handler, handlerMethod, "test");
 		
 		assertTrue(resp instanceof DirectRespondent);

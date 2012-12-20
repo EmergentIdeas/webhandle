@@ -39,10 +39,6 @@ class-path-include->com/emergentideas/webhandle/assumptions/oak/infrastructure.c
 
 Includes a configuration on the class path
 
-config-file-include->file1.conf
-
-Includes a file configuration (from the root of the app directory if the path is relative)
-
 
 adding binary resources
 =======================

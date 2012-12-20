@@ -224,6 +224,7 @@ public class TableDataModel {
 		
 		public Cell(Object value, int columnNumber) {
 			this.value = value;
+			this.columnNumber = columnNumber;
 		}
 		
 		

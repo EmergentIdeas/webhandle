@@ -82,11 +82,14 @@ public class LocationTest {
 		
 		List<TestObj> manyChildren = new ArrayList<TestObj>();
 		TestObj o3 = new TestObj();
+		o3.setB("b from o3");
 		manyChildren.add(o3);
 		manyChildren.add(new TestObj());
 		o2.setManyChildren(manyChildren);
 		
 		assertEquals(o3, loc.get("child1/manyChildren"));
+		assertEquals("b from o3", loc.get("child1/manyChildren/b"));
+		assertEquals("java.lang.String", loc.get("child1/manyChildren/b/class/name"));
 		assertEquals(2, loc.all("child1/manyChildren").size());
 		assertEquals(manyChildren, loc.get("child1/@manyChildren"));
 		assertTrue(loc.all("child1/@manyChildren").contains(manyChildren));

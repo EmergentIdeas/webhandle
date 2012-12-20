@@ -91,6 +91,14 @@ public class ReflectionUtilsTest {
 	}
 	
 	@Test
+	public void testGetIdSetter() throws Exception {
+		Method m = getIdSetterMethod(TestObj2.class);
+		assertNull(m);
+		m = getIdSetterMethod(TestObj.class);
+		assertEquals("setId", m.getName());
+	}
+	
+	@Test
 	public void testContains() throws Exception {
 		
 		String[] list = new String[] { "one", null, "two" };

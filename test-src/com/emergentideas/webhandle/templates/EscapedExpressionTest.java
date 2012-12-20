@@ -28,6 +28,13 @@ public class EscapedExpressionTest {
 		assertTrue(escaped.contains("locationVariable1"));
 		assertFalse(escaped.contains("something1/here"));
 		assertFalse(escaped.contains("locationVariable2"));
+		
+		esc = new EscapedExpression();
+		escaped = esc.escape("hello/there/somebody");
+		assertTrue(escaped.contains("locationVariable0"));
+		assertFalse(escaped.contains("hello"));
+		assertFalse(escaped.contains("there"));
+		assertFalse(escaped.contains("somebody"));
 	}
 	
 	@Test

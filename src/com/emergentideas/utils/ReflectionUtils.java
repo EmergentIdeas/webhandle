@@ -102,7 +102,6 @@ public class ReflectionUtils {
 		return Character.toLowerCase(methodName.charAt(0)) + methodName.substring(1);
 	}
 
-	
 	/**
 	 * returns the setter method if it exists for a given object and property name.  If two or more 
 	 * methods with the correct name but differing types are found, the first found will be returned
@@ -111,8 +110,19 @@ public class ReflectionUtils {
 	 * @return
 	 */
 	public static Method getSetterMethod(Object focus, String propertyName) {
+		return getSetterMethodFromClass(focus.getClass(), propertyName);
+	}
+	
+	/**
+	 * returns the setter method if it exists for a given object and property name.  If two or more 
+	 * methods with the correct name but differing types are found, the first found will be returned
+	 * @param focus
+	 * @param propertyName like address
+	 * @return
+	 */
+	public static Method getSetterMethodFromClass(Class focus, String propertyName) {
 		String methodName = "set" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
-		for(Method m : focus.getClass().getMethods()) {
+		for(Method m : focus.getMethods()) {
 			if(m.getName().equals(methodName)) {
 				if(m.getParameterTypes().length == 1) {
 					return m;
@@ -477,6 +487,36 @@ public class ReflectionUtils {
 				}
 				return result;
 			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Determines the id setter method if it exists.
+	 * @param entity
+	 * @return
+	 */
+	public static Method getIdSetterMethod(Class entity) {
+		for(Field f : entity.getDeclaredFields()) {
+			if(getAnnotation(f, Id.class) != null) {
+				return getSetterMethodFromClass(entity, f.getName());
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Returns the name of the setter method for the ID member or null if there
+	 * either is no ID member or no bean setter method for it. 
+	 * @param entity
+	 * @return
+	 */
+	public static String getIdSetterMethodName(Class entity) {
+		Method m = getIdSetterMethod(entity);
+		if(m != null) {
+			return m.getName();
 		}
 		
 		return null;

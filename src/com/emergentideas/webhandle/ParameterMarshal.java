@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 import static com.emergentideas.utils.ReflectionUtils.*;
 
 import com.emergentideas.logging.Logger;
@@ -93,6 +95,28 @@ public class ParameterMarshal {
 		
 		return null;
 	}
+	
+	/**
+	 * Returns all of the parameter names found by any of the parameter name investigators that are not blank.
+	 * @param focus
+	 * @param method
+	 * @param parameterClass
+	 * @param parameterAnnotations
+	 * @param argumentIndex
+	 * @return
+	 */
+	public <T> List<String> determineAllParameterNames(Object focus, Method method, Class<T> parameterClass, Annotation[] parameterAnnotations, int argumentIndex) {
+		List<String> result = new ArrayList<String>();
+		for(ParameterNameInvestigator investigator : configuration.getParameterNameInvestigators()) {
+			String name = investigator.determineParameterName(focus, method, parameterClass, parameterAnnotations, context, argumentIndex);
+			if(StringUtils.isBlank(name) == false) {
+				result.add(name);
+			}
+		}
+		
+		return result;
+	}
+
 	
 	/**
 	 * Returns just the class of the parameter without any parameterization info
@@ -251,7 +275,9 @@ public class ParameterMarshal {
 					context.setFoundParameter(parameterClass, result);
 				}
 				else {
-					context.setFoundParameter(parameterName, parameterClass, result);
+					for(String name : (List<String>)determineAllParameterNames(focus, method, parameterClass, parameterAnnotations, argumentIndex)) {
+						context.setFoundParameter(name, parameterClass, result);
+					}
 				}
 			}
 		}

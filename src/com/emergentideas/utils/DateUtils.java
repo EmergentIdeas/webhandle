@@ -2,6 +2,8 @@ package com.emergentideas.utils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -28,5 +30,21 @@ public class DateUtils {
 		httpDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 		return httpDateFormat;
 	}
+	
+	public static Date combineDateAndTime(Date useForDate, Date useForTime)
+	{
+		Calendar cRet = Calendar.getInstance();
+		cRet.setTime(useForDate);
+		
+		Calendar cTime = Calendar.getInstance();
+		cTime.setTime(useForTime);
+		cRet.set(Calendar.HOUR_OF_DAY, cTime.get(Calendar.HOUR_OF_DAY));
+		cRet.set(Calendar.MINUTE, cTime.get(Calendar.MINUTE));
+		cRet.set(Calendar.SECOND, cTime.get(Calendar.SECOND));
+		cRet.set(Calendar.MILLISECOND, cTime.get(Calendar.MILLISECOND));
+		
+		return(cRet.getTime());
+	}
+
 
 }

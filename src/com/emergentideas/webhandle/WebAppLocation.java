@@ -28,6 +28,10 @@ public class WebAppLocation {
 		return this;
 	}
 	
+	public String getAppRootLocationOnDisk() {
+		return (String) getServiceByName(Constants.APPLICATION_ON_DISK_LOCATION);
+	}
+	
 	public void setServiceByName(String name, Object service) {
 		initIfNeeded();
 		((Location)location.get("servicesByName")).put(name, service);

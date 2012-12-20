@@ -1,6 +1,9 @@
 package com.emergentideas.webhandle.handlers;
 
 import javax.persistence.EntityManager;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -16,24 +19,27 @@ import com.emergentideas.webhandle.exceptions.UserRequiredException;
 import com.emergentideas.webhandle.output.Template;
 import com.emergentideas.webhandle.output.Wrap;
 
-public class Handler1 {
+public class Handler1J2EE {
 
 	protected boolean calledOnce = false;
 	protected EntityManager entityManager;
 	
-	@Handle(value = {"/one/{name}", "/one" }, method = HttpMethod.GET)
+	@Path("/one/{name}")
+	@GET
 	public String one(String name) {
 		return "really";
 	}
 	
-	@Handle(value = "/one", method = {HttpMethod.POST, HttpMethod.GET})
+	@Path("/one")
+	@GET
+	@POST
 	@Template
 	@Wrap("app_page")
 	public String two(String id, Location location) {
 		return "mytemplate";
 	}
 	
-	@Handle(value = "/three")
+	@Path("/three")
 	public String three(String id) {
 		if(calledOnce == false) {
 			calledOnce = true;
@@ -42,7 +48,7 @@ public class Handler1 {
 		return "called twice";
 	}
 	
-	@Handle(value = "/three")
+	@Path("/three")
 	public String four(String id) {
 		if(calledOnce == false) {
 			calledOnce = true;
@@ -51,38 +57,40 @@ public class Handler1 {
 		return "called twice";
 	}
 	
-	@Handle(value = "/five")
+	
+	@Path("/five")
 	public String five(String id) {
 		throw new SecurityException();
 	}
 	
-	@Handle(value = "/twelve")
+	@Path("/twelve")
 	public String twelve(String id) {
 		throw new UserRequiredException();
 	}
 	
-	@Handle(value = "/six")
+	@Path("/six")
 	public String six(String id) {
 		throw new TransformationException();
 	}
 	
-	@Handle(value = "/seven")
+	@Path("/seven")
 	public String seven(String id) {
 		return "The number is: " + id;
 	}
 	
-	@Handle(value = "/eight/{id}")
+	@Path("/eight/{id}")
 	public String eight(Double id) {
 		return "The number is: " + id;
 	}
 	
-	@Handle(value = "/nine")
+	@Path("/nine")
 	@Template
 	public String nine(String id) {
 		return "one";
 	}
 	
-	@Handle(value = {"/ten", "/ten/{id}"}, method = HttpMethod.GET)
+	@Path("/ten/{id}")
+	@GET
 	@Template
 	public String tenGet(@Db("id") @NotNull @Command TestObj obj, Location loc) {
 		if(obj.getA() == null) {
@@ -97,7 +105,8 @@ public class Handler1 {
 		return "form1";
 	}
 	
-	@Handle(value = "/ten", method = HttpMethod.POST)
+	@Path("/ten")
+	@POST
 	@Template
 	public String ten(@Db("id") @NotNull @Command TestObj obj, Location loc) {
 		if(StringUtils.isBlank(obj.getId())) {
@@ -108,14 +117,16 @@ public class Handler1 {
 		return "form1";
 	}
 	
-	@Handle(value = "/eleven", method = {HttpMethod.POST, HttpMethod.GET})
+	@Path("/eleven")
+	@GET
+	@POST
 	@Template
 	@Wrap("app_page")
 	public String eleven(String id, Location location) {
 		return "mytemplate";
 	}
 	
-	@Handle("/1/fourteen")
+	@Path("/1/fourteen")
 	public String fourteen() {
 		return "handler1";
 	}

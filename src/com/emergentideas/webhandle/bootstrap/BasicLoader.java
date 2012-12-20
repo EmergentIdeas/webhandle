@@ -105,7 +105,21 @@ public class BasicLoader implements Loader {
 				}
 				
 				Object created = create(delegatedLoader, location, atom);
-				integrate(delegatedLoader, location, atom, created);
+				if(created instanceof AtomAndObject) {
+					AtomAndObject aao = (AtomAndObject)created;
+					integrate(delegatedLoader, location, aao.getAtom(), aao.getCreatedObject());
+				}
+				else if(created instanceof AtomAndObject[]) {
+					for(AtomAndObject aao : (AtomAndObject[])created) {
+						if(aao == null) {
+							continue;
+						}
+						integrate(delegatedLoader, location, aao.getAtom(), aao.getCreatedObject());
+					}
+				}
+				else {
+					integrate(delegatedLoader, location, atom, created);
+				}
 			}
 			catch(Exception e) {
 				log.error("Could not process configuration atom with type->value: " + atom.getType() + "->" + atom.getValue(), e);
