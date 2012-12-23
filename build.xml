@@ -56,7 +56,6 @@
 	<target name="copy-templates" depends="init" >
 		<copy todir="${build}/classes/com/emergentideas/webhandle/templates/oak">
 			<fileset dir="WebContent/WEB-INF/oakTemplates" />
-			<fileset dir="WebContent/WEB-INF/loginTemplates" />
 		</copy>
 		<copy todir="${build}/classes/com/emergentideas/webhandle/resources/oak">
 			<fileset dir="WebContent/oakContent" />
@@ -156,7 +155,7 @@
 
 	<target name="pub" depends="dist" >
 		<ivy:publish resolver="eico_local" pubrevision="1.0.0.${build.number}" update="true" overwrite="true">
-			<artifacts pattern="${dist}/lib/[artifact].[ext]" />
+			<artifacts pattern="${dist}/lib/com.emergentideas-[artifact].[ext]" />
 		</ivy:publish>
 	</target>
 	
