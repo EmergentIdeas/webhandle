@@ -1,6 +1,7 @@
 package com.emergentideas.webhandle;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +14,8 @@ import com.emergentideas.webhandle.Constants;
 import com.emergentideas.webhandle.InvocationContext;
 import com.emergentideas.webhandle.ParameterMarshal;
 import com.emergentideas.webhandle.ValueTransformer;
-import com.emergentideas.webhandle.apps.oak.login.OakUser;
+//import com.emergentideas.webhandle.apps.oak.login.OakUser;
+import com.emergentideas.webhandle.assumptions.oak.interfaces.User;
 import com.emergentideas.webhandle.composites.db.DbInvestigator;
 import com.emergentideas.webhandle.configurations.WebParameterMarsahalConfiguration;
 import com.emergentideas.webhandle.exceptions.ParameterNotFoundException;
@@ -232,7 +234,43 @@ public class ParameterMarshalTest {
 		}
 		
 		values.put("userRoles", new String[] { "admin", "normal-user" });
-		values.put("user", new OakUser());
+		values.put("user", new User() {
+			
+			public boolean isActive() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			
+			public String getProfileName() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			public String getId() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			public Collection<String> getGroupNames() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			public String getFullName() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			public String getEmail() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			public String getAuthenticationSystem() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+		});
 		try {
 			marshal.call(obj, m);
 			fail("Ooops.  We shouldn't be able to call this.");

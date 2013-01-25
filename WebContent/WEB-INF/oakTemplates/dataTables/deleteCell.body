@@ -1,1 +1,0 @@
-<td class="delete-cell"><form method="post" action="__$this__"><button type="submit" onclick="return confirm('OK to delete?');">X</button></form></td>

@@ -29,9 +29,6 @@
 		<!-- reads the names of method arguments -->
 		<dependency org="com.thoughtworks.paranamer" name="paranamer" rev="2.5.1" conf="deployment"/>
 		
-		<!-- sends email -->
-		<dependency org="org.apache.commons" name="commons-email" rev="1.2" conf="deployment"/>
-		
 		<dependency org="org.apache.httpcomponents" name="httpclient" rev="4.2.1" conf="deployment"/>
 		
 		<!-- apache log4j -->
