@@ -31,6 +31,16 @@ public-resource->static_content
 
 Serves files from the static_content directory
 
+Also, there are two configuration parameters for public-resource and classpath-public-resource. cacheTime is the time
+in seconds for the exipiration time reported in the HTTP Header.  By default, the cache time is zero and the client
+must request the resource (though possibly with etag) again each time it needs it.
+
+showDirectoryContents if set to true will cause any directory to show an inventory listing of its content.
+
+An example would be:
+
+public-resource->static_content?showDirectoryContents=true&cacheTime=3600
+
 
 including other configurations
 ==============================
