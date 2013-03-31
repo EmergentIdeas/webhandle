@@ -147,4 +147,55 @@ public class StringUtils {
 		replaceString(sb, target, replacement);
 		return sb.toString();
 	}
+	
+	/**
+	 * Removes the various ugly crap that browsers can submit as instead of understandable characters. These
+	 * are things like weird ways of indicating single quotes, non-breaking spaces, etc.
+	 * @param source
+	 * @return
+	 */
+	public static String replaceJunkCharacters(String source)
+	{
+		source = source.replace((char)194 + "" + (char)160, "&nbsp;");
+		source = source.replace((char)226 + "" + (char)128 + (char)153, "'");
+		
+		// The TM symbol
+		source = source.replace((char)226 + "" + (char)132 + (char)162, "&#8482;");
+		
+		// The registered trademark symbol
+		source = source.replace((char)194 + "" + (char)174, "&reg;");
+		
+		// A 2 superscript
+		source = source.replace((char)194 + "" + (char)178, "&sup2;");
+		
+		// A long hyphen
+		source = source.replace((char)226 + "" + (char)128 + (char)147, "&#8211;");
+		
+		// The degree symbol
+		source = source.replace((char)194 + "" + (char)176, "&deg;");
+		
+		// A left double quote
+		source = source.replace((char)226 + "" + (char)128 + (char)156, "&#8220;");
+
+		// A right double quote
+		source = source.replace((char)226 + "" + (char)128 + (char)157, "&#8221;");
+		
+		// bullets
+		source = source.replace((char)195 + "" + (char)131, "&bull;");
+		source = source.replace((char)194 + "" + (char)131, "&bull;");
+		
+		StringBuilder sb = new StringBuilder();
+		char[] data = source.toCharArray();
+		for(int i = 0; i < data.length; i++) {
+			if(data[i] == (char)195 || data[i] == (char)194) {
+				i++;
+			}
+			else {
+				sb.append(data[i]);
+			}
+		}
+
+		return sb.toString();
+	}
+
 }

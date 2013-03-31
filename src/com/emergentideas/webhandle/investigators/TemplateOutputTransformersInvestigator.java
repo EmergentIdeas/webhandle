@@ -46,24 +46,12 @@ import com.emergentideas.webhandle.transformers.WrapTransformer;
 public class TemplateOutputTransformersInvestigator implements
 		OutputResponseInvestigator {
 	
-	protected ElementStreamProcessor elementStreamProcessor;
-	protected ExpressionFactory expressionFactory;
-	
 	public static final String RESPONSE_WRAPPER_PARAMETER_NAME = "response-wrapper";
 	public static final String RESPONSE_PACKAGE_PARAMETER_NAME = "response-package";
 	
 	
 	public TemplateOutputTransformersInvestigator() {
 	}
-	
-	@Init
-	public void init() {
-		List<ElementProcessor> processors = new ArrayList<ElementProcessor>();
-		processors.add(new StringElementProcessor());
-		processors.add(new TripartateTemplateElementProcessor(expressionFactory));
-		elementStreamProcessor = new ElementStreamProcessor(processors);
-	}
-	
 	
 	public Respondent determineTransformers(InvocationContext context,
 			Object focus, Method method, Object response) {
@@ -121,17 +109,4 @@ public class TemplateOutputTransformersInvestigator implements
 		
 		return creator;
 	}
-
-
-	public ExpressionFactory getExpressionFactory() {
-		return expressionFactory;
-	}
-
-	@Wire
-	public void setExpressionFactory(ExpressionFactory expressionFactory) {
-		this.expressionFactory = expressionFactory;
-	}
-	
-	
-
 }

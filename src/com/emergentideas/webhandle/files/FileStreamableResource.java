@@ -7,7 +7,7 @@ import java.io.InputStream;
 import com.emergentideas.logging.Logger;
 import com.emergentideas.logging.SystemOutLogger;
 
-public class FileStreamableResource implements StreamableResource {
+public class FileStreamableResource implements StreamableResource, NamedResource {
 
 	protected File source;
 	protected static Logger log = SystemOutLogger.get(FileStreamableResource.class);
@@ -30,5 +30,7 @@ public class FileStreamableResource implements StreamableResource {
 		}
 	}
 
-	
+	public String getName() {
+		return source.getName();
+	}
 }

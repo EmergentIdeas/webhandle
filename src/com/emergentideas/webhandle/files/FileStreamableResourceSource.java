@@ -10,14 +10,33 @@ public class FileStreamableResourceSource implements StreamableResourceSource {
 		this.root = root;
 	}
 	
-	public StreamableResource get(String location) {
+	public Resource get(String location) {
 		if(isPathAcceptable(location) == false) {
 			return null;
 		}
 		
-		File resource = new File(root, location);
-		if(resource.exists() && resource.isFile()) {
-			return new FileStreamableResource(resource);
+		File resource;
+		if(location.startsWith("/") == false) {
+			resource = new File(root, location);
+		}
+		else {
+			// looks like this is an absolute path
+			// if this is a child of the root, we'll retrieve it, otherwise not
+			if(location.startsWith(root.getAbsolutePath() + "/")) {
+				resource = new File(location);
+			}
+			else {
+				return null;
+			}
+		}
+		
+		if(resource.exists()) {
+			if(resource.isFile()) {
+				return new FileStreamableResource(resource);
+			}
+			else if(resource.isDirectory()) {
+				return new DirectoryResource(resource, this);
+			}
 		}
 		return null;
 	}

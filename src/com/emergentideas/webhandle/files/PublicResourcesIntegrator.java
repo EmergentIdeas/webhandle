@@ -3,17 +3,21 @@ package com.emergentideas.webhandle.files;
 import java.io.File;
 import java.util.Map;
 
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
+
 import com.emergentideas.webhandle.Location;
 import com.emergentideas.webhandle.WebAppLocation;
 import com.emergentideas.webhandle.Wire;
-import com.emergentideas.webhandle.assumptions.oak.AppLoader;
 import com.emergentideas.webhandle.bootstrap.ConfigurationAtom;
 import com.emergentideas.webhandle.bootstrap.Create;
 import com.emergentideas.webhandle.bootstrap.Creator;
+import com.emergentideas.webhandle.bootstrap.FocusAndPropertiesAtom;
 import com.emergentideas.webhandle.bootstrap.FocusAndPropertiesConfigurationAtom;
 import com.emergentideas.webhandle.bootstrap.Integrate;
 import com.emergentideas.webhandle.bootstrap.Integrator;
 import com.emergentideas.webhandle.bootstrap.Loader;
+import com.emergentideas.webhandle.bootstrap.PropertiesAtom;
 import com.emergentideas.webhandle.bootstrap.PropertiesConfigurationAtom;
 import com.emergentideas.webhandle.handlers.HandlerInvestigator;
 
@@ -24,13 +28,25 @@ import static com.emergentideas.webhandle.Constants.*;
 @Integrate
 public class PublicResourcesIntegrator implements Creator, Integrator {
 
+	public static final String SHOW_DIRECTORY_CONTENTS = "showDirectoryContents";
+	public static final String CACHE_TIME = "cacheTime";
+	
 	protected HandlerInvestigator handlerInvestigator;
 	
 	public void integrate(Loader loader, Location location,
 			ConfigurationAtom atom, Object focus) {
 		if(focus != null && focus instanceof StreamableResourceSource) {
 			if("public-resource".equals(atom.getType()) || "classpath-public-resource".equals(atom.getType())) {
-				handlerInvestigator.analyzeObject(new StreamableResourcesHandler((StreamableResourceSource)focus));
+				StreamableResourcesHandler handler = new StreamableResourcesHandler((StreamableResourceSource)focus);
+				if(atom instanceof PropertiesAtom) {
+					PropertiesAtom propAtom = (PropertiesAtom)atom;
+					handler.setShowDirectoryContents(BooleanUtils.toBoolean(propAtom.getProperties().get(SHOW_DIRECTORY_CONTENTS)));
+					String cacheTime = propAtom.getProperties().get(CACHE_TIME);
+					if(StringUtils.isNotBlank(cacheTime)) {
+						handler.setCacheTime(Integer.parseInt(cacheTime));
+					}
+				}
+				handlerInvestigator.analyzeObject(handler);
 			}
 		}
 
@@ -43,13 +59,21 @@ public class PublicResourcesIntegrator implements Creator, Integrator {
 		if(appLocation == null) {
 			return null;
 		}
+		String resourceLocation;
+		
+		if(atom instanceof FocusAndPropertiesAtom) {
+			resourceLocation = ((FocusAndPropertiesAtom)atom).getFocus();
+		}
+		else {
+			resourceLocation = atom.getValue();
+		}
 		
 		if("public-resource".equals(atom.getType())) {
-			File root = new File(new File(appLocation), atom.getValue());
+			File root = new File(new File(appLocation), resourceLocation);
 			return new FileStreamableResourceSource(root);
 		}
 		if("classpath-public-resource".equals(atom.getType())) {
-			return new ClasspathFileStreamableResourceSource(atom.getValue());
+			return new ClasspathFileStreamableResourceSource(resourceLocation);
 		}
 		if("resource-sink".equals(atom.getType())) {
 			File root = new File(new File(appLocation), ((FocusAndPropertiesConfigurationAtom)atom).getFocus());

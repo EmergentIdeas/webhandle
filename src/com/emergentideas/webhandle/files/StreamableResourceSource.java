@@ -12,5 +12,5 @@ public interface StreamableResourceSource {
 	 * @param location
 	 * @return
 	 */
-	public StreamableResource get(String location);
+	public Resource get(String location);
 }

@@ -17,9 +17,9 @@ public class CompositeStreamableResourceSource implements
 		sources.add(0, source);
 	}
 	
-	public StreamableResource get(String location) {
+	public Resource get(String location) {
 		for(StreamableResourceSource source : sources) {
-			StreamableResource resource = source.get(location);
+			Resource resource = source.get(location);
 			if(resource != null) {
 				return resource;
 			}

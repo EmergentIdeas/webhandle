@@ -13,9 +13,6 @@ import org.reflections.vfs.Vfs.File;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Multimap;
-import com.pureperfect.ferret.ScanFilter;
-import com.pureperfect.ferret.WebClasspathScanner;
-import com.pureperfect.ferret.vfs.PathElement;
 
 public class ReflectionsTest {
 	

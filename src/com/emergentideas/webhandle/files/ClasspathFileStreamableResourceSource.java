@@ -14,7 +14,7 @@ public class ClasspathFileStreamableResourceSource implements StreamableResource
 		
 	}
 	
-	public StreamableResource get(String location) {
+	public Resource get(String location) {
 		if(location.contains("..") || location.contains("~")) {
 			return null;
 		}

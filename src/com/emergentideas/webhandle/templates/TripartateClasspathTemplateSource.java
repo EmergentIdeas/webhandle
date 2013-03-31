@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,10 +15,6 @@ import org.reflections.vfs.Vfs.File;
 import com.emergentideas.utils.StringUtils;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Multimap;
-import com.pureperfect.ferret.ClasspathScanner;
-import com.pureperfect.ferret.ScanFilter;
-import com.pureperfect.ferret.WebClasspathScanner;
-import com.pureperfect.ferret.vfs.PathElement;
 
 public class TripartateClasspathTemplateSource extends TripartateTemplateSource {
 
