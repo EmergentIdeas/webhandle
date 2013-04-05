@@ -240,6 +240,28 @@ Segmented output allows contribution to all areas at multiple levels.  Any of yo
 It doesn't always make sense for templates to contribute to anything but the body, but when it does, I wanted webhandle to help me make it possible instead of causing me to write code
 as a work around that looks like a 5th grade shop project.  (Appologies to any 5th graders out there just finishing a shop project.)
 
+Requesting Different Output Packages
+------------------------------------
 
+Sometimes it's really handy to specify as part of the query how you'd like the output of the request treated. For
+example, if a user is using the link copied from the location bar, you'd like to render all of the wrapper and branding
+around the content request. That is, you'd like the Wrap tag to be honored. Other times you're requesting content via
+ajax and not only don't want the wrapper, you don't want the html and body elements either.
+
+Webhandle provides two request attributes that by default will control whether an html producing request is wrapped and
+which part of the response is returned to the caller.  If you're returning all ajax requests as JSON, you won't need
+this. But, if like myself, you like to reuse the server side templates to render html for ajax requests, this makes
+everything easier.
+
+response-wrapper = (nothing), none
+
+If response-wrapper is set to none then the Wrap attribute will not be used even if it is declared
+
+response-package = (nothing), body-only
+
+If not set, then a whole HTML document is returned, assuming the request would ordinarily return HTML. If set to 
+body-only then just the contents of the body tag will be returned.
+
+When combined you can get just the meat of a given request pretty easily.
 
 
