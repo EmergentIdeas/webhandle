@@ -359,7 +359,9 @@ public class ReflectionUtils {
 
     /**
      * Gets the first method from <code>focus</code> of the name <code>methodName</code>. Returns null
-     * if no method of that name is found.
+     * if no method of that name is found. It actually looks for the first method with a given name
+     * in the declared class, if not found there, then in the superclass and so on. This makes sure that
+     * if there's an overloaded method that the one returned has the parameterized signature.
      * @param focus
      * @param methodName
      * @return
