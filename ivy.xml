@@ -44,7 +44,7 @@
 		<dependency org="mysql" name="mysql-connector-java" rev="5.1.21" conf="deployment"/>
 		
 		<!-- provides the jpa container -->
-		<dependency org="org.hibernate" name="hibernate-entitymanager" rev="latest.integration" conf="deployment"/>
+		<dependency org="org.hibernate" name="hibernate-entitymanager" rev="4.2.3.Final" conf="deployment"/>
 		
 		<!-- finds all files of a certain name on the class path, needed for class path based templates -->
 		<dependency org="org.reflections" name="reflections" rev="0.9.8" conf="deployment" />
