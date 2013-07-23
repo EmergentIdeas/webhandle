@@ -5,6 +5,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -143,7 +144,7 @@ public class TripartateTemplate implements TemplateInstance {
 			log.error("Could not parse properties", ex);
 		}
 		
-		Map<String, String> result = new HashMap<String, String>();
+		Map<String, String> result = new LinkedHashMap<String, String>();
 		for(Object key : properties.keySet()) {
 			result.put(key.toString(), properties.getProperty(key.toString()));
 		}
