@@ -367,12 +367,24 @@ public class ReflectionUtils {
      * @return
      */
 	public static <T> Method getFirstMethod(Class<T> focus, String methodName) {
-		for(Method m : focus.getMethods()) {
-			if(m.getName().equals(methodName)) {
-				return m;
+		Method foundMethod = null;
+		Class<?> c = focus;
+		found: while(c != null) {
+			for(Method m : c.getDeclaredMethods()) {
+				if(m.getName().equals(methodName)) {
+					foundMethod = m;
+					break found;
+				}
 			}
+//			ParameterizedType parameterizedType = (ParameterizedType) c.getGenericSuperclass();
+//			c = (Class) parameterizedType.getActualTypeArguments()[0];			
+			c = c.getSuperclass();
 		}
 		
+		Method secondFound = null;
+		try {
+			secondFound = focus.getMethod(methodName, foundMethod.getParameterTypes());
+		} catch(Exception e) {}
 		return null;
 	}
 	
