@@ -37,6 +37,6 @@ public class BeanCreatorTest {
 		atom.setFocus("com.emergentideas.webhandle.TestObj.*");
 		
 		AtomAndObject[] atomsAndObjects = (AtomAndObject[])creator.create(null, null, atom);
-		assertEquals(8, atomsAndObjects.length);
+		assertEquals(10, atomsAndObjects.length);
 	}
 }

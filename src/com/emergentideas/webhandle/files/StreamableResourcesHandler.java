@@ -1,5 +1,6 @@
 package com.emergentideas.webhandle.files;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -87,7 +88,7 @@ public class StreamableResourcesHandler {
 		}
 		else if(showDirectoryContents && resource instanceof Directory) {
 			if(filePath.endsWith("/") == false) {
-				if(filePath.startsWith("/") == false) {
+				if(isAbsoluteFilePath(filePath) == false) {
 					filePath = "/" + filePath;
 				}
 				return new Show(filePath + "/");
@@ -112,6 +113,21 @@ public class StreamableResourcesHandler {
 		}
 		
 		return new CouldNotHandle() {};
+	}
+	
+	protected boolean isAbsoluteFilePath(String path) {
+		if(File.pathSeparatorChar == '/') {
+			return path.startsWith("/");
+		}
+		else {
+			if(path == null || path.length() < 4) {
+				return false;
+			}
+			if(Character.isLetter(path.charAt(0)) && path.charAt(1) == ':' && path.charAt(2) == '\\' ) {
+				return true;
+			}
+			return false;
+		}
 	}
 	
 	protected String trimETag(String eTag) {

@@ -15,6 +15,7 @@ import com.emergentideas.webhandle.NoInject;
 import com.emergentideas.webhandle.TestObj;
 import com.emergentideas.webhandle.TestObj2;
 import com.emergentideas.webhandle.TestObj5;
+import com.emergentideas.webhandle.TestObjectParameterizedExtended;
 
 import static com.emergentideas.utils.ReflectionUtils.*;
 
@@ -136,5 +137,11 @@ public class ReflectionUtilsTest {
 		
 		assertEquals(Integer.class, c);
 
+	}
+	
+	@Test
+	public void testFirstMethod() throws Exception {
+		Method m = getFirstMethod(TestObjectParameterizedExtended.class, "method1");
+		assertEquals(String.class, m.getGenericParameterTypes()[0]);
 	}
 }
