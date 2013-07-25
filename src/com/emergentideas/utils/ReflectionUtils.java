@@ -385,7 +385,7 @@ public class ReflectionUtils {
 		try {
 			secondFound = focus.getMethod(methodName, foundMethod.getParameterTypes());
 		} catch(Exception e) {}
-		return null;
+		return secondFound;
 	}
 	
 	public static <T> CallSpec[] getMethodsWithAnnotaion(Object focus, Class<T> annotation) {
