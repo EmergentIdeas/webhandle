@@ -371,21 +371,36 @@ public class ReflectionUtils {
 		Class<?> c = focus;
 		found: while(c != null) {
 			for(Method m : c.getDeclaredMethods()) {
-				if(m.getName().equals(methodName)) {
+				if(m.getName().equals(methodName) && m.isBridge() == false) {
+					// Bridge methods are created by the compiler as the implementation in this class of
+					// the method required by an interface or super class. We don't want them because they'll
+					// have more basic parameters like Object instead of Integer. Since we're using this method
+					// to get methods where we'll investigate the parameters they will take, we probably want 
+					// the most specific version of the method.
 					foundMethod = m;
 					break found;
 				}
 			}
-//			ParameterizedType parameterizedType = (ParameterizedType) c.getGenericSuperclass();
-//			c = (Class) parameterizedType.getActualTypeArguments()[0];			
 			c = c.getSuperclass();
 		}
 		
 		Method secondFound = null;
+		if(foundMethod == null) {
+			return null;
+		}
+		
+		if(foundMethod.getDeclaringClass().equals(focus)) {
+			return foundMethod;
+		}
+		
 		try {
 			secondFound = focus.getMethod(methodName, foundMethod.getParameterTypes());
 		} catch(Exception e) {}
-		return secondFound;
+		
+		if(secondFound != null) {
+			return secondFound;
+		}
+		return foundMethod;
 	}
 	
 	public static <T> CallSpec[] getMethodsWithAnnotaion(Object focus, Class<T> annotation) {

@@ -1,6 +1,19 @@
 package com.emergentideas.webhandle.transformers;
 
+import java.util.Map;
+
+import com.emergentideas.webhandle.InvocationContext;
+
 public class StringToDoubleTransformer extends StringToNumberTransformerBase<Double> {
+
+	
+	@Override
+	public Double[] transform(InvocationContext context,
+			Map<String, String> transformationProperties,
+			Class finalParameterClass, String parameterName, String... source) {
+		return super.transform(context, transformationProperties, finalParameterClass,
+				parameterName, source);
+	}
 
 	@Override
 	protected Double convert(String number) {
