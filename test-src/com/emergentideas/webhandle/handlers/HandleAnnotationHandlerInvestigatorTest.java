@@ -58,9 +58,12 @@ public class HandleAnnotationHandlerInvestigatorTest {
 		assertEquals(1, specs.length);
 		assertEquals(one, specs[0].getMethod());
 		
-		// make sure we examine them in order
+		// There's really only one of these. In the past, I understood that methods were returned in the order
+		// they are declared, but that is not reliably so. Now, if you define two handlers for the same url pattern
+		// in the same class, it's up to the jvm ordering of the methods returned from getDeclaredMethods as to which
+		// you'll get
 		specs = investigator.determineHandlers("/one", HttpMethod.GET);
-		assertEquals(2, specs.length);
+		assertEquals(1, specs.length);
 		assertEquals(two, specs[0].getMethod());
 		
 		specs = investigator.determineHandlers("/one", HttpMethod.POST);

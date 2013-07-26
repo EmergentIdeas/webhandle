@@ -21,7 +21,7 @@ public class Handler1 {
 	protected boolean calledOnce = false;
 	protected EntityManager entityManager;
 	
-	@Handle(value = {"/one/{name}", "/one" }, method = HttpMethod.GET)
+	@Handle(value = {"/one/{name}"}, method = HttpMethod.GET)
 	public String one(String name) {
 		return "really";
 	}
