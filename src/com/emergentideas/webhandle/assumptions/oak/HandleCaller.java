@@ -116,6 +116,10 @@ public class HandleCaller implements ResponseLifecycleHandler {
 				called = spec;
 			}
 			
+			// Sometimes an intercepter or other piece of code will wrap the request object
+			// we should fetch it again to make sure we're using the latest version
+			request = marshal.getContext().getFoundParameter(HttpServletRequest.class);
+			
 			for(CallSpec spec : handlerInvestigator.determineHandlers(getUrl(request), getMethod(request))) {
 				try {
 					result = callAndUnwrapException(marshal, spec);
@@ -179,6 +183,11 @@ public class HandleCaller implements ResponseLifecycleHandler {
 		
 		if(called != null) {
 			Respondent resp = outputInvestigator.determineTransformers(marshal.getContext(), called.getFocus(), called.getMethod(), result);
+			
+			// Sometimes an intercepter or other piece of code will wrap the request object
+			// we should fetch it again to make sure we're using the latest version
+			request = marshal.getContext().getFoundParameter(HttpServletRequest.class);
+			
 			if(resp != null) {
 				resp.respond(servletContext, request, response);
 			}

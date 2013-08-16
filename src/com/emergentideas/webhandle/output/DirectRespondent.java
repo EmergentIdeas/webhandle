@@ -142,5 +142,19 @@ public class DirectRespondent implements Respondent {
 		this.headers = headers;
 	}
 
-	
+	public int getResponseStatus() {
+		return responseStatus;
+	}
+
+	public void setResponseStatus(int responseStatus) {
+		this.responseStatus = responseStatus;
+	}
+
+	public Logger getLog() {
+		return log;
+	}
+
+	public void setLog(Logger log) {
+		this.log = log;
+	}
 }

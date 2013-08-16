@@ -41,7 +41,7 @@
 			</fileset>
 		</path>
 		<!-- Compile the java code from ${src} into ${build} -->
-		<javac nowarn="on" srcdir="${src}" destdir="${build}/classes" target="1.6" debug="true" debuglevel="lines,vars,source">
+		<javac nowarn="on" srcdir="${src}" destdir="${build}/classes" target="1.6" source="1.6" debug="true" debuglevel="lines,vars,source">
 			<classpath refid="ivy.deps" />
 		</javac>
 

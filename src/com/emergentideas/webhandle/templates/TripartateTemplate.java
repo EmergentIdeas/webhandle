@@ -1,7 +1,6 @@
 package com.emergentideas.webhandle.templates;
 
 import java.io.ByteArrayInputStream;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -159,4 +158,27 @@ public class TripartateTemplate implements TemplateInstance {
 		this.sections = sections;
 	}
 
+	public Properties getHints() {
+		return hints;
+	}
+
+	public void setHints(Properties hints) {
+		this.hints = hints;
+	}
+
+	public ElementStreamProcessor getProcessor() {
+		return processor;
+	}
+
+	public void setProcessor(ElementStreamProcessor processor) {
+		this.processor = processor;
+	}
+
+	public Logger getLog() {
+		return log;
+	}
+
+	public void setLog(Logger log) {
+		this.log = log;
+	}
 }

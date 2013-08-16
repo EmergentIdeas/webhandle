@@ -8,6 +8,8 @@ import java.util.Map;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.webhandle.CallSpec;
 import com.emergentideas.webhandle.Constants;
@@ -64,20 +66,32 @@ public class RolesAllowedObjectorInvestigator implements
 	 * @param userRoles The roles as user has
 	 * @param rolesAllowed The set of roles that a user must have one of.
 	 */
-	public boolean hasGroup(@Source(Constants.USER_INFORMATION_SOURCE_NAME) List<String> userRoles, @Source(Constants.ANNOTATION_PROPERTIES_SOURCE_NAME)List<String> rolesAllowed,
-			User user, HttpServletRequest request) {
+	public boolean hasGroup(@Source(Constants.USER_INFORMATION_SOURCE_NAME) List<String> userRoles, 
+			@Source(Constants.ANNOTATION_PROPERTIES_SOURCE_NAME)List<String> rolesAllowed, User user, HttpServletRequest request) {
 		if(rolesAllowed == null || rolesAllowed.size() == 0) {
 			return true;
 		}
 		
-		if(user == null) {
+		if(user == null && request != null && (request.getUserPrincipal() == null || StringUtils.isBlank(request.getUserPrincipal().getName())) ) {
 			throw new UserRequiredException(request == null ? null : request.getRequestURL().toString());
 		}
-		if(userRoles == null || userRoles.isEmpty()) {
+		for(String allowed : rolesAllowed) {
+			if(request.isUserInRole(allowed)) {
+				return true;
+			}
+		}
+		
+		// Checking using the newer way of wrapping the request didn't work. Let's look at the User object in case
+		// an older style authorization plugin has stuck one in the session.
+		
+		if (user == null) {
+			throw new UserRequiredException(request == null ? null : request.getRequestURL().toString());
+		}
+		if (userRoles == null || userRoles.isEmpty()) {
 			throw new UnauthorizedAccessException();
 		}
-		for(String allowed : rolesAllowed) {
-			if(userRoles.contains(allowed)) {
+		for (String allowed : rolesAllowed) {
+			if (userRoles.contains(allowed)) {
 				return true;
 			}
 		}
