@@ -52,13 +52,17 @@ public class HttpBodyValueSource implements ValueSource<Object> {
 	protected Object getParameter(String name) {
 		if(isMultipartContent()) {
 			createMultipartContentObjects();
-			return multipartValues.get(name);
+			Object o = multipartValues.get(name); 
+			if(o != null) {
+				return o;
+			}
 		}
-		else {
-			String[] values = request.getParameterValues(name);
-			return values;
-		}
-
+		
+		// Fall through if the multipart resolver does not find the parameter. 
+		// This is useful for when the parameter is a url parameter and thus not parsed
+		// by the multipart resolver but still available from the request.
+		String[] values = request.getParameterValues(name);
+		return values;
 	}
 	
 	protected boolean isMultipartContent() {

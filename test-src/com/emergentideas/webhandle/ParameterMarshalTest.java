@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.webhandle.Constants;
@@ -221,6 +224,9 @@ public class ParameterMarshalTest {
 		Map<String, Object> values = new HashMap<String, Object>();
 		values.put("someInts", new String[] {"2", "3"});
 		
+		HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
+		Mockito.when(mockRequest.getRequestURL()).thenReturn(new StringBuffer("hello"));
+		values.put("request", new HttpServletRequest[] {mockRequest});
 		
 		MapValueSource source = new MapValueSource(values);
 		marshal.getSources().put("request", source);

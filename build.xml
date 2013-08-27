@@ -1,4 +1,4 @@
-<project xmlns:ivy="antlib:org.apache.ivy.ant" name="webhandle" default="pub" basedir=".">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="webhandle" default="dist" basedir=".">
 	<description>
         a build for the webhandle system
     </description>

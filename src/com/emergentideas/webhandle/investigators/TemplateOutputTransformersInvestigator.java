@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.webhandle.Init;
 import com.emergentideas.webhandle.InvocationContext;
@@ -22,6 +24,7 @@ import com.emergentideas.webhandle.output.HtmlDocRespondent;
 import com.emergentideas.webhandle.output.IterativeOutputCreator;
 import com.emergentideas.webhandle.output.OutputCreator;
 import com.emergentideas.webhandle.output.Respondent;
+import com.emergentideas.webhandle.output.ResponsePackage;
 import com.emergentideas.webhandle.output.SegmentedOutput;
 import com.emergentideas.webhandle.output.Template;
 import com.emergentideas.webhandle.output.Wrap;
@@ -100,7 +103,7 @@ public class TemplateOutputTransformersInvestigator implements
 			creator.addTransformer(ReflectionUtils.getFirstMethodCallSpec(contextTransformer, "transform"));
 		}
 		
-		if("body-only".equalsIgnoreCase(request.getParameter(RESPONSE_PACKAGE_PARAMETER_NAME))) {
+		if("body-only".equalsIgnoreCase(getResponsePackage(request, method))) {
 			creator.setFinalRespondent(new BodyRespondent(output));
 		}
 		else {
@@ -108,5 +111,18 @@ public class TemplateOutputTransformersInvestigator implements
 		}
 		
 		return creator;
+	}
+	
+	protected String getResponsePackage(HttpServletRequest request, Method method) {
+		String s = request.getParameter(RESPONSE_PACKAGE_PARAMETER_NAME);
+		if(StringUtils.isNotBlank(s)) {
+			return s;
+		}
+		ResponsePackage rp = ReflectionUtils.getAnnotation(method, ResponsePackage.class);
+		if(rp != null) {
+			return rp.value();
+		}
+		
+		return null;
 	}
 }

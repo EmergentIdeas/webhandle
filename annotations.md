@@ -38,3 +38,38 @@ J2EE6 Annotations can also be used.
 J2EE6 also uses the annotations @GET, @POST, @HEAD, @PUT, @DELETE, @OPTIONS.  Using one or more of
 these on a method in combination with a @Path will restrict the request to only those HTTP methods.
 If no HTTP method is defined, then all methods will be assumed to be acceptable.
+
+
+Responding to Requests
+======================
+
+==@Template
+
+Indicates that the response should be assumed to be a templated name that should be executed
+with the location information
+
+==@Wrap
+
+Indicates that the template should be wrapped by another template unless the caller requests
+that it not be wrapped but adding a request parameter
+
+> response-wrapper=none
+
+Including the page's chrome in this way allows plugin pieces of applications to reference the type
+of chrome they'd like (app_page, public_page, etc.) without having to know anything about how those
+chunks of chrome are constructed
+
+==@ResponsePackage
+
+Specifies how the output should be turned into a line level response. Currently, the only meaningful
+value is
+
+> body-only
+
+This has the same effect as requesting with the parameter
+
+> request-package=body-only
+
+Either of these methods will keep the output from generating the html element, the head and body elements and their
+associated interior code and just write the contents of the body to the line. This is needed for sending back ajax
+html or json.

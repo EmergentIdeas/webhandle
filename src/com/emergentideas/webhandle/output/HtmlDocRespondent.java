@@ -10,6 +10,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.emergentideas.logging.Logger;
@@ -61,9 +62,17 @@ public class HtmlDocRespondent extends DirectRespondent {
 			
 			
 			if(output.getStream("title").length() > 0) {
-				write(os, "<title>" + output.getStream("title") + "</title>", true);
+				write(os, "<title>" + StringEscapeUtils.escapeHtml(output.getStream("title").toString()) + "</title>", true);
 			}
 			
+			// Write the meta tags that are just name/value pairs
+			Map<String, String> namedMeta = output.getPropertySet("namedMeta");
+			for(String key : namedMeta.keySet()) {
+				String value = namedMeta.get(key);
+				if(StringUtils.isNotBlank(key) && StringUtils.isNotBlank(value)) {
+					write(os, "<meta name=\"" + key + "\" content=\"" + StringEscapeUtils.escapeHtml(value) + "\" />", true);
+				}
+			}
 			
 			Map<String, String> cssIncludes = output.getPropertySet("cssIncludes");
 			
@@ -115,7 +124,9 @@ public class HtmlDocRespondent extends DirectRespondent {
 	
 	protected void addDefaultHeaders() {
 		Map<String,String> headers = output.getPropertySet("httpHeader");
-		headers.put("Content-Type", "text/html; charset=" + characterSet.toLowerCase());
+		if(headers.containsKey("Content-Type") == false) {
+			headers.put("Content-Type", "text/html; charset=" + characterSet.toLowerCase());
+		}
 		if(headers.containsKey("Cache-Control") == false) {
 			headers.put("Cache-Control", "no-cache");
 		}

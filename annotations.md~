@@ -13,7 +13,12 @@ Any class which has a resource annotation will be added as a service with the na
 specified in the annotation or the simple name of the class (first letter lower case) if no
 name is specified and with a type of the type of the class if no type is specified.
 
+==@Wire
+Any method with a Wire annotation will be called and parameters used based on the normal
+parameter naming investigators.
 
+If a class has a wire method it is a shorthand way of putting the wire annotation on all
+the setters of that class.
 
 
 Handling Web Requests

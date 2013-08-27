@@ -4,12 +4,12 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 import com.emergentideas.webhandle.templates.TemplateDef;
 
-@TemplateDef("esc")
-public class EscapeHTML extends EscapeTemplate {
+@TemplateDef("escjs")
+public class EscapeJS extends EscapeTemplate {
 
 	@Override
 	protected String escape(String s) {
-		return StringEscapeUtils.escapeHtml(s);
+		return StringEscapeUtils.escapeJavaScript(s);
 	}
 
 	

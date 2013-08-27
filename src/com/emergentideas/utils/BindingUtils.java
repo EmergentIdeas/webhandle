@@ -12,6 +12,8 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.emergentideas.webhandle.Location;
 
 public class BindingUtils 
@@ -190,8 +192,7 @@ public class BindingUtils
 				if(isBlank(valueToSet) == false)
 				{
 					String inputType = getAttributeValue(s, "type");
-					if("text".equals(inputType) || "hidden".equals(inputType))
-					{
+					if("text".equals(inputType) || "hidden".equals(inputType) || org.apache.commons.lang.StringUtils.isBlank(inputType)) {
 						//If it already has a value, delete the value
 						Matcher mValue = pValAttr.matcher(s);
 						if(mValue.find())
@@ -205,6 +206,9 @@ public class BindingUtils
 								nameAttrEnd -= (valueAttrEnd - valueAttrStart);
 							}
 						}
+						
+						// escape the html
+						valueToSet = StringEscapeUtils.escapeHtml(valueToSet);
 						
 						s = s.substring(0, nameAttrEnd ) + " value=\"" + valueToSet + "\" " + s.substring(nameAttrEnd);
 					}

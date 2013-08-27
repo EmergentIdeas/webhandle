@@ -17,8 +17,13 @@ html tag, allows a template to set the html tag for language or whatever else it
 
 htmlHeader
 ----------
-html header, will probably be added before all of the css includes and libraries but after
-any sort of meta or http-equiv tags
+html header, will be added before all of the css includes and libraries but after
+any sort of http-equiv tags
+
+namedMeta
+---------
+the named html header meta tags for the page (a map of name value pairs). 
+Other meta tags not having name and content attributes should be created by adding to the htmlHeader
 
 title
 -----
