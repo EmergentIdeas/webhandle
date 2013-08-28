@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<Context  docBase="/data/repositories/webhost_deployed">
+<Context  docBase="/data/repositories/webhandle/dist">
 	<Parameter 
 	  name="host.apps.definitions" 
-	  value="/usr/share/tomcat6/vhost.txt" 
+	  value="/usr/share/tomcat6/vhost.conf" 
 	/>
 </Context>

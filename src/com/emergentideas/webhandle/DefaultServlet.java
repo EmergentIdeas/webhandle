@@ -26,6 +26,9 @@ public class DefaultServlet extends HttpServlet {
 		AppLoader loader = new AppLoader();
 		try {
 			String hostAppsFileName = getServletContext().getInitParameter("host.apps.definitions");
+			if(StringUtils.isBlank(hostAppsFileName)) {
+				hostAppsFileName = "WEB-INF/webhandle.conf";
+			}
 			File conf = null;
 			if(StringUtils.isBlank(hostAppsFileName) == false ) {
 				conf = new File(hostAppsFileName);
