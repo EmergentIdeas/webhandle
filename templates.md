@@ -171,6 +171,23 @@ it would just poop on your shoes since the dot operator doesn't know how to extr
 
 
 
+== Special Information
+Most times I template information information into an HTML format I do just fine without needing to know the ordinal number of
+the element I'm processing or whether it's the first of the last of the series. In some cases though, like generating JSON, it 
+can be important. There a few build in variables can help when you do.
+
+1. <the/template/name>_count		This is the count of element within the list (starting with zero) for the current invocations of the
+template listed. It contains the template name so that child templates that are themselves called multiple times can access the 
+ordinal number of ancestor objects. An example would be: contact-templates/address_count
+2. $has_next							True if there are more elements yet to come in the sequence, false otherwise. Handy for deciding to add a comma or not.
+It will be written only multiple items are being processed.
+3. $is_first							True if the first element, false otherwise. Could be useful for templating the first row of data differently (as headers
+or something) than the other rows. It will be written only multiple items are being processed.
+4. $is_last							Pretty much the inverse of $hasNext. It will be written only multiple items are being processed.
+5. $current_count					The index within the list being iterated of the current object. This is easer to use than <template/name>_count but can
+be overwritten by the subsequent invocation of templates which are processing multiple objects.  It will be written only multiple items
+are being processed.
+
 
 
 

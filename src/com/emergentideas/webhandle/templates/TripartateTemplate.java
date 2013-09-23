@@ -11,6 +11,7 @@ import java.util.Properties;
 
 import com.emergentideas.logging.Logger;
 import com.emergentideas.logging.SystemOutLogger;
+import com.emergentideas.utils.OrderedProperties;
 import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.utils.StringUtils;
 import com.emergentideas.webhandle.Location;
@@ -135,7 +136,7 @@ public class TripartateTemplate implements TemplateInstance {
 	}
 	
 	protected Map<String, String> parseProperties(String info) {
-		Properties properties = new Properties();
+		Properties properties = new OrderedProperties();
 		try {
 			properties.load(new ByteArrayInputStream(info.getBytes()));
 		}

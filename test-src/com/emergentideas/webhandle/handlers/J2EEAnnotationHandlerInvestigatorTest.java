@@ -84,8 +84,8 @@ public class J2EEAnnotationHandlerInvestigatorTest {
 	@Test
 	public void testMethodOrder() throws Exception {
 		HandleAnnotationHandlerInvestigator investigator = new HandleAnnotationHandlerInvestigator();
-		List<Method> methods = investigator.getMethodsInInheritenceOrder(Handler3J2EE.class);
+		List<Method> methods = investigator.getMethodsInReverseInheritenceOrder(Handler3J2EE.class);
 		
-		assertTrue(methods.get(0).getName().equals("six"));
+		assertTrue(methods.get(methods.size() - 1).getName().equals("six"));
 	}
 }

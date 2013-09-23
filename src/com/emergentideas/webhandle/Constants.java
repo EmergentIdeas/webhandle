@@ -34,5 +34,6 @@ public interface Constants {
 	public static final String APPLICATION_ON_DISK_LOCATION = "application-on-disk-location";
 
 
+	public static final String DEFAULT_CHARACTER_ENCODING = "UTF-8";
 	
 }

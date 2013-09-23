@@ -9,15 +9,19 @@ import com.emergentideas.webhandle.investigators.ResourceAnnotationPropertyNameI
 import com.emergentideas.webhandle.investigators.SourceAnnotationSourceSetInvestigator;
 import com.emergentideas.webhandle.investigators.TransformersAnnotationTransformersInvestigator;
 import com.emergentideas.webhandle.transformers.NumberToStringTransformer;
+import com.emergentideas.webhandle.transformers.StringToBigDecimalTransformer;
 import com.emergentideas.webhandle.transformers.StringToBooleanTransformer;
 import com.emergentideas.webhandle.transformers.StringToDateTransformer;
 import com.emergentideas.webhandle.transformers.StringToDoubleTransformer;
+import com.emergentideas.webhandle.transformers.StringToFloatTransformer;
 import com.emergentideas.webhandle.transformers.StringToIntegerTransformer;
 
 public class IntegratorConfiguration extends ParameterMarshalConfiguration {
 	
 	public IntegratorConfiguration() {
 		addCustomInvestigators();
+		
+		addNameAnnotationNameInvestigators();
 		
 		// adding composite investigators first so they take precedence
 		addDbInvestigators();
@@ -35,7 +39,10 @@ public class IntegratorConfiguration extends ParameterMarshalConfiguration {
 	}
 	
 	protected void addCustomInvestigators() {
-		
+	}
+	
+	protected void addNameAnnotationNameInvestigators() {
+		getParameterNameInvestigators().add(new NameAnnotationPropertyNameInvestigator());
 	}
 	
 	protected void addOutputInvestigators() {
@@ -51,6 +58,8 @@ public class IntegratorConfiguration extends ParameterMarshalConfiguration {
 		getTypeTransformers().add(new StringToDateTransformer());
 		getTypeTransformers().add(new StringToIntegerTransformer());
 		getTypeTransformers().add(new StringToDoubleTransformer());
+		getTypeTransformers().add(new StringToBigDecimalTransformer());
+		getTypeTransformers().add(new StringToFloatTransformer());
 	}
 	
 	protected void addDbInvestigators() {
@@ -70,9 +79,7 @@ public class IntegratorConfiguration extends ParameterMarshalConfiguration {
 	}
 	
 	protected void addDefaultParameterNameInvestigators() {
-		getParameterNameInvestigators().add(new NameAnnotationPropertyNameInvestigator());
 		getParameterNameInvestigators().add(new DebugInfoParameterNameInvestigator());
-		
 	}
 	
 	protected void addDefaultSourceSetInvestigators() {

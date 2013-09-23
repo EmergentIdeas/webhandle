@@ -68,13 +68,21 @@ public class TripartateTemplateElementProcessor implements ElementProcessor {
 					}
 					
 					Iterator<Object> it = data.iterator();
-					for(int i = 0; i < data.size(); i++) {
+					int dataSize = data.size();
+					for(int i = 0; i < dataSize; i++) {
 						Object o = it.next();
 						if(ti != null) {
 							Location callLocation = new AppLocation(location);
 							callLocation.add(o);
 							if(templateCountName != null) {
 								callLocation.put(templateCountName, i);
+							}
+							
+							if(dataSize > 1) {
+								callLocation.put("has_next", i < (dataSize - 1));
+								callLocation.put("is_first", i == 0);
+								callLocation.put("is_last", !(i < (dataSize - 1)));
+								callLocation.put("current_count", i);
 							}
 							
 							ti.render(output, callLocation, elementSourceName, null);

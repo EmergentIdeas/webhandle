@@ -8,19 +8,25 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.pojava.datetime.DateTime;
 
+import com.emergentideas.utils.DateUtils;
 import com.emergentideas.webhandle.InvocationContext;
 import com.emergentideas.webhandle.ValueTransformer;
 
 public class StringToDateTransformer implements ValueTransformer<String, String, Date[]> {
 
+	// This is also the HTML5 date format
 	protected static final String sWidgetDateFormat = "yyyy-MM-dd";
+	
 	protected static final String sWidgetDateFormat2 = "yyyy.MM.dd";
 	protected static final String sWidgetDateFormat3 = "MM/dd/yyyy";
 	protected static final String sWidgetDateFormat4 = "dd/MM/yyyy";
 	
 	protected static final String sWidgetTimeFormat = "HH:mm:ss";
 	protected static final String sWidgetTimeFormat2 = "H:mm:ss";
+	
+	// This is also the HTML5 time format
 	protected static final String sWidgetTimeFormat3 = "HH:mm";
+	
 	protected static final String sWidgetTimeFormat4 = "H:mm";
 	
 	protected static final String sWidgetTimeFormat5 = "h:mma";
@@ -31,6 +37,7 @@ public class StringToDateTransformer implements ValueTransformer<String, String,
 	
 	protected DateFormat dfDateAndTime = new SimpleDateFormat(sWholeFormat);
 	protected DateFormat dfDateAndTime2 = new SimpleDateFormat(sWholeFormat2);
+	protected DateFormat dfDateAndTime3 = DateUtils.newHtml5DateTimeLocalFormat();
 	
 	protected DateFormat dfDateOnly = new SimpleDateFormat(sWidgetDateFormat);
 	protected DateFormat dfDateOnly2 = new SimpleDateFormat(sWidgetDateFormat2);
@@ -43,10 +50,14 @@ public class StringToDateTransformer implements ValueTransformer<String, String,
 	protected DateFormat dfTimeOnly4 = new SimpleDateFormat(sWidgetTimeFormat4);
 	protected DateFormat dfTimeOnly5 = new SimpleDateFormat(sWidgetTimeFormat5);
 	protected DateFormat dfTimeOnly6 = new SimpleDateFormat(sWidgetTimeFormat6);
+	
+	protected DateFormat dfMonth = DateUtils.newHtml5MonthFormat();
+	protected DateFormat dfWeek = DateUtils.newHtml5WeekFormat();
 
 	protected DateFormat[] allFormats = {
 			dfDateAndTime,
 			dfDateAndTime2,
+			dfDateAndTime3,
 			dfDateOnly,
 			dfDateOnly2,
 			dfDateOnly3,
@@ -56,7 +67,9 @@ public class StringToDateTransformer implements ValueTransformer<String, String,
 			dfTimeOnly3,
 			dfTimeOnly4,
 			dfTimeOnly5,
-			dfTimeOnly6
+			dfTimeOnly6,
+			dfMonth,
+			dfWeek
 	};
 	
 	public Date[] transform(InvocationContext context, Map<String, String> transformationProperties, 

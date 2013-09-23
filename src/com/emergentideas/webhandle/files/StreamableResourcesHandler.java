@@ -56,6 +56,11 @@ public class StreamableResourcesHandler {
 			return new CouldNotHandle() {};
 		}
 		
+		// must-revalidate causes the browser to rigorously adhere to the caching rules without take
+		// what the spec refers to as "liberties". It does not, as the name would imply, cause every
+		// use of a cached object to be revalidated against the server copy.
+		String revalidateSegment = ", must-revalidate";
+		
 		Calendar c = Calendar.getInstance();
 		if(cacheTime > 0) {
 			c.add(Calendar.SECOND, cacheTime);
@@ -70,7 +75,7 @@ public class StreamableResourcesHandler {
 		
 		if(resource instanceof StreamableResource) {
 			headers.put("Content-Type", servletContext.getMimeType(filePath));
-			headers.put("Cache-Control" , (cacheTime > 0 ? "public, " : "no-cache, ") + "max-age=" + cacheTime + ", must-revalidate");
+			headers.put("Cache-Control" , (cacheTime > 0 ? "public, " : "no-cache, ") + "max-age=" + cacheTime + revalidateSegment);
 			headers.put("Expires", DateUtils.htmlExpiresDateFormat().format(c.getTime()));
 			StreamableResource sr = (StreamableResource)resource;
 			headers.put("ETag", sr.getEtag());

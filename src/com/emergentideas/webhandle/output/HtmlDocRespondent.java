@@ -3,6 +3,7 @@ package com.emergentideas.webhandle.output;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.emergentideas.logging.Logger;
 import com.emergentideas.logging.SystemOutLogger;
+import com.emergentideas.utils.DateUtils;
 
 public class HtmlDocRespondent extends DirectRespondent {
 
@@ -123,16 +125,26 @@ public class HtmlDocRespondent extends DirectRespondent {
 	}
 	
 	protected void addDefaultHeaders() {
+		Calendar c = Calendar.getInstance();
+		c.add(Calendar.HOUR, -1);
+		
 		Map<String,String> headers = output.getPropertySet("httpHeader");
 		if(headers.containsKey("Content-Type") == false) {
 			headers.put("Content-Type", "text/html; charset=" + characterSet.toLowerCase());
 		}
 		if(headers.containsKey("Cache-Control") == false) {
-			headers.put("Cache-Control", "no-cache");
+			headers.put("Cache-Control", "no-cache, must-revalidate, max-age=0");
 		}
 		if(headers.containsKey("Pragma") == false) {
 			headers.put("Pragma", "no-cache");
 		}
+		if(headers.containsKey("Expires") == false) {
+			headers.put("Expires", DateUtils.htmlExpiresDateFormat().format(c.getTime()));
+		}
+		if(headers.containsKey("X-UA-Compatible") == false) {
+			headers.put("X-UA-Compatible", "IE=edge");
+		}
+		
 
 	}
 	

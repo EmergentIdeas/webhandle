@@ -144,7 +144,21 @@ public class ReflectionUtils {
 	}
 	
 	public static Method getGetterMethodFromClass(Class focus, String propertyName) {
-		String methodName = "get" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
+		String methodName = null; 
+		if(propertyName.length() >= 2 && Character.isLowerCase(propertyName.charAt(0)) && Character.isUpperCase(propertyName.charAt(1))) {
+			// This is the format for a property like xValue
+			methodName = "get" + propertyName;
+			Method m = getNoArgumentMethodWithName(focus, methodName);
+			if(m != null) {
+				return m;
+			}
+		}
+		
+		methodName = "get" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
+		return getNoArgumentMethodWithName(focus, methodName);
+	}
+	
+	protected static Method getNoArgumentMethodWithName(Class focus, String methodName) {
 		for(Method m : focus.getMethods()) {
 			if(m.getName().equals(methodName)) {
 				if(m.getParameterTypes().length == 0) {

@@ -1,6 +1,7 @@
 package com.emergentideas.utils;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
@@ -188,32 +189,19 @@ public class BindingUtils
 				
 				Object o = data.get(nameOfInput);
 				String valueToSet = o == null ? null : o.toString();
+				Date dateValue = null;
+				
+				if(o instanceof Date) {
+					dateValue = (Date)o;
+				}
+				else if(o instanceof Calendar) {
+					dateValue = ((Calendar)o).getTime();
+				}
 				
 				if(isBlank(valueToSet) == false)
 				{
 					String inputType = getAttributeValue(s, "type");
-					if("text".equals(inputType) || "hidden".equals(inputType) || org.apache.commons.lang.StringUtils.isBlank(inputType)) {
-						//If it already has a value, delete the value
-						Matcher mValue = pValAttr.matcher(s);
-						if(mValue.find())
-						{
-							valueAttrStart = mValue.start(1);
-							valueAttrEnd = mValue.end(1);
-							s = s.substring(0, valueAttrStart) + s.substring(valueAttrEnd);
-							if(valueAttrStart < nameAttrStart) {
-								// If the value comes before the name, change the location to adjust for the shorter string
-								nameAttrStart -= (valueAttrEnd - valueAttrStart);
-								nameAttrEnd -= (valueAttrEnd - valueAttrStart);
-							}
-						}
-						
-						// escape the html
-						valueToSet = StringEscapeUtils.escapeHtml(valueToSet);
-						
-						s = s.substring(0, nameAttrEnd ) + " value=\"" + valueToSet + "\" " + s.substring(nameAttrEnd);
-					}
-					else if("radio".equals(inputType))
-					{
+					if("radio".equalsIgnoreCase(inputType)) {
 						String buttonValue = getAttributeValue(s, "value");
 						if(valueToSet.equals(buttonValue)) {
 							s = addValueBeforeFirstElementTermination(s, "checked=\"checked\"");
@@ -222,8 +210,7 @@ public class BindingUtils
 							s = StringUtils.replaceString(s, "checked=\"checked\"", "", "checked", "");
 						}
 					}
-					else if("checkbox".equals(inputType))
-					{
+					else if("checkbox".equalsIgnoreCase(inputType)) {
 						String buttonValue = getAttributeValue(s, "value");
 						if(org.apache.commons.lang.StringUtils.isBlank(buttonValue)) {
 							// if the button value is blank, then we're just looking for an indication that the check box should be
@@ -239,6 +226,66 @@ public class BindingUtils
 								s = addValueBeforeFirstElementTermination(s, "checked=\"checked\"");
 							}
 						}
+					}
+					else if("file".equalsIgnoreCase(inputType) || "submit".equalsIgnoreCase(inputType)) {
+						// don't do anything
+					}
+					else {
+						// There are lots of new input types in html5. Most are just text fields that the browser
+						// provides some tooling for. However, some of them, like dates, require the text to be
+						// specially formatted. No matter what, we should add the value. If we understand the
+						// type, we should correctly format the value
+						
+						
+						//If it already has a value, delete the value
+						Matcher mValue = pValAttr.matcher(s);
+						if(mValue.find())
+						{
+							valueAttrStart = mValue.start(1);
+							valueAttrEnd = mValue.end(1);
+							s = s.substring(0, valueAttrStart) + s.substring(valueAttrEnd);
+							if(valueAttrStart < nameAttrStart) {
+								// If the value comes before the name, change the location to adjust for the shorter string
+								nameAttrStart -= (valueAttrEnd - valueAttrStart);
+								nameAttrEnd -= (valueAttrEnd - valueAttrStart);
+							}
+						}
+						
+						if("text".equalsIgnoreCase(inputType) || "hidden".equalsIgnoreCase(inputType) || org.apache.commons.lang.StringUtils.isBlank(inputType)) {
+							// This falls into a general text replacement category
+						}
+						else if("date".equalsIgnoreCase(inputType)) {
+							if(dateValue != null) {
+								valueToSet = DateUtils.html5DateFormat().format(dateValue);
+							}
+						}
+						else if("datetime-local".equalsIgnoreCase(inputType) || "datetime".equalsIgnoreCase(inputType)) {
+							if(dateValue != null) {
+								valueToSet = DateUtils.html5DateTimeLocalFormat().format(dateValue);
+							}
+						}
+						else if("month".equalsIgnoreCase(inputType)) {
+							if(dateValue != null) {
+								valueToSet = DateUtils.html5MonthFormat().format(dateValue);
+							}
+						}
+						else if("week".equalsIgnoreCase(inputType)) {
+							if(dateValue != null) {
+								valueToSet = DateUtils.html5WeekFormat().format(dateValue);
+							}
+						}
+						else if("time".equalsIgnoreCase(inputType)) {
+							if(dateValue != null) {
+								valueToSet = DateUtils.html5TimeFormat().format(dateValue);
+							}
+						}
+
+						
+						
+						// escape the html
+						valueToSet = StringEscapeUtils.escapeHtml(valueToSet);
+						
+						s = s.substring(0, nameAttrEnd ) + " value=\"" + valueToSet + "\" " + s.substring(nameAttrEnd);
 					}
 				}
 			}

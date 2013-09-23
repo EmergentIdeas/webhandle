@@ -6,6 +6,8 @@
 	<property name="src" location="src"/>
 	<property name="build" location="compiled"/>
 	<property name="dist"  location="dist"/>
+	
+	<property name="organisation" value="com.emergentideas" />
 
 	<ivy:settings file="settings.xml" />
 
@@ -148,6 +150,12 @@
 		</ivy:publish>
 	</target>
 	
+	<!-- deletes this module from the cache so that subsequent publications of the same version will be picked up -->
+	<target name="delcache">
+		<ivy:cachepath pathid="ivy.cachepath.dne" conf="empty"/>
+		<echo message="deleting cache dir: ${ivy.cache.dir}/${organisation}/${ant.project.name}"></echo>
+	  	<delete dir="${ivy.cache.dir}/${organisation}/${ant.project.name}" />
+	</target>
 
 
 	<target name="clean" description="clean up" >

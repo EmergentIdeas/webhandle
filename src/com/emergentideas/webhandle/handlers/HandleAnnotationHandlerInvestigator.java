@@ -1,7 +1,9 @@
 package com.emergentideas.webhandle.handlers;
 
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.webhandle.CallSpec;
+import com.emergentideas.webhandle.Constants;
 import com.emergentideas.webhandle.Location;
 import com.emergentideas.webhandle.Type;
 import com.emergentideas.webhandle.bootstrap.ConfigurationAtom;
@@ -46,6 +49,7 @@ public class HandleAnnotationHandlerInvestigator implements HandlerInvestigator,
 	
 	protected Map<UrlRegexOutput, HttpRequestCallSpec> handlerCalls = Collections.synchronizedMap(new HashMap<UrlRegexOutput, HttpRequestCallSpec>());
 	
+	protected String characterEncoding = Constants.DEFAULT_CHARACTER_ENCODING;
 	
 	
 	public void integrate(Loader loader, Location location,
@@ -58,8 +62,6 @@ public class HandleAnnotationHandlerInvestigator implements HandlerInvestigator,
 
 	public void analyzeObject(Object handler) {
 		String[] urlPrefixPattern = null;
-		
-		Set<String> definedUrlMethodCombos = new HashSet<String>(); 
 		
 		Handle handle = ReflectionUtils.getAnnotationOnClass(handler.getClass(), Handle.class);
 		Path path = ReflectionUtils.getAnnotationOnClass(handler.getClass(), Path.class);
@@ -75,7 +77,7 @@ public class HandleAnnotationHandlerInvestigator implements HandlerInvestigator,
 			urlPrefixPattern = new String[] { "" };
 		}
 		
-		for(Method method : getMethodsInInheritenceOrder(handler.getClass())) {
+		for(Method method : removeDuplicates(getMethodsInReverseInheritenceOrder(handler.getClass()), handle, path, urlPrefixPattern)) {
 			if(ReflectionUtils.isPublic(method) == false) {
 				continue;
 			}
@@ -86,30 +88,77 @@ public class HandleAnnotationHandlerInvestigator implements HandlerInvestigator,
 				continue;
 			}
 			
-			for(String prefix : urlPrefixPattern) {
-				if(handle != null) {
-					for(String suffix : handle.value()) {
-						String url = prefix + suffix;
-						String urlAndMethod = url + createHttpMethodsString(handle.method());
-						if(definedUrlMethodCombos.contains(urlAndMethod)) {
-							continue;
-						}
-						definedUrlMethodCombos.add(urlAndMethod);
-						addHandlerToLists(handler, method, handle.method(), url);
-					}
+			List<String> values = new ArrayList<String>();
+			if(handle != null) {
+				for(String s : handle.value()) {
+					values.add(s);
 				}
-				else if(path != null) {
-					String url = prefix + path.value();
-					HttpMethod[] allowedMethods = extractMethods(method);
-					String urlAndMethod = url + createHttpMethodsString(allowedMethods);
-					if(definedUrlMethodCombos.contains(urlAndMethod)) {
-						continue;
-					}
-					definedUrlMethodCombos.add(urlAndMethod);
+			}
+			else if(path != null) {
+				values.add(path.value());
+			}
+			
+			for(String prefix : urlPrefixPattern) {
+				
+				HttpMethod[] allowedMethods = extractMethods(method);
+				
+				for(String suffix : values) {
+					String url = prefix + suffix;
 					addHandlerToLists(handler, method, allowedMethods, url);
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Removes the first of any url and method combo from the list of methods
+	 * @param methods
+	 * @return
+	 */
+	protected List<Method> removeDuplicates(List<Method> methods, Handle handle, Path path, String[] urlPrefixPattern) {
+		
+		List<Method> methodsToRemove = new ArrayList<Method>();
+		Map<String, Method> definedUrlMethodCombos = new HashMap<String, Method>();
+		
+		for(Method method : methods) {
+			if(ReflectionUtils.isPublic(method) == false) {
+				continue;
+			}
+			
+			handle = ReflectionUtils.getAnnotation(method, Handle.class);
+			path = ReflectionUtils.getAnnotation(method, Path.class);
+			if(handle == null && path == null) {
+				continue;
+			}
+			
+			List<String> values = new ArrayList<String>();
+			if(handle != null) {
+				for(String s : handle.value()) {
+					values.add(s);
+				}
+			}
+			else if(path != null) {
+				values.add(path.value());
+			}
+			
+			for(String prefix : urlPrefixPattern) {
+				HttpMethod[] allowedMethods = extractMethods(method);
+				for(String suffix : values) {
+					String url = prefix + suffix;
+					String urlAndMethod = url + createHttpMethodsString(allowedMethods);
+					if(definedUrlMethodCombos.containsKey(urlAndMethod)) {
+						methodsToRemove.add(definedUrlMethodCombos.get(urlAndMethod));
+					}
+					definedUrlMethodCombos.put(urlAndMethod, method);
+				}
+			}
+		}
+		
+		for(Method m : methodsToRemove) {
+			methods.remove(m);
+		}
+		
+		return methods;
 	}
 	
 	protected void addHandlerToLists(Object handler, Method method, HttpMethod[] allowedMethods, String url) {
@@ -124,15 +173,22 @@ public class HandleAnnotationHandlerInvestigator implements HandlerInvestigator,
 	
 	protected HttpMethod[] extractMethods(Method m) {
 		List<HttpMethod> methods = new ArrayList<HttpMethod>();
-		addIfPresent(m, GET.class, methods, HttpMethod.GET);
-		addIfPresent(m, POST.class, methods, HttpMethod.POST);
-		addIfPresent(m, PUT.class, methods, HttpMethod.PUT);
-		addIfPresent(m, DELETE.class, methods, HttpMethod.DELETE);
-		addIfPresent(m, OPTIONS.class, methods, HttpMethod.OPTIONS);
-		addIfPresent(m, HEAD.class, methods, HttpMethod.HEAD);
 		
-		if(methods.size() == 0) {
-			methods.add(HttpMethod.ANY);
+		Handle handle = ReflectionUtils.getAnnotation(m, Handle.class);
+		if(handle != null) {
+			return handle.method();
+		}
+		else {
+			addIfPresent(m, GET.class, methods, HttpMethod.GET);
+			addIfPresent(m, POST.class, methods, HttpMethod.POST);
+			addIfPresent(m, PUT.class, methods, HttpMethod.PUT);
+			addIfPresent(m, DELETE.class, methods, HttpMethod.DELETE);
+			addIfPresent(m, OPTIONS.class, methods, HttpMethod.OPTIONS);
+			addIfPresent(m, HEAD.class, methods, HttpMethod.HEAD);
+			
+			if(methods.size() == 0) {
+				methods.add(HttpMethod.ANY);
+			}
 		}
 		
 		return methods.toArray(new HttpMethod[methods.size()]);
@@ -160,7 +216,7 @@ public class HandleAnnotationHandlerInvestigator implements HandlerInvestigator,
 	 * @param c
 	 * @return
 	 */
-	protected List<Method> getMethodsInInheritenceOrder(Class<?> c) {
+	protected List<Method> getMethodsInReverseInheritenceOrder(Class<?> c) {
 		List<Method> result = new ArrayList<Method>();
 		
 		while(c != null) {
@@ -170,6 +226,7 @@ public class HandleAnnotationHandlerInvestigator implements HandlerInvestigator,
 			c = c.getSuperclass();
 		}
 		
+		Collections.reverse(result);
 		return result;
 	}
 	
@@ -181,6 +238,7 @@ public class HandleAnnotationHandlerInvestigator implements HandlerInvestigator,
 		for(UrlRegexOutput regex : handlerRegexs) {
 			Map<String, String> properties = regex.matches(requestUrl);
 			if(properties != null) {
+				urlDecode(properties);
 				HttpRequestCallSpec spec = handlerCalls.get(regex);
 				if(contains(spec.getAllowedMethods(), HttpMethod.ANY) || contains(spec.getAllowedMethods(), method)) {
 					// looks like we've found a method which will handle the url
@@ -193,6 +251,16 @@ public class HandleAnnotationHandlerInvestigator implements HandlerInvestigator,
 		}
 		
 		return result.toArray(new CallSpec[result.size()]);
+	}
+	
+	protected void urlDecode(Map<String, String> properties) {
+		for(Map.Entry<String, String> entry : properties.entrySet()) {
+			try {
+				entry.setValue(URLDecoder.decode(entry.getValue(), characterEncoding));
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	protected <T> boolean contains(T[] baseSet, T focus) {

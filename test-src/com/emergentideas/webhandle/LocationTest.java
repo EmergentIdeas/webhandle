@@ -158,6 +158,17 @@ public class LocationTest {
 		assertTrue(result.contains("four"));
 	}
 	
+	@Test
+	public void textOneInitialCapitalLetter() {
+		AppLocation loc = new AppLocation();
+		
+		Point p = new Point();
+		p.xValue = "hello";
+		
+		loc.add(p);
+		assertEquals("hello", loc.get("xValue"));
+	}
+	
 }
 
 

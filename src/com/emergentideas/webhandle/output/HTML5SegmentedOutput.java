@@ -24,16 +24,6 @@ public class HTML5SegmentedOutput extends SegmentedOutput {
 			for(String key : ((Set<String>)(Set)defaults.keySet())) {
 				getStream(key).append(defaults.get(key).toString());
 			}
-			
-			getPropertySet("httpHeader").put("X-UA-Compatible", "IE=edge");
-			
-			Calendar c = Calendar.getInstance();
-			c.add(Calendar.HOUR, -1);
-			
-			// add default cache control information
-			getPropertySet("httpHeader").put("Cache-Control", "public, must-revalidate, max-age=0");
-			getPropertySet("httpHeader").put("Content-Type", "text/html");
-			getPropertySet("httpHeader").put("Expires", DateUtils.htmlExpiresDateFormat().format(c.getTime()));
 		}
 		catch(Exception e) {
 			logger.error("Could not load html5 defaults.", e);
