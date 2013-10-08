@@ -46,6 +46,13 @@ public class HttpBodyValueSource implements ValueSource<Object> {
 		if(values != null) {
 			return true;
 		}
+		
+		values = getParameter(name + "[]");
+		
+		if(values != null) {
+			return true;
+		}
+		
 		return false;
 	}
 	
@@ -62,6 +69,10 @@ public class HttpBodyValueSource implements ValueSource<Object> {
 		// This is useful for when the parameter is a url parameter and thus not parsed
 		// by the multipart resolver but still available from the request.
 		String[] values = request.getParameterValues(name);
+		
+		if(values == null) {
+			values = request.getParameterValues(name + "[]");
+		}
 		return values;
 	}
 	
