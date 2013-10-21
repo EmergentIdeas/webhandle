@@ -116,6 +116,13 @@ public class ReflectionUtilsTest {
 	public void testClassDistance() throws Exception {
 		assertEquals((Integer)1, ReflectionUtils.findClassDistance(List.class, ArrayList.class));
 		assertEquals((Integer)2, ReflectionUtils.findClassDistance(List.class, new ArrayList() {}.getClass()));
+		
+		assertEquals((Integer)1, ReflectionUtils.findDirectionalClassDistance(List.class, ArrayList.class));
+		assertEquals((Integer)2, ReflectionUtils.findDirectionalClassDistance(List.class, new ArrayList() {}.getClass()));
+
+		assertEquals((Integer)(-1), ReflectionUtils.findDirectionalClassDistance(ArrayList.class, List.class));
+		assertEquals((Integer)(-2), ReflectionUtils.findDirectionalClassDistance(new ArrayList() {}.getClass(), List.class));
+
 	}
 	
 	@Test
