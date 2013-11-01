@@ -19,7 +19,11 @@ public class OrderedPropertiesTest {
 		
 		int i = 20;
 		while(i > 0) {
-			String value = rand.nextInt(1000) + ""; 
+			int randValue = rand.nextInt(1000);
+			if(l.contains(randValue)) {
+				continue;
+			}
+			String value = randValue + ""; 
 			l.add(value);
 			sb.append(value + "=" + value + "\n");
 			i--;

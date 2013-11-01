@@ -49,6 +49,26 @@ public class AppLocation implements Location {
 	}
 
 	public Object get(String path, InvocationContext context) {
+		if("$this".equals(path) || "this".equals(path)) {
+			if(currentObjects == null || currentObjects.size() == 0) {
+				if(parent != null) {
+					return parent.get(path, context);
+				}
+				return null;
+			}
+			else {
+				return currentObjects.get(0);
+			}
+		}
+		if((currentObjects == null || currentObjects.isEmpty()) && (keyedObjects == null || keyedObjects.isEmpty())) {
+			// Location contains no new information, go right to the parent if available
+			if(parent != null) {
+				return parent.get(path, context);
+			}
+			return null;
+		}
+
+		
 		List<Object> all = all(path, context);
 		if(all.size() > 0) {
 			return all.get(0);
@@ -74,33 +94,35 @@ public class AppLocation implements Location {
 		List<Object> results = new ArrayList<Object>();
 		Collection<Object> candidates = getRootObjectsToConsider();
 		
-		boolean useOnlyOneCandidate = true;
-		
-		Stack<String> pathParts = pathToStack(path);
-		while(pathParts.isEmpty() == false) {
-			String qualifiedPart = pathParts.pop();
-			String propertyName = getPropertyNameFromPathSegment(qualifiedPart);
-			boolean keepCollections = isKeepCollections(qualifiedPart);
+		if(candidates.size() > 0) {
+			boolean useOnlyOneCandidate = true;
 			
-			candidates = extractNextStageObjects(candidates, propertyName, useOnlyOneCandidate);
-			if(keepCollections == false) {
-				expandCollections(candidates);
-			}
-			
-			if(pathParts.isEmpty() == false) {
-				// if there are more parts in the path and any of the candidates are Locations, 
-				// process the locations for remaining parts
-				String remainingPath = stackToPath(pathParts);
-				processLocationsInCandidates(candidates, results, remainingPath, context);
-			}
-			
-			// The first round we only want to use one object instead of all the current and named objects
-			// Subsequent rounds we'll want to pick up everything
-			useOnlyOneCandidate = false;
-			
-			if(candidates.isEmpty()) {
-				// No need to keep processing parts if their are no more candidates
-				break;
+			Stack<String> pathParts = pathToStack(path);
+			while(pathParts.isEmpty() == false) {
+				String qualifiedPart = pathParts.pop();
+				String propertyName = getPropertyNameFromPathSegment(qualifiedPart);
+				boolean keepCollections = isKeepCollections(qualifiedPart);
+				
+				candidates = extractNextStageObjects(candidates, propertyName, useOnlyOneCandidate);
+				if(keepCollections == false) {
+					expandCollections(candidates);
+				}
+				
+				if(pathParts.isEmpty() == false) {
+					// if there are more parts in the path and any of the candidates are Locations, 
+					// process the locations for remaining parts
+					String remainingPath = stackToPath(pathParts);
+					processLocationsInCandidates(candidates, results, remainingPath, context);
+				}
+				
+				// The first round we only want to use one object instead of all the current and named objects
+				// Subsequent rounds we'll want to pick up everything
+				useOnlyOneCandidate = false;
+				
+				if(candidates.isEmpty()) {
+					// No need to keep processing parts if their are no more candidates
+					break;
+				}
 			}
 		}
 		
@@ -210,7 +232,7 @@ public class AppLocation implements Location {
 	 */
 	protected Collection<Object> getRootObjectsToConsider() {
 		List<Object> result = new ArrayList<Object>();
-		if(keyedObjects != null) {
+		if(keyedObjects != null && keyedObjects.size() > 0) {
 			result.add(keyedObjects);
 		}
 		

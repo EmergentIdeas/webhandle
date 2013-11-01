@@ -58,6 +58,7 @@ public class AppLocationTest {
 		assertEquals("B2", tol.get(0).getB());
 		assertEquals("B3", tol.get(1).getB());
 		
+		assertEquals("B2", ((TestObj)loc.get("manyChildren")).getB());
 		
 		// test objects where there's only a getter
 		RequestMessages messages = new RequestMessages();
@@ -101,5 +102,8 @@ public class AppLocationTest {
 		
 		assertEquals("upperlevel", second.get("upperlevel"));
 		assertNull(base.get("upperlevel"));
+		
+		Location empty = new AppLocation();
+		assertNull(empty.get("something"));
 	}
 }

@@ -120,7 +120,7 @@ public class ProxiedThreadLocalEntityManager implements EntityManager {
 	}
 
 	public EntityTransaction getTransaction() {
-		return em().getTransaction();
+		return new InnerTransaction(em().getTransaction());
 	}
 	
 	
@@ -244,6 +244,9 @@ public class ProxiedThreadLocalEntityManager implements EntityManager {
 	}
 
 	protected EntityManager em() {
+		return em(false);
+	}
+	protected EntityManager em(boolean checkConnection) {
 		if(factory == null) {
 			throw new UnsupportedOperationException();
 		}
@@ -251,7 +254,7 @@ public class ProxiedThreadLocalEntityManager implements EntityManager {
 			long start = System.currentTimeMillis();
 			do {
 				EntityManager em = factory.createEntityManager();
-				if(isConnectionAlive(em)) {
+				if((!checkConnection) || isConnectionAlive(em)) {
 					currentManager.set(em);
 					break;
 				}
@@ -269,5 +272,48 @@ public class ProxiedThreadLocalEntityManager implements EntityManager {
 		catch(Throwable t) {
 			return false;
 		}
+	}
+	
+	class InnerTransaction implements EntityTransaction {
+
+		protected EntityTransaction inner;
+		
+		public InnerTransaction(EntityTransaction inner) {
+			this.inner = inner;
+		}
+		
+		public void begin() {
+			try {
+				inner.begin();
+			}
+			catch(Exception e) {
+				// it's possible our connection has timed-out. Let's see if we can grab a new entitymanager
+				// and try again.
+				wipeClean();
+				inner = em(true).getTransaction();
+				inner.begin();
+			}
+		}
+
+		public void commit() {
+			inner.commit();
+		}
+
+		public void rollback() {
+			inner.rollback();
+		}
+
+		public void setRollbackOnly() {
+			inner.setRollbackOnly();
+		}
+
+		public boolean getRollbackOnly() {
+			return inner.getRollbackOnly();
+		}
+
+		public boolean isActive() {
+			return inner.isActive();
+		}
+		
 	}
 }

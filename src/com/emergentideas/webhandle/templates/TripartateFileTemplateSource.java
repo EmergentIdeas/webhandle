@@ -1,23 +1,16 @@
 package com.emergentideas.webhandle.templates;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.io.StringReader;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import com.emergentideas.logging.Logger;
-import com.emergentideas.logging.SystemOutLogger;
-import com.emergentideas.utils.FileUtils;
-import com.emergentideas.utils.ReflectionUtils;
-import com.emergentideas.utils.StringUtils;
 
 public class TripartateFileTemplateSource extends TripartateTemplateSource {
 	
 	protected File root;
+	protected FileCache cache = new FileCache();
 	
 	public TripartateFileTemplateSource() {
 		super();
@@ -65,10 +58,10 @@ public class TripartateFileTemplateSource extends TripartateTemplateSource {
 					
 					if(HINTS_EXTENSION.equals(suffix)) {
 						hints = new Properties(hints);
-						hints.load(new FileInputStream(child));
+						hints.load(new StringReader(cache.get(child)));
 					}
 					else {
-						parts.put(suffix, FileUtils.getFileAsString(child));
+						parts.put(suffix, cache.get(child));
 					}
 				}
 			}

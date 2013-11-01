@@ -20,6 +20,7 @@ public class TripartateClasspathTemplateSource extends TripartateTemplateSource 
 
 	protected Map<String, Map<String, String>> partsByTemplateName = new HashMap<String, Map<String,String>>();
 	protected Map<String, Properties> hintsByTemplateName = Collections.synchronizedMap(new HashMap<String, Properties>());
+	protected Map<String, TemplateInstance> cachedTemplates = Collections.synchronizedMap(new HashMap<String, TemplateInstance>());
 	protected String classpathPrefix;
 	
 	public TripartateClasspathTemplateSource(String classpathPrefix) {
@@ -131,16 +132,21 @@ public class TripartateClasspathTemplateSource extends TripartateTemplateSource 
 	}
 	
 	public TemplateInstance get(String templateName) {
-		Properties phints = hintsByTemplateName.get(templateName);
-		if(phints == null) {
-			phints = defaultHints;
+		TemplateInstance template = cachedTemplates.get(templateName);
+		if(template == null) {
+			Properties phints = hintsByTemplateName.get(templateName);
+			if(phints == null) {
+				phints = defaultHints;
+			}
+			
+			if(partsByTemplateName.containsKey(templateName) == false) {
+				return null;
+			}
+
+			template = new TripartateTemplate(this, elementStreamProcessor, getPartsMap(templateName), phints);
+			cachedTemplates.put(templateName, template);
 		}
 		
-		if(partsByTemplateName.containsKey(templateName) == false) {
-			return null;
-		}
-
-		TemplateInstance template = new TripartateTemplate(this, elementStreamProcessor, getPartsMap(templateName), phints);
 		return template;
 
 	}

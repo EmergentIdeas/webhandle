@@ -15,6 +15,8 @@ public class SegmentedOutput {
 	protected Map<String, Map<String, String>> namedPropertySets = new HashMap<String, Map<String,String>>();
 	
 	protected Map<String, List<String>> namedValues = new HashMap<String, List<String>>();
+	
+	protected Map<String, Object> namedObjects = new HashMap<String, Object>();
 
 	public StringBuilder getStream(String name) {
 		StringBuilder sb = namedStreams.get(name);
@@ -67,7 +69,13 @@ public class SegmentedOutput {
 		return result;
 	}
 	
-
+	public Object getObject(String name) {
+		return namedObjects.get(name);
+	}
+	
+	public void setObject(String name, Object obj) {
+		namedObjects.put(name, obj);
+	}
 	
 	public Set<String> getAllKeys() {
 		Set<String> result = new HashSet<String>();
@@ -83,9 +91,11 @@ public class SegmentedOutput {
 		namedStreams.clear();
 		namedPropertySets.clear();
 		namedValues.clear();
+		namedObjects.clear();
 		
 		namedStreams.putAll(otherOutput.namedStreams);
 		namedPropertySets.putAll(otherOutput.namedPropertySets);
 		namedValues.putAll(otherOutput.namedValues);
+		namedObjects.putAll(otherOutput.namedObjects);
 	}
 }

@@ -18,6 +18,8 @@ public class TripartateTemplateElementProcessor implements ElementProcessor {
 	protected Logger logger = SystemOutLogger.get(TripartateTemplateElementProcessor.class);
 	protected ExpressionFactory expressionFactory;
 	
+	protected static final String TEMPLATE_SOURCE_NAME = "TEMPLATE_SOURCE";
+	
 	public TripartateTemplateElementProcessor(ExpressionFactory expressionFactory) {
 		this.expressionFactory = expressionFactory;
 	}
@@ -42,7 +44,13 @@ public class TripartateTemplateElementProcessor implements ElementProcessor {
 				// create the iteration count variable name
 				templateCountName = templateName.replace('/', '_') + "_count";
 				
-				ti = new WebAppLocation(location).getTemplateSource().get(templateName);
+				TemplateSource ts = (TemplateSource)output.getObject(TEMPLATE_SOURCE_NAME);
+				if(ts == null) {
+					ts = new WebAppLocation(location).getTemplateSource();
+					output.setObject(TEMPLATE_SOURCE_NAME, ts);
+				}
+				
+				ti = ts.get(templateName);
 				if(ti == null) {
 					logger.error("Could not find template named: " + templateName);
 					return true;

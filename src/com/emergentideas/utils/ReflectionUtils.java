@@ -10,7 +10,10 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Id;
 
@@ -22,6 +25,10 @@ public class ReflectionUtils {
 	
 	protected static Class[] primitives = new Class[] { Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE, Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE, Void.TYPE };
 
+	protected static Map<Class, Map<String, Method>> noArgumentMethodCache = Collections.synchronizedMap(new HashMap<Class, Map<String, Method>>());
+	
+	protected static Map<Class, Map<String, Method>> classPropertyGetterMethodCache = Collections.synchronizedMap(new HashMap<Class, Map<String, Method>>());
+	
 	
 	/**
 	 * Returns true if the method follows the rules to be a setter on a bean.
@@ -144,29 +151,60 @@ public class ReflectionUtils {
 	}
 	
 	public static Method getGetterMethodFromClass(Class focus, String propertyName) {
+		Map<String, Method> classCache;
+		synchronized (classPropertyGetterMethodCache) {
+			classCache = classPropertyGetterMethodCache.get(focus);
+			if(classCache == null) {
+				classCache = Collections.synchronizedMap(new HashMap<String, Method>());
+				classPropertyGetterMethodCache.put(focus, classCache);
+			}
+		}
+		
+		if(classCache.containsKey(propertyName)) {
+			return classCache.get(propertyName);
+		}
+
 		String methodName = null; 
 		if(propertyName.length() >= 2 && Character.isLowerCase(propertyName.charAt(0)) && Character.isUpperCase(propertyName.charAt(1))) {
 			// This is the format for a property like xValue
 			methodName = "get" + propertyName;
 			Method m = getNoArgumentMethodWithName(focus, methodName);
 			if(m != null) {
+				classCache.put(propertyName, m);
 				return m;
 			}
 		}
 		
 		methodName = "get" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
-		return getNoArgumentMethodWithName(focus, methodName);
+		Method m = getNoArgumentMethodWithName(focus, methodName);
+		classCache.put(propertyName, m);
+		return m;
 	}
 	
 	protected static Method getNoArgumentMethodWithName(Class focus, String methodName) {
+		Map<String, Method> classCache;
+		synchronized (noArgumentMethodCache) {
+			classCache = noArgumentMethodCache.get(focus);
+			if(classCache == null) {
+				classCache = Collections.synchronizedMap(new HashMap<String, Method>());
+				noArgumentMethodCache.put(focus, classCache);
+			}
+		}
+		
+		if(classCache.containsKey(methodName)) {
+			return classCache.get(methodName);
+		}
+		
 		for(Method m : focus.getMethods()) {
 			if(m.getName().equals(methodName)) {
 				if(m.getParameterTypes().length == 0) {
+					classCache.put(methodName, m);
 					return m;
 				}
 			}
 		}
 		
+		classCache.put(methodName, null);
 		return null;
 	}
 	
