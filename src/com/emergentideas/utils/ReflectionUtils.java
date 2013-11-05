@@ -67,7 +67,13 @@ public class ReflectionUtils {
 	protected static boolean isTypedMethod(String type, Method method) {
 		String methodName = method.getName();
 		
-		if(methodName.startsWith(type) && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3))) {
+		if(methodName.startsWith(type) && methodName.length() > 3 && 
+				(Character.isUpperCase(methodName.charAt(3)) ||
+						// This is the case with a member name like xAxis
+						(methodName.length() > 4 && Character.isLowerCase(methodName.charAt(3)) && Character.isUpperCase(methodName.charAt(4)))
+				)
+						
+		) {
 			return true;
 		}
 

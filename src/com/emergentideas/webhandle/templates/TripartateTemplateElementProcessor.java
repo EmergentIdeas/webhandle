@@ -43,6 +43,7 @@ public class TripartateTemplateElementProcessor implements ElementProcessor {
 			if(templateName != null) {
 				// create the iteration count variable name
 				templateCountName = templateName.replace('/', '_') + "_count";
+				templateCountName = templateCountName.replace('-', '_');
 				
 				TemplateSource ts = (TemplateSource)output.getObject(TEMPLATE_SOURCE_NAME);
 				if(ts == null) {
