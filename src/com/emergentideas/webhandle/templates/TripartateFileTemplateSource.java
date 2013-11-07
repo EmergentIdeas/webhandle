@@ -6,11 +6,22 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
+
+import javax.annotation.Resource;
+
+import com.emergentideas.webhandle.assumptions.oak.RequestTermCache;
 
 public class TripartateFileTemplateSource extends TripartateTemplateSource {
 	
 	protected File root;
 	protected FileCache cache = new FileCache();
+	
+	protected String uid = UUID.randomUUID().toString();
+	protected String cachePrefix = "template:" + uid + ":";
+	
+	@Resource
+	protected RequestTermCache requestTermCache;
 	
 	public TripartateFileTemplateSource() {
 		super();
@@ -27,6 +38,15 @@ public class TripartateFileTemplateSource extends TripartateTemplateSource {
 			return null;
 		}
 		
+		if(requestTermCache.containsKey(cachePrefix + templateName)) {
+			TemplateInstance ti = (TemplateInstance)requestTermCache.get(cachePrefix + templateName);
+			return ti;
+		}
+		
+		return getFromDisk(templateName);
+	}
+	
+	protected TemplateInstance getFromDisk(String templateName) {
 		File templateFile = new File(root, templateName);
 		
 		
@@ -40,6 +60,7 @@ public class TripartateFileTemplateSource extends TripartateTemplateSource {
 			File parent = templateFile.getParentFile();
 			File[] siblingFiles = parent.listFiles();
 			if(siblingFiles == null) {
+				requestTermCache.put(cachePrefix + templateName, null);
 				return null;
 			}
 			for(File child : siblingFiles) {
@@ -67,19 +88,56 @@ public class TripartateFileTemplateSource extends TripartateTemplateSource {
 			}
 			
 			if(parts.size() == 0) {
+				requestTermCache.put(cachePrefix + templateName, null);
 				return null;
 			}
 			
 			TemplateInstance template = new TripartateTemplate(this, elementStreamProcessor, parts, hints);
+			requestTermCache.put(cachePrefix + templateName, template);
 			return template;
 		}
 		catch(IOException e) {
 			logger.error("Could not read template file: " + templateName, e);
+			requestTermCache.put(cachePrefix + templateName, null);
 			return null;
-		}
+		}		
 	}
 
 	public void setLocation(String location) {
 		root = new File(location);
 	}
+
+	public FileCache getCache() {
+		return cache;
+	}
+
+	public void setCache(FileCache cache) {
+		this.cache = cache;
+	}
+
+	public String getUid() {
+		return uid;
+	}
+
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
+
+	public String getCachePrefix() {
+		return cachePrefix;
+	}
+
+	public void setCachePrefix(String cachePrefix) {
+		this.cachePrefix = cachePrefix;
+	}
+
+	public RequestTermCache getRequestTermCache() {
+		return requestTermCache;
+	}
+
+	public void setRequestTermCache(RequestTermCache requestTermCache) {
+		this.requestTermCache = requestTermCache;
+	}
+	
+	
 }

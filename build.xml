@@ -117,6 +117,8 @@
 		<jar jarfile="${dist}/WEB-INF/lib/webhandle.jar" basedir="${build}/classes"/>
 	  	<ivy:retrieve pattern="${dist}/WEB-INF/lib/[artifact](-[classifier]).jar" type="jar" conf="deployment"/>
 		
+		<copy tofile="${dist}/WEB-INF/buildNumber.properties" file="buildNumber.properties" />
+		
 		<copy todir="${dist}/WEB-INF/lib">
 			<fileset dir="lib" >
 				<include name="*.jar"/>
@@ -136,7 +138,6 @@
 	<target name="dist" depends="web-app-acorn" description="generate the distribution" >
 		<!-- Create the distribution directory -->
 		<mkdir dir="${dist}/lib"/>
-
 		<copy tofile="${dist}/lib/webhandle.jar" file="${dist}/WEB-INF/lib/webhandle.jar" />
 		<zip destfile="${dist}/lib/webhandle-sources.jar" basedir="${src}" />
 	</target>

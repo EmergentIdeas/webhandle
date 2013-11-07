@@ -32,6 +32,7 @@ public class StreamableResourcesHandler {
 	protected Logger log = SystemOutLogger.get(StreamableResourcesHandler.class);
 	protected int cacheTime;
 	protected boolean showDirectoryContents = false;
+	protected int secondsIn5Years = 5 * 365 * 24 * 60 * 60;
 	
 	public StreamableResourcesHandler(StreamableResourceSource source) {
 		this(source, 0);
@@ -51,6 +52,14 @@ public class StreamableResourcesHandler {
 	@Handle(value = "/{filePath:.+}", method = HttpMethod.GET)
 	@Template
 	public Object handle(String filePath, ServletContext servletContext, @Name("If-None-Match") String existingETag, Location loc) {
+		boolean virtual = isVirtualResource(filePath); 
+		if(virtual) {
+			filePath = getNonVirtualPath(filePath);
+			if(filePath == null) {
+				return new CouldNotHandle() {};
+			}
+		}
+		
 		Resource resource = source.get(filePath);
 		if(resource == null) {
 			return new CouldNotHandle() {};
@@ -62,7 +71,13 @@ public class StreamableResourcesHandler {
 		String revalidateSegment = ", must-revalidate";
 		
 		Calendar c = Calendar.getInstance();
-		if(cacheTime > 0) {
+		int effectiveCacheTime = cacheTime;
+		if(virtual) {
+			// virtual resources are assumed never to be changed so let's give them a long cache time
+			c.add(Calendar.YEAR, 5);
+			effectiveCacheTime = secondsIn5Years;
+		}
+		else if(cacheTime > 0) {
 			c.add(Calendar.SECOND, cacheTime);
 		}
 		else {
@@ -75,7 +90,7 @@ public class StreamableResourcesHandler {
 		
 		if(resource instanceof StreamableResource) {
 			headers.put("Content-Type", servletContext.getMimeType(filePath));
-			headers.put("Cache-Control" , (cacheTime > 0 ? "public, " : "no-cache, ") + "max-age=" + cacheTime + revalidateSegment);
+			headers.put("Cache-Control" , (effectiveCacheTime > 0 ? "public, " : "no-cache, ") + "max-age=" + effectiveCacheTime + revalidateSegment);
 			headers.put("Expires", DateUtils.htmlExpiresDateFormat().format(c.getTime()));
 			StreamableResource sr = (StreamableResource)resource;
 			headers.put("ETag", sr.getEtag());
@@ -151,6 +166,28 @@ public class StreamableResourcesHandler {
 		}
 		
 		return eTag;
+	}
+	
+	protected boolean isVirtualResource(String filePath) {
+		return filePath.startsWith("vrsc/");
+	}
+	
+	protected String getNonVirtualPath(String filePath) {
+		int length = filePath.length();
+		for(int i = getVitualFixedOffset(filePath); i < length; i++) {
+			if(filePath.charAt(i) == '/') {
+				if(i < length - 1) {
+					return filePath.substring(i + 1);
+				}
+				break;
+			}
+		}
+		
+		return null;
+	}
+	
+	protected int getVitualFixedOffset(String filePath) {
+		return 5;
 	}
 
 	public int getCacheTime() {

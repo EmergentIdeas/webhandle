@@ -111,5 +111,19 @@ public class StreamableResourcesHandlerTest {
 		DirectRespondent resp = (DirectRespondent)handler.handle("file", servletContext, "234", new AppLocation());
 		assertFalse(DateUtils.htmlExpiresDateFormat().parse(resp.getHeaders().get("Expires")).before(now));
 	}
+	
+	@Test
+	public void testVirtualResourceCode() throws Exception {
+		StreamableResourcesHandler handler = new StreamableResourcesHandler(null);
+		assertTrue(handler.isVirtualResource("vrsc/1234/hello"));
+		assertFalse(handler.isVirtualResource("vrscs/1234/hello"));
+		
+		assertEquals("hello", handler.getNonVirtualPath("vrsc/1234/hello"));
+		assertEquals("hello", handler.getNonVirtualPath("vrsc/12344/hello"));
+		assertNull(handler.getNonVirtualPath("vrsc/1234/"));
+		assertNull(handler.getNonVirtualPath("vrsc/1234"));
+		assertNull(handler.getNonVirtualPath("vrsc/"));
+		
+	}
 
 }
