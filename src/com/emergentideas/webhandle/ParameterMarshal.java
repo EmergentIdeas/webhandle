@@ -557,6 +557,10 @@ public class ParameterMarshal {
 			return false;
 		}
 		
+		if(transformer instanceof VariableReturnTypeValueTransformer) {
+			// We're passing a lot of nulls here. Should probably fix eventually.
+			return ((VariableReturnTypeValueTransformer)transformer).isReturnTypeCompatible(context, null, finalType, null, null);
+		}
 		return isReturnTypeCompatible(finalType, transformer);
 	}
 	

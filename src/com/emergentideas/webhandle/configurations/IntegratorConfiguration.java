@@ -8,11 +8,14 @@ import com.emergentideas.webhandle.investigators.NameAnnotationPropertyNameInves
 import com.emergentideas.webhandle.investigators.ResourceAnnotationPropertyNameInvestigator;
 import com.emergentideas.webhandle.investigators.SourceAnnotationSourceSetInvestigator;
 import com.emergentideas.webhandle.investigators.TransformersAnnotationTransformersInvestigator;
+import com.emergentideas.webhandle.transformers.FileItemToBytesTransformer;
+import com.emergentideas.webhandle.transformers.FileItemToStringTransformer;
 import com.emergentideas.webhandle.transformers.NumberToStringTransformer;
 import com.emergentideas.webhandle.transformers.StringToBigDecimalTransformer;
 import com.emergentideas.webhandle.transformers.StringToBooleanTransformer;
 import com.emergentideas.webhandle.transformers.StringToDateTransformer;
 import com.emergentideas.webhandle.transformers.StringToDoubleTransformer;
+import com.emergentideas.webhandle.transformers.StringToEnumTransformer;
 import com.emergentideas.webhandle.transformers.StringToFloatTransformer;
 import com.emergentideas.webhandle.transformers.StringToIntegerTransformer;
 
@@ -60,6 +63,9 @@ public class IntegratorConfiguration extends ParameterMarshalConfiguration {
 		getTypeTransformers().add(new StringToDoubleTransformer());
 		getTypeTransformers().add(new StringToBigDecimalTransformer());
 		getTypeTransformers().add(new StringToFloatTransformer());
+		getTypeTransformers().add(new StringToEnumTransformer());
+		getTypeTransformers().add(new FileItemToBytesTransformer());
+		getTypeTransformers().add(new FileItemToStringTransformer());
 	}
 	
 	protected void addDbInvestigators() {
