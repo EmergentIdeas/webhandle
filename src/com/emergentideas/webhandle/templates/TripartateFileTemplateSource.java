@@ -38,7 +38,7 @@ public class TripartateFileTemplateSource extends TripartateTemplateSource {
 			return null;
 		}
 		
-		if(requestTermCache.containsKey(cachePrefix + templateName)) {
+		if(requestTermCache != null && requestTermCache.containsKey(cachePrefix + templateName)) {
 			TemplateInstance ti = (TemplateInstance)requestTermCache.get(cachePrefix + templateName);
 			return ti;
 		}
@@ -60,7 +60,9 @@ public class TripartateFileTemplateSource extends TripartateTemplateSource {
 			File parent = templateFile.getParentFile();
 			File[] siblingFiles = parent.listFiles();
 			if(siblingFiles == null) {
-				requestTermCache.put(cachePrefix + templateName, null);
+				if(requestTermCache != null) {
+					requestTermCache.put(cachePrefix + templateName, null);
+				}
 				return null;
 			}
 			for(File child : siblingFiles) {
@@ -88,17 +90,23 @@ public class TripartateFileTemplateSource extends TripartateTemplateSource {
 			}
 			
 			if(parts.size() == 0) {
-				requestTermCache.put(cachePrefix + templateName, null);
+				if(requestTermCache != null) {
+					requestTermCache.put(cachePrefix + templateName, null);
+				}
 				return null;
 			}
 			
 			TemplateInstance template = new TripartateTemplate(this, elementStreamProcessor, parts, hints);
-			requestTermCache.put(cachePrefix + templateName, template);
+			if(requestTermCache != null) {
+				requestTermCache.put(cachePrefix + templateName, template);
+			}
 			return template;
 		}
 		catch(IOException e) {
 			logger.error("Could not read template file: " + templateName, e);
-			requestTermCache.put(cachePrefix + templateName, null);
+			if(requestTermCache != null) {
+				requestTermCache.put(cachePrefix + templateName, null);
+			}
 			return null;
 		}		
 	}

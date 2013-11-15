@@ -37,7 +37,17 @@ public class RequestObjectSetup {
 	public void setup(Location location, InvocationContext context, HttpServletRequest request) {
 		context.setFoundParameter(SegmentedOutput.class, new HTML5SegmentedOutput());
 		
-		RequestMessages errors = new RequestMessages();
+		Location sessionLocation = (Location)location.get(Constants.SESSION_LOCATION);
+		
+		// See if we've got request messages left over from another session
+		RequestMessages errors = (RequestMessages)sessionLocation.get(RequestMessages.SESSION_LOCATION_KEY);
+		// Clear the messages no matter what
+		sessionLocation.put(RequestMessages.SESSION_LOCATION_KEY, null);
+		
+		if(errors == null) {
+			errors = new RequestMessages(sessionLocation);
+		}
+		
 		context.setFoundParameter(RequestMessages.class, errors);
 		location.put("messages", errors);
 		
