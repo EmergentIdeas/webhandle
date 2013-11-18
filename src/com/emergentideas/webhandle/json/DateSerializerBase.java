@@ -10,7 +10,7 @@ import com.emergentideas.webhandle.output.SegmentedOutput;
 
 public abstract class DateSerializerBase<T> implements ObjectSerializer<T> {
 
-	protected String format = "yyyy-mm-dd'T'HH:MM:ss.SSS'Z'";
+	protected String format = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 	protected SimpleDateFormat jsonDateFormatter =  new SimpleDateFormat(format); 
 	
 	public DateSerializerBase() {
@@ -20,14 +20,19 @@ public abstract class DateSerializerBase<T> implements ObjectSerializer<T> {
 	
 	
 	protected void innerSerialize(SegmentedOutput output, Date objToSerialize, String... allowedSerializationProfiles) {
-		boolean asString = ReflectionUtils.contains(allowedSerializationProfiles, "date-as-string");
 		StringBuilder sb = output.getStream("body");
-		if(!asString) {
-			sb.append("new Date(");
+		if(ReflectionUtils.contains(allowedSerializationProfiles, "date-as-millis")) {
+			sb.append(objToSerialize.getTime());
 		}
-		sb.append('"' + jsonDateFormatter.format(objToSerialize) + '"');
-		if(!asString) {
-			sb.append(")");
+		else {
+			boolean asString = ReflectionUtils.contains(allowedSerializationProfiles, "date-as-string");
+			if(!asString) {
+				sb.append("new Date(");
+			}
+			sb.append('"' + jsonDateFormatter.format(objToSerialize) + '"');
+			if(!asString) {
+				sb.append(")");
+			}
 		}
 	}
 

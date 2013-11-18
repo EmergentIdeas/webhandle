@@ -1,13 +1,12 @@
 package com.emergentideas.webhandle.json;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+
 
 import com.emergentideas.webhandle.output.SegmentedOutput;
 
@@ -59,17 +58,54 @@ public class JavaObjectSerializerTest<T extends Object> {
 	
 	@Test
 	public void testSimpleObject() throws Exception {
-		AnnotationDriverJSONSerializer ser = new AnnotationDriverJSONSerializer();
+		AnnotationDrivenJSONSerializer ser = new AnnotationDrivenJSONSerializer();
 		JavaObjectSerializer jos = new JavaObjectSerializer();
 		ser.add(jos);
 		ser.add(new NumberSerializer());
 		ser.add(new StringSerializer());
 		ser.add(new DateSerializer());
 		ser.add(new BooleanSerializer());
+		ser.add(new ByteArraySerializer());
 		
 		SegmentedOutput output = new SegmentedOutput();
 		ser.serialize(output, new SimpleData1());
-		System.out.println(output.getStream("body").toString());
+		String result = output.getStream("body").toString();
+		System.out.println(result);
+		
+		assertTrue(result.contains("\"greeting\""));
+		assertTrue(result.contains("\"age\""));
+		assertTrue(result.contains("\"cakeWeight\""));
+		assertTrue(result.contains("\"todaysDate\""));
+		assertTrue(result.contains("\"actuallyNull\""));
+		assertTrue(result.contains("\"justStrings\""));
+		assertTrue(result.contains("\"ints\""));
+		assertTrue(result.contains("\"doubles\""));
+		assertTrue(result.contains("\"myBytes\": \"d29ybGQ=\""));
+		
+		
+		assertFalse(result.contains("\"lotsOfStuff\""));
+		assertFalse(result.contains("\"shouldNotSee\""));
+		assertFalse(result.contains("\"serializer\""));
+		
+		output = new SegmentedOutput();
+		ser.serialize(output, new SimpleData1(), "bytes-as-array");
+		result = output.getStream("body").toString();
+		assertTrue(result.contains("\"myBytes\": [119, 111, 114, 108, 100]"));
+		
+		output = new SegmentedOutput();
+		ser.serialize(output, new SimpleData1(), "default");
+		result = output.getStream("body").toString();
+		assertTrue(result.contains("new Date("));
+		
+		output = new SegmentedOutput();
+		ser.serialize(output, new SimpleData1(), "date-as-string");
+		result = output.getStream("body").toString();
+		assertFalse(result.contains("new Date("));
+
+		output = new SegmentedOutput();
+		ser.serialize(output, new SimpleData1(), "date-as-millis");
+		result = output.getStream("body").toString();
+		assertFalse(result.contains("Z"));
 	}
 
 	

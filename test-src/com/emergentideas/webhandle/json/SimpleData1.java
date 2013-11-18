@@ -1,5 +1,6 @@
 package com.emergentideas.webhandle.json;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,6 +20,8 @@ public class SimpleData1 {
 	protected int[] ints = new int[] { 1, 2, 3 };
 	protected Double[] doubles = new Double[] { 1.1, 2.2, 3.3 };
 	
+	protected byte[] myBytes;
+	
 	
 	public SimpleData1() {
 		justStrings.add("Hello");
@@ -26,6 +29,11 @@ public class SimpleData1 {
 		
 		lotsOfStuff.add("Hello");
 		lotsOfStuff.add(serializer);
+		try {
+			myBytes = "world".getBytes("utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public String getGreeting() {
@@ -95,6 +103,14 @@ public class SimpleData1 {
 
 	public void setDoubles(Double[] doubles) {
 		this.doubles = doubles;
+	}
+
+	public byte[] getMyBytes() {
+		return myBytes;
+	}
+
+	public void setMyBytes(byte[] myBytes) {
+		this.myBytes = myBytes;
 	}
 	
 	

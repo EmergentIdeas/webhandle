@@ -8,21 +8,21 @@ public class AnnotationDrivenJSONSerializerTest {
 	
 	@Test
 	public void testFindsProfiles() throws Exception {
-		AnnotationDriverJSONSerializer s = new AnnotationDriverJSONSerializer();
+		AnnotationDrivenJSONSerializer s = new AnnotationDrivenJSONSerializer();
 		
 		assertArrayEquals(new String[] {"default", "one"}, s.findProfiles(new Serializer1()));
 	}
 	
 	@Test
 	public void testFindsType() throws Exception {
-		AnnotationDriverJSONSerializer s = new AnnotationDriverJSONSerializer();
+		AnnotationDrivenJSONSerializer s = new AnnotationDrivenJSONSerializer();
 		assertEquals(String.class, s.findTypeSerialized(new Serializer1()));
 		assertEquals(Number.class, s.findTypeSerialized(new Serializer2()));
 	}
 	
 	@Test
 	public void testBestSerializer() throws Exception {
-		AnnotationDriverJSONSerializer s = new AnnotationDriverJSONSerializer();
+		AnnotationDrivenJSONSerializer s = new AnnotationDrivenJSONSerializer();
 		s.add(new Serializer1());
 		s.add(new Serializer2());
 		s.add(new Serializer3());
@@ -34,8 +34,23 @@ public class AnnotationDrivenJSONSerializerTest {
 	}
 	
 	@Test
+	public void testByteArraySerializer() throws Exception {
+		AnnotationDrivenJSONSerializer s = new AnnotationDrivenJSONSerializer();
+		s.add(new Serializer1());
+		s.add(new Serializer2());
+		s.add(new Serializer3());
+		s.add(new Serializer6());
+		
+		
+		assertEquals(Serializer6.class, s.determineBestSerializer(Object.class, "default").getClass());
+		assertNull(s.determineBestSerializer(byte[].class, "default"));
+		s.add(new Serializer5());
+		assertEquals(Serializer5.class, s.determineBestSerializer(byte[].class, "default").getClass());
+	}
+	
+	@Test
 	public void testFindSerializer() throws Exception {
-		AnnotationDriverJSONSerializer s = new AnnotationDriverJSONSerializer();
+		AnnotationDrivenJSONSerializer s = new AnnotationDrivenJSONSerializer();
 		s.add(new Serializer1());
 		s.add(new Serializer2());
 		s.add(new Serializer3());
@@ -58,7 +73,7 @@ public class AnnotationDrivenJSONSerializerTest {
 	
 	@Test
 	public void testCacheUsed() throws Exception {
-		AnnotationDriverJSONSerializer s = new AnnotationDriverJSONSerializer();
+		AnnotationDrivenJSONSerializer s = new AnnotationDrivenJSONSerializer();
 		s.add(new Serializer1());
 		s.add(new Serializer2());
 		s.add(new Serializer3());

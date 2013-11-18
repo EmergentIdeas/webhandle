@@ -8,7 +8,6 @@ import com.emergentideas.webhandle.output.SegmentedOutput;
 @JSONSerializer
 public class CollectionSerializer implements ObjectSerializer<Collection> {
 
-	@Override
 	public void serialize(Serializer callingSerializer, SegmentedOutput output,
 			Collection objToSerialize, String... allowedSerializationProfiles) throws Exception {
 		StringBuilder sb = output.getStream("body");

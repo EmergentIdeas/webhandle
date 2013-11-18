@@ -8,7 +8,6 @@ import com.emergentideas.webhandle.output.SegmentedOutput;
 @JSONSerializer
 public class MapSerializer implements ObjectSerializer<Map> {
 
-	@Override
 	public void serialize(Serializer callingSerializer, SegmentedOutput output,
 			Map objToSerialize, String... allowedSerializationProfiles) throws Exception {
 		StringBuilder sb = output.getStream("body");

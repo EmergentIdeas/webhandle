@@ -3,12 +3,10 @@ package com.emergentideas.webhandle.json;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.GenericDeclaration;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -20,7 +18,6 @@ public class JavaObjectSerializer implements ObjectSerializer<Object> {
 
 	protected MapSerializer mapSerializer = new MapSerializer();
 	
-	@Override
 	public void serialize(Serializer callingSerializer, SegmentedOutput output,
 			Object objToSerialize, String... allowedSerializationProfiles) throws Exception {
 		Map<String, Object> values = new LinkedHashMap<String, Object>();
@@ -83,6 +80,14 @@ public class JavaObjectSerializer implements ObjectSerializer<Object> {
 		if(returnType.isArray()) {
 			return isSimpleEnoughType(null, returnType.getComponentType(), null);
 		}
+		if(Date.class.isAssignableFrom(returnType)) {
+			return true;
+		}
+		if(Calendar.class.isAssignableFrom(returnType)) {
+			return true;
+		}
+		
+		
 		if(Collection.class.isAssignableFrom(returnType) && obj != null) {
 			Collection c = (Collection)obj;
 			for(Object o : c) {

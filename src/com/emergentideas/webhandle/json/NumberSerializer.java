@@ -5,7 +5,6 @@ import com.emergentideas.webhandle.output.SegmentedOutput;
 @JSONSerializer
 public class NumberSerializer implements ObjectSerializer<Number> {
 
-	@Override
 	public void serialize(Serializer callingSerializer, SegmentedOutput output,
 			Number objToSerialize, String... allowedSerializationProfiles) {
 		if(objToSerialize != null) {

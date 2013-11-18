@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
@@ -18,6 +19,9 @@ import com.emergentideas.webhandle.WebAppLocation;
 import com.emergentideas.webhandle.Wire;
 import com.emergentideas.webhandle.assumptions.oak.CompositeTemplateSource;
 import com.emergentideas.webhandle.assumptions.oak.LibraryTemplateSource;
+import com.emergentideas.webhandle.json.AnnotationDrivenJSONSerializer;
+import com.emergentideas.webhandle.json.JSON;
+import com.emergentideas.webhandle.json.JsonRespondent;
 import com.emergentideas.webhandle.output.BodyRespondent;
 import com.emergentideas.webhandle.output.DirectRespondent;
 import com.emergentideas.webhandle.output.HtmlDocRespondent;
@@ -52,6 +56,8 @@ public class TemplateOutputTransformersInvestigator implements
 	public static final String RESPONSE_WRAPPER_PARAMETER_NAME = "response-wrapper";
 	public static final String RESPONSE_PACKAGE_PARAMETER_NAME = "response-package";
 	
+	@Resource
+	protected AnnotationDrivenJSONSerializer annotationDrivenJSONSerializer; 
 	
 	public TemplateOutputTransformersInvestigator() {
 	}
@@ -65,6 +71,7 @@ public class TemplateOutputTransformersInvestigator implements
 		
 		Template template = ReflectionUtils.getAnnotation(method, Template.class);
 		Wrap wrap = ReflectionUtils.getAnnotation(method, Wrap.class);
+		JSON json = ReflectionUtils.getAnnotation(method, JSON.class);
 		
 		HttpServletRequest request = context.getFoundParameter(HttpServletRequest.class);
 		if("none".equalsIgnoreCase(request.getParameter(RESPONSE_WRAPPER_PARAMETER_NAME))) {
@@ -72,7 +79,12 @@ public class TemplateOutputTransformersInvestigator implements
 		}
 		
 		if(template == null && wrap == null) {
-			return new DirectRespondent(response);
+			DirectRespondent dr = new DirectRespondent(response);
+			dr.addCacheHeaders(0);
+		}
+		
+		if(json != null) {
+			return new JsonRespondent(annotationDrivenJSONSerializer, response, json.value());
 		}
 		
 		OutputCreator creator = new IterativeOutputCreator(context.getFoundParameter(ParameterMarshal.class), response);

@@ -8,10 +8,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import com.emergentideas.utils.ReflectionUtils;
 import com.emergentideas.webhandle.output.SegmentedOutput;
 
-public class AnnotationDriverJSONSerializer implements Serializer {
+@Resource
+public class AnnotationDrivenJSONSerializer implements Serializer {
 	
 	public static final String DEFAULT_PROFILE = "default";
 
@@ -31,23 +34,29 @@ public class AnnotationDriverJSONSerializer implements Serializer {
 	protected ObjectSerializer arraySerializer = new ArraySerializer();
 	
 	
-	@Override
 	public void serialize(SegmentedOutput output, Object objToSerialize,
 			String... allowedSerializationProfiles) throws Exception {
 		if(objToSerialize == null) {
 			output.getStream("body").append("null");
+			return;
 		}
-		else if(objToSerialize instanceof Collection) {
+		
+
+		if(objToSerialize instanceof Collection) {
 			collectionSerializer.serialize(this, output, objToSerialize, allowedSerializationProfiles);
+			return;
 		}
-		else if(objToSerialize instanceof Map) {
+		if(objToSerialize instanceof Map) {
 			mapSerializer.serialize(this, output, objToSerialize, allowedSerializationProfiles);
+			return;
 		}
-		else if(objToSerialize.getClass().isArray()) {
+		
+		ObjectSerializer os = determineSerializer(objToSerialize.getClass(), allowedSerializationProfiles);
+		
+		if(objToSerialize.getClass().isArray() && os == null) {
 			arraySerializer.serialize(this, output, objToSerialize, allowedSerializationProfiles);
 		}
 		else {
-			ObjectSerializer os = determineSerializer(objToSerialize.getClass(), allowedSerializationProfiles);
 			os.serialize(this, output, objToSerialize, allowedSerializationProfiles);
 		}
 		
@@ -132,6 +141,13 @@ public class AnnotationDriverJSONSerializer implements Serializer {
 			}
 		}
 		
+		if(classToSerialize.isArray() && lastFound != null) {
+			// If the class to serialize is an array, we want to offer other serializers a chance. However,
+			// we don't want a base Object serializer to pick it up as it would do the wrong thing.
+			if(!findTypeSerialized(lastFound).isArray()) {
+				return null;
+			}
+		}
 		return lastFound;
 	}
 	

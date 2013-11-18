@@ -11,7 +11,7 @@ public class ArraySerializerTest {
 	@Test
 	public void testSerializePrimitiveArrays() throws Exception {
 		ArraySerializer as = new ArraySerializer();
-		AnnotationDriverJSONSerializer ser = new AnnotationDriverJSONSerializer();
+		AnnotationDrivenJSONSerializer ser = new AnnotationDrivenJSONSerializer();
 		ser.add(new NumberSerializer());
 		ser.add(as);
 		SegmentedOutput output = new SegmentedOutput();

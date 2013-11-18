@@ -9,7 +9,6 @@ import com.emergentideas.webhandle.output.SegmentedOutput;
 @JSONSerializer
 public class ArraySerializer implements ObjectSerializer<Object> {
 
-	@Override
 	public void serialize(Serializer callingSerializer, SegmentedOutput output,
 			Object objToSerialize, String... allowedSerializationProfiles) throws Exception {
 		

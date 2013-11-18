@@ -7,7 +7,6 @@ import com.emergentideas.webhandle.output.SegmentedOutput;
 @JSONSerializer
 public class StringSerializer implements ObjectSerializer<String> {
 
-	@Override
 	public void serialize(Serializer callingSerializer, SegmentedOutput output,
 			String objToSerialize, String... allowedSerializationProfiles) {
 		if(objToSerialize != null) {

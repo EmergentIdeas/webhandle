@@ -2,11 +2,11 @@ package com.emergentideas.webhandle.json;
 
 import com.emergentideas.webhandle.output.SegmentedOutput;
 
-@JSONSerializer({"default", "one"})
-public class Serializer1 implements ObjectSerializer<String> {
+@JSONSerializer({"default", "two"})
+public class Serializer5 implements ObjectSerializer<byte[]> {
 
 	public void serialize(Serializer callingSerializer, SegmentedOutput output,
-			String objToSerialize, String... allowedSerializationProfiles) {
+			byte[] objToSerialize, String... allowedSerializationProfiles) {
 		
 
 	}
