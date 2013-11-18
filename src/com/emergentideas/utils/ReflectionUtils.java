@@ -362,7 +362,8 @@ public class ReflectionUtils {
     }
 
     /**
-     * Returns the primitive type for a class like Integer which has a corresponding primitive. 
+     * Returns the primitive type for a class like Integer which has a corresponding primitive, otherwise
+     * returns null. 
      * @param type
      * @return
      */
@@ -531,8 +532,30 @@ public class ReflectionUtils {
 	 * @return
 	 */
 	public static Integer findClassDistance(Class one, Class two) {
+		Integer i = findDirectionalClassDistance(one, two);
+		if(i != null) {
+			i = Math.abs(i);
+		}
+		
+		return i;
+	}
+	
+	/**
+	 * If one class can be assigned from the other, it gets the distance between the 
+	 * two in terms of how many class definitions are between the two classes.
+	 * @param one
+	 * @param two
+	 * @return
+	 */
+	public static Integer findDirectionalClassDistance(Class one, Class two) {
+		if(one == null || two == null) {
+			return null;
+		}
+		
 		Class base;
 		Class extension;
+		
+		int multiplier = 1;
 		
 		if(one.equals(two)) {
 			return 0;
@@ -544,25 +567,31 @@ public class ReflectionUtils {
 		else if(two.isAssignableFrom(one)) {
 			base = two;
 			extension = one;
+			multiplier = -1;
 		}
 		else {
 			return null;
 		}
 		
 		int distance = Integer.MAX_VALUE;
-		Integer possible = findClassDistance(base, extension.getSuperclass());
-		if(possible != null && possible < distance) {
-			distance = possible;
+		if(two.isInterface() && extension.getSuperclass() == null && extension.getInterfaces().length == 0) {
+			distance = 1;
 		}
-		
-		for(Class inter : extension.getInterfaces()) {
-			possible = findClassDistance(base, inter);
+		else {
+			Integer possible = findDirectionalClassDistance(base, extension.getSuperclass());
 			if(possible != null && possible < distance) {
 				distance = possible;
 			}
+		
+			for(Class inter : extension.getInterfaces()) {
+				possible = findDirectionalClassDistance(base, inter);
+				if(possible != null && possible < distance) {
+					distance = possible;
+				}
+			}
 		}
 		
-		return distance + 1;
+		return multiplier * (distance + 1);
 	}
 	
 	public static Class<?> determineIdClass(Class entity) {

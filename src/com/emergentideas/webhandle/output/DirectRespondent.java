@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.emergentideas.logging.Logger;
 import com.emergentideas.logging.SystemOutLogger;
+import com.emergentideas.utils.DateUtils;
+import com.emergentideas.webhandle.files.StreamableResource;
 
 public class DirectRespondent implements Respondent {
 
@@ -110,6 +113,31 @@ public class DirectRespondent implements Respondent {
 		catch(IOException e) {
 			log.error("Could not write output.", e);
 		}
+	}
+	
+	/**
+	 * Add cache headers to the result. If <code>cacheSeconds</code> is 0 or less the expires date
+	 * will be set to 1 hour in the past.
+	 * @param cacheSeconds
+	 */
+	public void addCacheHeaders(int cacheSeconds) {
+		// must-revalidate causes the browser to rigorously adhere to the caching rules without take
+		// what the spec refers to as "liberties". It does not, as the name would imply, cause every
+		// use of a cached object to be revalidated against the server copy.
+		String revalidateSegment = ", must-revalidate";
+		
+		Calendar c = Calendar.getInstance();
+		if(cacheSeconds > 0) {
+			c.add(Calendar.SECOND, cacheSeconds);
+		}
+		else {
+			// if the cache time is zero we'll push the expire date back an hour to account for any difference
+			// between the client's clock and the server clock
+			c.add(Calendar.HOUR, -1);
+		}
+		
+		headers.put("Cache-Control" , (cacheSeconds > 0 ? "public, " : "no-cache, ") + "max-age=" + cacheSeconds + revalidateSegment);
+		headers.put("Expires", DateUtils.htmlExpiresDateFormat().format(c.getTime()));
 	}
 	
 	protected OutputStream createOutputStream(ServletContext servletContext, HttpServletRequest request, 
