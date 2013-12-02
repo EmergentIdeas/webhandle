@@ -78,9 +78,10 @@ public class TemplateOutputTransformersInvestigator implements
 			wrap = null;
 		}
 		
-		if(template == null && wrap == null) {
+		if(template == null && wrap == null && json == null) {
 			DirectRespondent dr = new DirectRespondent(response);
 			dr.addCacheHeaders(0);
+			return dr;
 		}
 		
 		if(json != null) {
@@ -136,5 +137,14 @@ public class TemplateOutputTransformersInvestigator implements
 		}
 		
 		return null;
+	}
+
+	public AnnotationDrivenJSONSerializer getAnnotationDrivenJSONSerializer() {
+		return annotationDrivenJSONSerializer;
+	}
+
+	public void setAnnotationDrivenJSONSerializer(
+			AnnotationDrivenJSONSerializer annotationDrivenJSONSerializer) {
+		this.annotationDrivenJSONSerializer = annotationDrivenJSONSerializer;
 	}
 }

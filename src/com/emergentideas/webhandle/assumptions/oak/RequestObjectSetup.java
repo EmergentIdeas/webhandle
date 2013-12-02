@@ -1,8 +1,12 @@
 package com.emergentideas.webhandle.assumptions.oak;
 
+import java.util.Properties;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.emergentideas.logging.Logger;
+import com.emergentideas.logging.SystemOutLogger;
 import com.emergentideas.webhandle.Constants;
 import com.emergentideas.webhandle.InvocationContext;
 import com.emergentideas.webhandle.Location;
@@ -26,8 +30,13 @@ public class RequestObjectSetup {
 	 */
 	protected String resourceCacheKey;
 	
+	protected Properties segmentedOutputDefaults;
+	
 	@Resource
 	protected RequestTermCache requestTermCache;
+	
+	protected Logger log = SystemOutLogger.get(RequestObjectSetup.class);
+
 	
 	public RequestObjectSetup() {
 		resourceCacheKey = "/vrsc/" + (System.currentTimeMillis() / 1000);
@@ -35,7 +44,7 @@ public class RequestObjectSetup {
 
 	@PreRequest
 	public void setup(Location location, InvocationContext context, HttpServletRequest request) {
-		context.setFoundParameter(SegmentedOutput.class, new HTML5SegmentedOutput());
+		context.setFoundParameter(SegmentedOutput.class, new HTML5SegmentedOutput(getDefaultProperties()));
 		
 		Location sessionLocation = (Location)location.get(Constants.SESSION_LOCATION);
 		
@@ -64,6 +73,19 @@ public class RequestObjectSetup {
 		clearCache();
 	}
 	
+	protected Properties getDefaultProperties() {
+		if(segmentedOutputDefaults == null) {
+			try {
+				segmentedOutputDefaults = HTML5SegmentedOutput.getDefaultProperties();
+			}
+			catch(Exception e) {
+				log.error("Could not initialize the segemented output properties for HTML5", e);
+				segmentedOutputDefaults = new Properties();
+			}
+		}
+		return segmentedOutputDefaults;
+	}
+	
 	protected void clearCache() {
 		if(requestTermCache != null) {
 			requestTermCache.clear();
@@ -84,6 +106,30 @@ public class RequestObjectSetup {
 
 	public void setCache(RequestTermCache cache) {
 		this.requestTermCache = cache;
+	}
+
+	public Properties getSegmentedOutputDefaults() {
+		return segmentedOutputDefaults;
+	}
+
+	public void setSegmentedOutputDefaults(Properties segmentedOutputDefaults) {
+		this.segmentedOutputDefaults = segmentedOutputDefaults;
+	}
+
+	public RequestTermCache getRequestTermCache() {
+		return requestTermCache;
+	}
+
+	public void setRequestTermCache(RequestTermCache requestTermCache) {
+		this.requestTermCache = requestTermCache;
+	}
+
+	public Logger getLog() {
+		return log;
+	}
+
+	public void setLog(Logger log) {
+		this.log = log;
 	}
 	
 	

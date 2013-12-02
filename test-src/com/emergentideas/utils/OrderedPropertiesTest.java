@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 public class OrderedPropertiesTest {
@@ -20,10 +21,10 @@ public class OrderedPropertiesTest {
 		int i = 20;
 		while(i > 0) {
 			int randValue = rand.nextInt(1000);
-			if(l.contains(randValue)) {
+			String value = randValue + ""; 
+			if(l.contains(value)) {
 				continue;
 			}
-			String value = randValue + ""; 
 			l.add(value);
 			sb.append(value + "=" + value + "\n");
 			i--;
@@ -33,7 +34,7 @@ public class OrderedPropertiesTest {
 		
 		OrderedProperties prop = new OrderedProperties();
 		prop.load(inst);
-		
+
 		for(Object value : prop.keySet()) {
 			assertEquals(l.get(0), (String)value);
 			l.remove(0);

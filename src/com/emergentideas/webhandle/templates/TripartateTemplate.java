@@ -22,6 +22,8 @@ public class TripartateTemplate implements TemplateInstance {
 
 	protected Map<String, String> sections = Collections.synchronizedMap(new HashMap<String, String>());
 	
+	protected Map<String, List<Element>> compiledSections = Collections.synchronizedMap(new HashMap<String, List<Element>>()); 
+	
 	protected Properties hints;
 	
 	protected ElementStreamProcessor processor;
@@ -35,16 +37,28 @@ public class TripartateTemplate implements TemplateInstance {
 	public static final String LIST_MARKER = "list";
 	public static final String MAP_MARKER = "map";
 	
+	protected static final TripartateParser parser = new TripartateParser(); 
 	
 	
 	public TripartateTemplate(TemplateSource templateSource, ElementStreamProcessor processor, Map<String, String> sections, Properties hints) {
 		this.sections.putAll(sections);
 		this.processor = processor;
 		this.hints = hints;
+		compileSections();
+	}
+	
+	protected void compileSections() {
+		for(String name : sections.keySet()) {
+			String templateText = sections.get(name);
+			if(org.apache.commons.lang.StringUtils.isBlank(templateText)) {
+				continue;
+			}
+			List<Element> compiled = parser.parse(templateText);
+			compiledSections.put(name, compiled);
+		}
 	}
 	
 	public void render(SegmentedOutput output, Location location, String elementSourceName, String... processingHints) {
-		TripartateParser parser = new TripartateParser();
 		
 		for(String sectionName : createSectionRenderOrder()) {
 			String hintsString = hints.getProperty(sectionName);
@@ -54,13 +68,10 @@ public class TripartateTemplate implements TemplateInstance {
 			
 			String[] hints = hintsString.split(",");
 			
-			// whatever this is, the text should be processed as a tripartate template
-			String templateText = sections.get(sectionName);
-			if(org.apache.commons.lang.StringUtils.isBlank(templateText)) {
+			List<Element> elements = compiledSections.get(sectionName);
+			if(elements == null) {
 				continue;
 			}
-			
-			List<Element> elements = parser.parse(templateText);
 			
 			if(ReflectionUtils.contains(hints, STREAM_MARKER) && ReflectionUtils.contains(hints, APPEND_MARKER)) {
 				// if we're appending to the stream, we don't have to do anything because the natural

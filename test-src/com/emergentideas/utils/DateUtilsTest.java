@@ -17,11 +17,14 @@ public class DateUtilsTest {
 		
 		c.set(Calendar.HOUR_OF_DAY, 0);
 		c.set(Calendar.MINUTE, 15);
+		c.set(Calendar.SECOND, 1);
 		
 		assertEquals("2010-01-16", DateUtils.html5DateFormat().format(c.getTime()));
 		assertEquals("2010-01-16T00:15", DateUtils.html5DateTimeLocalFormat().format(c.getTime()));
 		assertEquals("2010-01", DateUtils.html5MonthFormat().format(c.getTime()));
 		assertEquals("2010-W03", DateUtils.html5WeekFormat().format(c.getTime()));
 		assertEquals("00:15", DateUtils.html5TimeFormat().format(c.getTime()));
+		assertEquals("2010-01-16T06:15:01Z", DateUtils.newJavaNIODateFormat().format(c.getTime()));
+
 	}
 }

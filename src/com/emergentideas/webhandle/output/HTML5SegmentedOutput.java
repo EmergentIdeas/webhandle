@@ -1,33 +1,35 @@
 package com.emergentideas.webhandle.output;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
+import java.io.IOException;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TimeZone;
 
 import com.emergentideas.logging.Logger;
 import com.emergentideas.logging.SystemOutLogger;
-import com.emergentideas.utils.DateUtils;
 import com.emergentideas.utils.StringUtils;
 
 public class HTML5SegmentedOutput extends SegmentedOutput {
 	
 	Logger logger = SystemOutLogger.get(HTML5SegmentedOutput.class);
 	
-	public HTML5SegmentedOutput() {
+	public HTML5SegmentedOutput() throws IOException {
+		this(getDefaultProperties());
+	}
+	
+	public HTML5SegmentedOutput(Properties defaults) {
+		setDefaults(defaults);
+	}
+	
+	protected void setDefaults(Properties defaults) {
+		for(String key : ((Set<String>)(Set)defaults.keySet())) {
+			getStream(key).append(defaults.get(key).toString());
+		}
+	}
+	
+	public static Properties getDefaultProperties() throws IOException {
 		Properties defaults = new Properties();
-		try {
-			defaults.load(StringUtils.getStreamFromClassPathLocation("com/emergentideas/webhandle/output/html5OutputDefaults.properties"));
-			for(String key : ((Set<String>)(Set)defaults.keySet())) {
-				getStream(key).append(defaults.get(key).toString());
-			}
-		}
-		catch(Exception e) {
-			logger.error("Could not load html5 defaults.", e);
-		}
+		defaults.load(StringUtils.getStreamFromClassPathLocation("com/emergentideas/webhandle/output/html5OutputDefaults.properties"));
+		return defaults;
 	}
 
 

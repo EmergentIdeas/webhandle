@@ -2,6 +2,8 @@ package com.emergentideas.webhandle.files;
 
 import java.io.File;
 
+import com.emergentideas.webhandle.files.FileInfo.FileType;
+
 public class FileStreamableResourceSource implements StreamableResourceSource {
 
 	protected File root;
@@ -30,11 +32,12 @@ public class FileStreamableResourceSource implements StreamableResourceSource {
 			}
 		}
 		
-		if(resource.exists()) {
-			if(resource.isFile()) {
-				return new FileStreamableResource(resource);
+		FileInfo fi = FileInfo.getInfo(resource);
+		if(fi != null) {
+			if(fi.getType() == FileType.FILE) {
+				return new FileStreamableResource(resource, fi.getLastModified() + "");
 			}
-			else if(resource.isDirectory()) {
+			else if(fi.getType() == FileType.DIRECTORY) {
 				return new DirectoryResource(resource, this);
 			}
 		}

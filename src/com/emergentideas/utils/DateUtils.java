@@ -16,6 +16,7 @@ public class DateUtils {
 	static DateFormat html5WeekFormat;
 	static DateFormat html5MonthFormat;
 	static DateFormat html5TimeFormat;
+	static DateFormat javaNIODateFormat;
 	
 	
 	/**
@@ -84,6 +85,17 @@ public class DateUtils {
 		return html5TimeFormat;
 	}
 	
+	/**
+	 * Returns the global copy of the Java NIO date format.  Don't change this one
+	 * @return
+	 */
+	public static DateFormat javaNIODateFormat() {
+		if(javaNIODateFormat == null) {
+			javaNIODateFormat = newJavaNIODateFormat();
+		}
+		return javaNIODateFormat;
+	}
+	
 	
 	/**
 	 * Returns a new copy of the http expires date format.  Change this in any way you like.
@@ -137,6 +149,15 @@ public class DateUtils {
 	public static DateFormat newDateFormat(String format) {
 		return newDateFormat(format, null);
 	}
+	
+	/**
+	 * Returns a new copy of the date format used by the Java NIO attributes objects.  Change this in any way you like.
+	 * @return
+	 */
+	public static DateFormat newJavaNIODateFormat() {
+		return newDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", "GMT");
+	}
+
 	
 	public static DateFormat newDateFormat(String format, String timeZone) {
 		DateFormat dateFormat = new SimpleDateFormat(format, Locale.US);

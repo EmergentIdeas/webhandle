@@ -37,7 +37,13 @@ public class IterativeOutputCreator implements OutputCreator {
 		this.response = response;
 		
 		if(output == null) {
-			output = new HTML5SegmentedOutput();
+			try {
+				output = new HTML5SegmentedOutput();
+			}
+			catch(Exception e) {
+				log.error("Could not initialize the HTML5SegmentedOutput", e);
+				output = new SegmentedOutput();
+			}
 			marshal.getContext().setFoundParameter(SegmentedOutput.class, output);
 		}
 		

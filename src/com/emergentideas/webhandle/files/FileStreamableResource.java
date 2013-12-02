@@ -11,12 +11,21 @@ public class FileStreamableResource implements StreamableResource, NamedResource
 
 	protected File source;
 	protected static Logger log = SystemOutLogger.get(FileStreamableResource.class);
+	protected String eTag;
 	
 	public FileStreamableResource(File source) {
 		this.source = source;
 	}
 	
+	public FileStreamableResource(File source, String eTag) {
+		this.source = source;
+		this.eTag = eTag;
+	}
+	
 	public String getEtag() {
+		if(eTag != null) {
+			return eTag;
+		}
 		return "" + source.lastModified();
 	}
 
@@ -33,4 +42,15 @@ public class FileStreamableResource implements StreamableResource, NamedResource
 	public String getName() {
 		return source.getName();
 	}
+
+	public String geteTag() {
+		return eTag;
+	}
+
+	public void seteTag(String eTag) {
+		this.eTag = eTag;
+	}
+
+
+	
 }

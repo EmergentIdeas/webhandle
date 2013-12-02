@@ -64,7 +64,7 @@ public class HintsTest {
 
 	}
 	
-	protected SegmentedOutput prepOutput() {
+	protected SegmentedOutput prepOutput() throws Exception {
 		SegmentedOutput out = new HTML5SegmentedOutput();
 		out.getList("footerLibraries").add("default.css");
 		out.getStream("body").append("start:");

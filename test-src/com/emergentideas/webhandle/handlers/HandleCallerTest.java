@@ -26,6 +26,8 @@ import com.emergentideas.webhandle.exceptions.CouldNotHandleException;
 import com.emergentideas.webhandle.exceptions.TransformationException;
 import com.emergentideas.webhandle.exceptions.UserRequiredException;
 import com.emergentideas.webhandle.investigators.TemplateOutputTransformersInvestigator;
+import com.emergentideas.webhandle.json.AnnotationDrivenJSONSerializer;
+import com.emergentideas.webhandle.json.StringSerializer;
 
 public class HandleCallerTest {
 
@@ -153,6 +155,44 @@ public class HandleCallerTest {
 		
 		String written = new String(out.toByteArray(), "UTF-8");
 		assertEquals("handler2", written);
+	}
+	
+	@Test
+	public void testEnsureJSONHandlerReturned() throws Exception {
+		final ByteArrayOutputStream out = new ByteArrayOutputStream();
+		InvocationContext context = new InvocationContext();
+		ParameterMarshal marshal = new ParameterMarshal(new WebParameterMarsahalConfiguration(), context);
+		new WebRequestContextPopulator().populate(marshal, context);
+		
+		TemplateOutputTransformersInvestigator outputInvestigator = new TemplateOutputTransformersInvestigator();
+		HandleAnnotationHandlerInvestigator handlerInvestigator = new HandleAnnotationHandlerInvestigator();
+		
+		AnnotationDrivenJSONSerializer serializer = new AnnotationDrivenJSONSerializer();
+		serializer.add(new StringSerializer());
+		outputInvestigator.setAnnotationDrivenJSONSerializer(serializer);
+		
+		JsonTestHandler handler = new JsonTestHandler();
+		handlerInvestigator.analyzeObject(handler);
+		
+		HandleCaller caller = new HandleCaller();
+		caller.setHandlerInvestigator(handlerInvestigator);
+		caller.setOutputInvestigator(outputInvestigator);
+		
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		
+		when(request.getServletPath()).thenReturn("/1");
+		when(request.getMethod()).thenReturn("GET");
+		
+		HttpServletResponse response = mock(HttpServletResponse.class);
+		when(response.getOutputStream()).thenReturn(new TestServletOutputStream(out));
+		
+		context.setFoundParameter(HttpServletRequest.class, request);
+		context.setFoundParameter(HttpServletResponse.class, response);
+
+		caller.call(null, request, response, marshal);
+		
+		String written = new String(out.toByteArray(), "UTF-8");
+		assertEquals("[\"hello\", \"there\"]", written);
 	}
 	
 	@Test

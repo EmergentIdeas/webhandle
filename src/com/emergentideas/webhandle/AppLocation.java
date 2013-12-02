@@ -25,7 +25,7 @@ public class AppLocation implements Location {
 	
 	protected Location parent;
 	
-	List<PropertyAccessor> accessors = null;
+	protected static List<PropertyAccessor> accessors = createAccessors();
 	
 	protected Logger log;
 	
@@ -38,6 +38,12 @@ public class AppLocation implements Location {
 		this.parent = parent;
 	}
 	
+	protected static List<PropertyAccessor> createAccessors() {
+		List<PropertyAccessor> loc = Collections.synchronizedList(new ArrayList<PropertyAccessor>());
+		loc.add(new MapPropertyAccessor());
+		loc.add(new JavaBeanPropertyAccessor());
+		return loc;
+	}
 	
 	
 	public Object get(String path) {
@@ -257,7 +263,7 @@ public class AppLocation implements Location {
 	 * @return
 	 */
 	protected List<Object> extractNextStageObjects(Collection<Object> candidates, String key, boolean useOnlyOneCandidate) {
-		return extractNextStageObjects(candidates, key, useOnlyOneCandidate, getPropertyAccessorList());
+		return extractNextStageObjects(candidates, key, useOnlyOneCandidate, accessors);
 	}
 	
 	/**
@@ -304,14 +310,6 @@ public class AppLocation implements Location {
 		return results;
 	}
 	
-	protected List<PropertyAccessor> getPropertyAccessorList() {
-		if(accessors == null) {
-			accessors = Collections.synchronizedList(new ArrayList<PropertyAccessor>());
-			accessors.add(new MapPropertyAccessor());
-			accessors.add(new JavaBeanPropertyAccessor());
-		}
-		return accessors;
-	}
 	
 	/**
 	 * Converts a path into a stack of parts.  A path like <code>one/two/three</code> 

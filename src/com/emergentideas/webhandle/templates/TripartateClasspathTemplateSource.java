@@ -132,15 +132,15 @@ public class TripartateClasspathTemplateSource extends TripartateTemplateSource 
 	}
 	
 	public TemplateInstance get(String templateName) {
+		if(partsByTemplateName.containsKey(templateName) == false) {
+			return null;
+		}
+		
 		TemplateInstance template = cachedTemplates.get(templateName);
 		if(template == null) {
 			Properties phints = hintsByTemplateName.get(templateName);
 			if(phints == null) {
 				phints = defaultHints;
-			}
-			
-			if(partsByTemplateName.containsKey(templateName) == false) {
-				return null;
 			}
 
 			template = new TripartateTemplate(this, elementStreamProcessor, getPartsMap(templateName), phints);
