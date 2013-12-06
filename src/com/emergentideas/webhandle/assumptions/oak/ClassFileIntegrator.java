@@ -22,8 +22,7 @@ public class ClassFileIntegrator implements Integrator {
 	
 	protected Logger log = SystemOutLogger.get(ClassFileIntegrator.class);
 
-	public void integrate(Loader loader, Location location,
-			ConfigurationAtom atom, Object focus) {
+	public void integrate(Loader loader, Location location, ConfigurationAtom atom, Object focus) {
 		if(atom == null) {
 			return;
 		}
@@ -67,6 +66,20 @@ public class ClassFileIntegrator implements Integrator {
 			}
 
 		}
+		else if("isolate-classes".equals(atom.getType())) {
+			WebAppLocation webApp = new WebAppLocation(location);
+			String classList = atom.getValue();
+			
+			ClassLoader oldClassLoader = (ClassLoader)webApp.getServiceByName(CLASS_LOADER_NAME);
+			IsolatingClassLoader classloader = new IsolatingClassLoader(oldClassLoader);
+			
+			for(String className : classList.split(",")) {
+				classloader.addClassOrPattern(className);
+			}
+			Thread.currentThread().setContextClassLoader(classloader);
+			webApp.setServiceByName(CLASS_LOADER_NAME, classloader);
+		}
+
 		
 	}
 

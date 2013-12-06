@@ -117,6 +117,13 @@ public class DbIntegrator implements Integrator {
 				"	xsi:schemaLocation=\"http://java.sun.com/xml/ns/persistence persistence_1_0.xsd\"\n" + 
 				"	version=\"1.0\">\n" + 
 				"	<persistence-unit name=\"" + unitName + "\" transaction-type=\"RESOURCE_LOCAL\">\n" + 
+				"<persistence-unit-metadata>\n" + 
+				"    <persistence-unit-defaults>\n" + 
+				"      <entity-listeners>\n" + 
+				"        <entity-listener class=\"com.emergentideas.webhandle.db.JPAGlobalListener\"/>      \n" + 
+				"      </entity-listeners>\n" + 
+				"    </persistence-unit-defaults>\n" + 
+				"  </persistence-unit-metadata>" +
 				"		<provider>" + conf.getProvider() + "</provider>\n" );
 		
 		for(String className : conf.getClassNames()) {

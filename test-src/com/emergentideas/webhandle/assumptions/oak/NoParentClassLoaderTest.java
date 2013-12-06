@@ -22,14 +22,20 @@ public class NoParentClassLoaderTest {
 	@SuppressWarnings("unused")
 	@Test
 	public void testNoParent() throws Exception {
-		ClassLoader n1 = new NoParentLoader(Thread.currentThread().getContextClassLoader());
-		ClassLoader n2 = new NoParentLoader(Thread.currentThread().getContextClassLoader());
+		IsolatingClassLoader n1 = new IsolatingClassLoader(Thread.currentThread().getContextClassLoader());
+		n1.addClassOrPattern(specialClass);
+		n1.addClassOrPattern(specialClass2 + ".*");
+		
+		IsolatingClassLoader n2 = new IsolatingClassLoader(Thread.currentThread().getContextClassLoader());
+		n2.addClassOrPattern(specialClass);
+		n2.addClassOrPattern(specialClass2);
 		
 		assertTrue(ReflectionUtils.getClassForName(specialClass) == StaticDataHolder.class);
 		assertTrue(ReflectionUtils.getClassForName(specialClass) != n1.loadClass(specialClass));
 		assertTrue(n1.loadClass(specialClass) != n2.loadClass(specialClass));
 		assertTrue(n1.loadClass(specialClass) == n1.loadClass(specialClass));
 		assertTrue(n1.loadClass(notSpecialClass) == n2.loadClass(notSpecialClass));
+		assertTrue(n1.loadClass(specialClass2) != n2.loadClass(specialClass2));
 		
 		
 		ClassLoader testCaseLoader = Thread.currentThread().getContextClassLoader();
@@ -40,6 +46,8 @@ public class NoParentClassLoaderTest {
 		Runnable r2 = (Runnable)ReflectionUtils.getClassForName(LoadedRunnable.class.getName()).newInstance();
 		r2.run();
 		
+		assertEquals(r1.toString(), r2.toString());
+		
 		Thread.sleep(40);
 		Thread.currentThread().setContextClassLoader(n1);
 		
@@ -49,62 +57,7 @@ public class NoParentClassLoaderTest {
 		Runnable r4 = (Runnable)ReflectionUtils.getClassForName(LoadedRunnable.class.getName()).newInstance();
 		r4.run();
 		
-		boolean b = r1 == r2;
-		
-		
-		
-	}
-	
-	
-	class NoParentLoader extends ClassLoader {
-		public NoParentLoader(final ClassLoader parent) throws Exception {
-			super(parent);
-		}
-		
-		
-
-		@Override
-		protected Class<?> findClass(String name) throws ClassNotFoundException {
-			name = name.replace('.', '/') + ".class";
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			InputStream is = getParent().getResourceAsStream(name);
-			try {
-				IOUtils.copy(is, baos);
-			}
-			catch(Exception e) {
-				e.printStackTrace();
-			}
-			byte[] b = baos.toByteArray();
-			return defineClass(null, b, 0, b.length, null);
-		}
-
-		@Override
-		protected Class<?> loadClass(String name, boolean resolve)
-				throws ClassNotFoundException {
-			if(name.equals(specialClass) == false && name.equals(specialClass2) == false) {
-				return super.loadClass(name, resolve);
-			}
-	        synchronized (getClassLoadingLock(name)) {
-	            // First, check if the class has already been loaded
-	            Class c = findLoadedClass(name);
-	            if (c == null) {
-	                long t0 = System.nanoTime();
-
-	                if (c == null) {
-	                    // If still not found, then invoke findClass in order
-	                    // to find the class.
-	                    long t1 = System.nanoTime();
-	                    c = findClass(name);
-
-	                }
-	            }
-	            if (resolve) {
-	                resolveClass(c);
-	            }
-	            return c;
-	        }
-
-		}
+		assertEquals(r3.toString(), r4.toString());
 		
 	}
 }
