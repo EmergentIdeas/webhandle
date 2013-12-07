@@ -37,7 +37,6 @@ public class FileInfo {
 				return new FileInfo(last, type);
 			}
 			catch(Exception e) {
-				e.printStackTrace();
 			}
 		}
 		else {

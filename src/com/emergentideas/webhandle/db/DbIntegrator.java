@@ -49,6 +49,25 @@ public class DbIntegrator implements Integrator {
 				oldClassLoader = Thread.currentThread().getContextClassLoader();
 			}
 			ClassLoader classloader = new ClassLoader(oldClassLoader) {
+				
+				
+				
+				@Override
+				protected URL findResource(String name) {
+					try {
+						if("jpa/orm.xml".equals(name)) {
+							Enumeration<URL> found = findResources(name);
+							if(found.hasMoreElements()) {
+								return found.nextElement();
+							}
+						}
+					}
+					catch(IOException e) {
+						e.printStackTrace();
+					}
+					return super.findResource(name);
+				}
+
 				@Override
 				protected Enumeration<URL> findResources(String name)
 						throws IOException {
@@ -68,6 +87,30 @@ public class DbIntegrator implements Integrator {
 											public InputStream getInputStream()
 													throws IOException {
 												InputStream is = new ByteArrayInputStream(generatePersistenceXml(conf, webApp).getBytes());
+												return is;
+											}
+										};
+									}
+								})
+							);
+						return urls.elements();
+					}
+					if("jpa/orm.xml".equals(name)) {
+						Vector<URL> urls = new Vector<URL>();
+						urls.add(
+								new URL("local", "localhost", 80, "/fakelocation/jpa/orm.xml", new URLStreamHandler() {
+									
+									@Override
+									protected URLConnection openConnection(URL u) throws IOException {
+										return new URLConnection(u) {
+											@Override
+											public void connect() throws IOException {
+											}
+
+											@Override
+											public InputStream getInputStream()
+													throws IOException {
+												InputStream is = new ByteArrayInputStream(generateMappingXml().getBytes());
 												return is;
 											}
 										};
@@ -104,6 +147,21 @@ public class DbIntegrator implements Integrator {
 
 	}
 	
+	protected String generateMappingXml() {
+		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+				"<entity-mappings xmlns=\"http://java.sun.com/xml/ns/persistence/orm\"\n" + 
+				"    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + 
+				"    xsi:schemaLocation=\"http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd\"\n" + 
+				"    version=\"2.0\">\n" + 
+				"<persistence-unit-metadata>\n" + 
+				"    <persistence-unit-defaults>\n" + 
+				"      <entity-listeners>\n" + 
+				"        <entity-listener class=\"com.emergentideas.webhandle.db.JPAGlobalListener\"/>      \n" + 
+				"      </entity-listeners>\n" + 
+				"    </persistence-unit-defaults>\n" + 
+				"  </persistence-unit-metadata>" +
+				"</entity-mappings>";
+	}
 	
 	protected String generatePersistenceXml(DbConfiguration conf, WebAppLocation webApp) {
 		
@@ -116,15 +174,10 @@ public class DbIntegrator implements Integrator {
 				"	xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + 
 				"	xsi:schemaLocation=\"http://java.sun.com/xml/ns/persistence persistence_1_0.xsd\"\n" + 
 				"	version=\"1.0\">\n" + 
-				"	<persistence-unit name=\"" + unitName + "\" transaction-type=\"RESOURCE_LOCAL\">\n" + 
-				"<persistence-unit-metadata>\n" + 
-				"    <persistence-unit-defaults>\n" + 
-				"      <entity-listeners>\n" + 
-				"        <entity-listener class=\"com.emergentideas.webhandle.db.JPAGlobalListener\"/>      \n" + 
-				"      </entity-listeners>\n" + 
-				"    </persistence-unit-defaults>\n" + 
-				"  </persistence-unit-metadata>" +
-				"		<provider>" + conf.getProvider() + "</provider>\n" );
+				"	<persistence-unit name=\"" + unitName + "\" transaction-type=\"RESOURCE_LOCAL\">\n" +
+				"		<provider>" + conf.getProvider() + "</provider>\n" +
+				"		<mapping-file>jpa/orm.xml</mapping-file>\n" 
+				);
 		
 		for(String className : conf.getClassNames()) {
 			data.append("		<class>" + className + "</class>\n" );
