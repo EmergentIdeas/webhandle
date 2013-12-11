@@ -14,57 +14,67 @@ public class JPAGlobalListener {
 	
 	protected static ObjectChangeListener listener;
 	
+	protected ObjectChangeListener objListener;
+	
+	public JPAGlobalListener() {
+		this.objListener = listener;
+	}
+	
 	@PreUpdate
 	public void preUpdate(Object o) {
-		if(listener != null) {
-			listener.changeEvent(ChangeType.PRE_UPDATE, o);
+		if(getListener() != null) {
+			getListener().changeEvent(ChangeType.PRE_UPDATE, o);
 		}
 	}
 	
 	@PostUpdate
 	public void postUpdate(Object o) {
-		if(listener != null) {
-			listener.changeEvent(ChangeType.POST_UPDATE, o);
+		if(getListener() != null) {
+			getListener().changeEvent(ChangeType.POST_UPDATE, o);
 		}
 	}
 	
 	@PrePersist
 	public void prePersist(Object o) {
-		if(listener != null) {
-			listener.changeEvent(ChangeType.PRE_PERSIST, o);
+		if(getListener() != null) {
+			getListener().changeEvent(ChangeType.PRE_PERSIST, o);
 		}
 	}
 	
 	@PostPersist
 	public void postPersist(Object o) {
-		if(listener != null) {
-			listener.changeEvent(ChangeType.POST_PERSIST, o);
+		if(getListener() != null) {
+			getListener().changeEvent(ChangeType.POST_PERSIST, o);
 		}
 	}
 	
 	@PreRemove
 	public void preRemove(Object o) {
-		if(listener != null) {
-			listener.changeEvent(ChangeType.PRE_REMOVE, o);
+		if(getListener() != null) {
+			getListener().changeEvent(ChangeType.PRE_REMOVE, o);
 		}
 	}
 	
 	@PostRemove
 	public void postRemove(Object o) {
-		if(listener != null) {
-			listener.changeEvent(ChangeType.POST_REMOVE, o);
+		if(getListener() != null) {
+			getListener().changeEvent(ChangeType.POST_REMOVE, o);
 		}
 	}
 	
 	@PostLoad
 	public void postLoad(Object o) {
-		if(listener != null) {
-			listener.changeEvent(ChangeType.POST_LOAD, o);
+		if(getListener() != null) {
+			getListener().changeEvent(ChangeType.POST_LOAD, o);
 		}
 	}
 
-	public static ObjectChangeListener getListener() {
+	public static ObjectChangeListener getStaticListener() {
 		return listener;
+	}
+
+	public ObjectChangeListener getListener() {
+		return objListener;
 	}
 
 	public static void setListener(ObjectChangeListener listener) {

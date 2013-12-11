@@ -34,6 +34,9 @@ public class IsolatingClassLoader extends ClassLoader {
 		name = name.replace('.', '/') + ".class";
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		InputStream is = getParent().getResourceAsStream(name);
+		if(is == null) {
+			throw new ClassNotFoundException(name);
+		}
 		try {
 			IOUtils.copy(is, baos);
 		}

@@ -17,7 +17,7 @@ public class ObjectChangeListenerIntegrator implements Integrator {
 	@Override
 	public void integrate(Loader loader, Location location, ConfigurationAtom atom, Object focus) {
 		if(objectEventInterchange != null) {
-			if(focus instanceof ObjectChangeListener) {
+			if(focus != null && focus instanceof ObjectChangeListener) {
 				objectEventInterchange.addListener((ObjectChangeListener)focus);
 			}
 		}
