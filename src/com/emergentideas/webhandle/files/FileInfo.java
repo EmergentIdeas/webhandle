@@ -37,7 +37,7 @@ public class FileInfo {
 				return new FileInfo(last, type);
 			}
 			catch(Exception e) {
-				e.printStackTrace();
+				// This is okay. It just means that there's no file at the path.
 			}
 		}
 		else {
