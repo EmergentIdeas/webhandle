@@ -4,12 +4,17 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.reflections.Configuration;
 import org.reflections.Reflections;
+import org.reflections.scanners.ResourcesScanner;
 import org.reflections.scanners.Scanner;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 import org.reflections.vfs.Vfs.File;
 
 import com.emergentideas.logging.Logger;
@@ -48,21 +53,22 @@ public class BeanCreator implements Creator {
 			final Pattern pat = Pattern.compile("(" + className + ")\\.class");
 			final List<String> foundClassNames = new ArrayList<String>();
 			
-			Reflections reflections = new Reflections("", new Scanner() {
+			List<ClassLoader> loaders = new ArrayList<ClassLoader>();
+			ClassLoader current = Thread.currentThread().getContextClassLoader();
+			do {
+				loaders.add(current);
+				current = current.getParent();
+			} while(current != null);
+			
+			ConfigurationBuilder cb = new ConfigurationBuilder()
+			.addClassLoaders(loaders)
+			.addUrls(ClasspathHelper.forPackage(""))
+			.addUrls(ClasspathHelper.forClassLoader(loaders.toArray(new ClassLoader[loaders.size()])))
+			.setScanners(new ResourcesScanner() {
 
-				public void setConfiguration(Configuration configuration) {}
-
-				public Multimap<String, String> getStore() {
-					return null;
-				}
-
-				public void setStore(Multimap<String, String> store) {	}
-
-				public Scanner filterResultsBy(Predicate<String> filter) {
-					return null;
-				}
-
+				@Override
 				public boolean acceptsInput(String file) {
+					// TODO Auto-generated method stub
 					Matcher m = pat.matcher(file);
 					if(m.matches()) {
 						
@@ -71,16 +77,12 @@ public class BeanCreator implements Creator {
 							foundClassNames.add(cn);
 						}
 					}
-					return false;
+					return super.acceptsInput(file);
 				}
-
-				public void scan(File file) {}
-
-				public boolean acceptResult(String fqn) {
-					return false;
-				}
+				
 			});
 			
+			Reflections reflections = new Reflections(cb);
 			AtomAndObject[] result = new AtomAndObject[foundClassNames.size()];
 			for(int i = 0; i < foundClassNames.size(); i++) {
 				String cn = foundClassNames.get(i);
