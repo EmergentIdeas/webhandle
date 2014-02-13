@@ -25,7 +25,7 @@ public class FileInfo {
 	 * @param file
 	 * @return
 	 */
-	public static FileInfo getInfo(File file) {
+	public synchronized static FileInfo getInfo(File file) {
 		if(isJava7()) {
 			try {
 				initReflectionObjects();
