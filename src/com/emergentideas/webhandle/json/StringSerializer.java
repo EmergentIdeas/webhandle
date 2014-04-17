@@ -10,7 +10,7 @@ public class StringSerializer implements ObjectSerializer<String> {
 	public void serialize(Serializer callingSerializer, SegmentedOutput output,
 			String objToSerialize, String... allowedSerializationProfiles) {
 		if(objToSerialize != null) {
-			output.getStream("body").append("\"" + StringEscapeUtils.escapeJavaScript(objToSerialize) + "\"");
+			output.getStream("body").append("\"" + StringEscapeUtils.escapeJavaScript(objToSerialize).replace("\\'", "'") + "\"");
 		}
 	}
 
