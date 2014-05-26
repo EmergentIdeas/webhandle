@@ -32,7 +32,7 @@
 		<!-- reads the names of method arguments -->
 		<dependency org="com.thoughtworks.paranamer" name="paranamer" rev="2.5.1" conf="deployment"/>
 		
-		<dependency org="org.apache.httpcomponents" name="httpclient" rev="4.2.1" conf="deployment"/>
+		<dependency org="org.apache.httpcomponents" name="httpclient" rev="4.3.2" conf="deployment"/>
 		
 		<!-- apache log4j -->
 		<dependency org="log4j" name="log4j" rev="1.2.17"/>

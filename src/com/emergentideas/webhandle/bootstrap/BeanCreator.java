@@ -1,6 +1,8 @@
 package com.emergentideas.webhandle.bootstrap;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -120,12 +122,26 @@ public class BeanCreator implements Creator {
 	protected Object createObjectFromClass(String className, ConfigurationAtom atom) throws Exception {
 		Class c = Thread.currentThread().getContextClassLoader().loadClass(className);
 		
-		if(c.isInterface() || c.isAnnotation() || c.isEnum() || c.isArray()) {
+		if(c.isInterface() || c.isAnnotation() || c.isEnum() || c.isArray() || Modifier.isAbstract(c.getModifiers())) {
 			return null;
 		}
+		
+		boolean noargFound = false;
+		for(Constructor con : c.getConstructors()) {
+			Class[] parms = con.getParameterTypes();
+			if(parms == null || parms.length == 0) {
+				noargFound = true;
+				break;
+			}
+		}
+		
+		if(noargFound == false) {
+			return null;
+		}
+		
 		Object o = c.newInstance();
 		
-		if(atom instanceof FocusAndPropertiesAtom) {
+		if(atom != null && atom instanceof FocusAndPropertiesAtom) {
 			assignProperties(o, ((FocusAndPropertiesAtom)atom).getProperties());
 		}
 		return o;

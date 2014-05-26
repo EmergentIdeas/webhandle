@@ -76,6 +76,41 @@ public class ParmManipulator {
 	}
 	
 	/**
+	 * Injects request parameters (and others if available) into the focus object.  Create for
+	 * setting the request parameters after the fact.  It will not set a parameter marked with
+	 * the {@link NoInject} annotation. 
+	 * @param parameterNames  This list of NOT allowed properties to inject.
+	 */
+	public void injectExcept(Object focus, String... parameterNames) {
+		if(focus == null) {
+			return;
+		}
+		
+		ParameterMarshal marshal = context.getFoundParameter(ParameterMarshal.class);
+		for(Method m : focus.getClass().getMethods()) {
+			if(ReflectionUtils.isSetterMethod(m) == false) {
+				continue;
+			}
+			
+			if(ReflectionUtils.getAnnotation(m, NoInject.class) != null) {
+				continue;
+			}
+			
+			if(parameterNames != null && ReflectionUtils.contains(parameterNames, ReflectionUtils.getPropertyName(m))) {
+				// if there are allowed parameter names specified and this is not one of them, continue to the next parameter
+				continue;
+			}
+			
+			try {
+				marshal.call(focus, m, false);
+			}
+			catch(Exception e) {
+				log.error("Could not set property during inject for method: " + m.getName(), e);
+			}
+		}
+	}
+	
+	/**
 	 * Adds the parameters from the request to the location.
 	 * @param location
 	 */

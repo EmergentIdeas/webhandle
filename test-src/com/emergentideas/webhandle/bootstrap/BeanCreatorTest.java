@@ -39,4 +39,12 @@ public class BeanCreatorTest {
 		AtomAndObject[] atomsAndObjects = (AtomAndObject[])creator.create(null, null, atom);
 		assertEquals(10, atomsAndObjects.length);
 	}
+	
+	@Test
+	public void testObjectWithoutConstructor() throws Exception {
+		BeanCreator creator = new BeanCreator();
+		assertNull(creator.createObjectFromClass(NoNoargConstructor.class.getName(), null));
+		assertNotNull(creator.createObjectFromClass(NoargConstructor.class.getName(), null));
+		assertNull(creator.createObjectFromClass(AbstractClass.class.getName(), null));
+	}
 }
