@@ -1,6 +1,7 @@
 package com.emergentideas.webhandle;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import com.emergentideas.webhandle.ValueTransformer;
 //import com.emergentideas.webhandle.apps.oak.login.OakUser;
 import com.emergentideas.webhandle.assumptions.oak.interfaces.User;
 import com.emergentideas.webhandle.composites.db.DbInvestigator;
+import com.emergentideas.webhandle.configurations.IntegratorConfiguration;
 import com.emergentideas.webhandle.configurations.WebParameterMarsahalConfiguration;
 import com.emergentideas.webhandle.exceptions.ParameterNotFoundException;
 import com.emergentideas.webhandle.investigators.NameAnnotationPropertyNameInvestigator;
@@ -485,7 +487,115 @@ public class ParameterMarshalTest {
 	public void testTryConversion() throws Exception {
 		TestObj obj = new TestObj();
 		Method m = ReflectionUtils.getFirstMethod(obj.getClass(), "primitiveParameters");
-		m.invoke(obj, new int[] { new Integer(12) });
 		
+		m.invoke(obj, new int[] { new Integer(12) });
+		assertArrayEquals(new int[] {12}, obj.getPrimitiveParameters());
+		
+		ArrayTestObj9 o = new ArrayTestObj9();
+		assertNull(o.getAssigned());
+		
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		ParameterMarshal parameterMarshal = new ParameterMarshal(new IntegratorConfiguration());
+		
+		m = ReflectionUtils.getFirstMethod(o.getClass(), "string");
+		
+		parameters.put("value", "12");
+		parameterMarshal.call(o, m, false, Constants.USER_INFORMATION_SOURCE_NAME, parameters);
+		assertEquals("12", o.getAssigned());
+		o.clear();
+		
+		parameters.put("value", new String[] {"12"});
+		parameterMarshal.call(o, m, false, Constants.USER_INFORMATION_SOURCE_NAME, parameters);
+		assertEquals("12", o.getAssigned());
+		o.clear();
+		
+		parameters.put("value", new String[] {"12", "11"});
+		parameterMarshal.call(o, m, false, Constants.USER_INFORMATION_SOURCE_NAME, parameters);
+		assertEquals("12", o.getAssigned());
+		o.clear();
+		
+		m = ReflectionUtils.getFirstMethod(o.getClass(), "strings");
+		
+		parameters.put("value", "12");
+		parameterMarshal.call(o, m, false, Constants.USER_INFORMATION_SOURCE_NAME, parameters);
+		assertTrue(isEqual(new String[] {"12"}, (Object[])o.getAssigned()));
+		o.clear();
+		
+		parameters.put("value", new String[] {"12"});
+		parameterMarshal.call(o, m, false, Constants.USER_INFORMATION_SOURCE_NAME, parameters);
+		assertTrue(isEqual(new String[] {"12"}, (Object[])o.getAssigned()));
+		o.clear();
+		
+		m = ReflectionUtils.getFirstMethod(o.getClass(), "integers");
+		
+		parameters.put("value", "12");
+		parameterMarshal.call(o, m, false, Constants.USER_INFORMATION_SOURCE_NAME, parameters);
+		assertTrue(isEqual(new Integer[] {12}, (Object[])o.getAssigned()));
+		o.clear();
+		
+		parameters.put("value", new String[] {"12", "11"});
+		parameterMarshal.call(o, m, false, Constants.USER_INFORMATION_SOURCE_NAME, parameters);
+		assertTrue(isEqual(new Integer[] {12, 11}, (Object[])o.getAssigned()));
+		o.clear();
+		
+		parameters.put("value", new Integer[] {12, 11});
+		parameterMarshal.call(o, m, false, Constants.USER_INFORMATION_SOURCE_NAME, parameters);
+		assertTrue(isEqual(new Integer[] {12, 11}, (Object[])o.getAssigned()));
+		o.clear();
+		
+		m = ReflectionUtils.getFirstMethod(o.getClass(), "intValue");
+		
+		parameters.put("value", "12");
+		parameterMarshal.call(o, m, false, Constants.USER_INFORMATION_SOURCE_NAME, parameters);
+		assertEquals(new Integer(12), o.getAssigned());
+		o.clear();
+		
+		parameters.put("value", new String[] {"12"});
+		parameterMarshal.call(o, m, false, Constants.USER_INFORMATION_SOURCE_NAME, parameters);
+		assertEquals(new Integer(12), o.getAssigned());
+		o.clear();
+
+		parameters.put("value", new Integer[] {12});
+		parameterMarshal.call(o, m, false, Constants.USER_INFORMATION_SOURCE_NAME, parameters);
+		assertEquals(new Integer(12), o.getAssigned());
+		o.clear();
+		
+		m = ReflectionUtils.getFirstMethod(o.getClass(), "integer");
+		
+		parameters.put("value", "12");
+		parameterMarshal.call(o, m, false, Constants.USER_INFORMATION_SOURCE_NAME, parameters);
+		assertEquals(new Integer(12), o.getAssigned());
+		o.clear();
+		
+		parameters.put("value", new String[] {"12"});
+		parameterMarshal.call(o, m, false, Constants.USER_INFORMATION_SOURCE_NAME, parameters);
+		assertEquals(new Integer(12), o.getAssigned());
+		o.clear();
+
+		parameters.put("value", new Integer[] {12});
+		parameterMarshal.call(o, m, false, Constants.USER_INFORMATION_SOURCE_NAME, parameters);
+		assertEquals(new Integer(12), o.getAssigned());
+		o.clear();
+		
+	}
+	
+	protected boolean isEqual(Object[] a1, Object[] a2) {
+		if(a1 == null && a2 == null) {
+			return true;
+		}
+		
+		if(a1 == null || a2 == null) {
+			return false;
+		}
+		
+		if(a1.length != a2.length) {
+			return false;
+		}
+		
+		for(int i = 0; i < a1.length; i++) {
+			assertEquals(a1[i], a2[i]);
+		}
+		
+		return true;
 	}
 }

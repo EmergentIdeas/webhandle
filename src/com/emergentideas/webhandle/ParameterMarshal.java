@@ -1,6 +1,7 @@
 package com.emergentideas.webhandle;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -431,6 +432,14 @@ public class ParameterMarshal {
 			if(isArrayType(initial)) {
 				startingPoint = (Object[])initial;
 			}
+			else if(initial instanceof Collection) {
+				Collection c = (Collection)initial;
+				startingPoint = new Object[c.size()];
+				int i = 0;
+				for(Object o : c) {
+					startingPoint[i++] = o;
+				}
+			}
 			else {
 				startingPoint = makeArrayFromObject(initial);
 			}
@@ -500,8 +509,16 @@ public class ParameterMarshal {
 	}
 	
 	protected <T> T convertArrayToSingleValueOrCollectionIfNeeded(Object data, Class finalType) {
-		if(data.getClass().isArray() && finalType.getClass().isArray() == false) {
+		if(data.getClass().isArray() && finalType.isArray() == false) {
 			// we've been working with arrays, but we want a single value
+			
+			// let's try the simplest of cases that the current array is just an array of
+			// the object desired and we have only one of them in the array
+			// or that the destination is an Object and we shouldn't do any work to convert the single
+			// object in the array
+			if((data.getClass().equals(getArrayStyle(finalType)) || Object.class.equals(finalType)) && Array.getLength(data) == 1) {
+				return (T) Array.get(data, 0);
+			}
 			
 			// let's try an automatic convert
 			Object result = convert((Object[])data, finalType);

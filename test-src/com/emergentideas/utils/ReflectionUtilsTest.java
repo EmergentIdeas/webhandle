@@ -16,6 +16,8 @@ import com.emergentideas.webhandle.TestObj;
 import com.emergentideas.webhandle.TestObj2;
 import com.emergentideas.webhandle.TestObj5;
 import com.emergentideas.webhandle.TestObjectParameterizedExtended;
+import com.emergentideas.webhandle.handlers.HandleAnnotationHandlerInvestigator;
+import com.emergentideas.webhandle.handlers.Handler3;
 
 import static com.emergentideas.utils.ReflectionUtils.*;
 
@@ -151,4 +153,12 @@ public class ReflectionUtilsTest {
 		Method m = getFirstMethod(TestObjectParameterizedExtended.class, "method1");
 		assertEquals(String.class, m.getGenericParameterTypes()[0]);
 	}
+	
+	@Test
+	public void testMethodOrder() throws Exception {
+		List<Method> methods = getMethodsInReverseInheritenceOrder(Handler3.class);
+		
+		assertTrue(methods.get(methods.size() - 1).getName().equals("six"));
+	}
+
 }

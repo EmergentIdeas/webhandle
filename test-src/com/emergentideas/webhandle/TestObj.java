@@ -33,6 +33,9 @@ public class TestObj {
 	protected List<TestObj> manyChildren;
 	
 	@Transient
+	protected int[] primitiveParameters;
+	
+	@Transient
 	int order = 2;
 	
 	public TestObj() {
@@ -135,7 +138,17 @@ public class TestObj {
 	}
 
 	public void primitiveParameters(int[] values) {
-		
+		primitiveParameters = values;
 	}
+
+	public int[] getPrimitiveParameters() {
+		return primitiveParameters;
+	}
+
+	public void setPrimitiveParameters(int[] primitiveParameters) {
+		this.primitiveParameters = primitiveParameters;
+	}
+	
+	
 	
 }

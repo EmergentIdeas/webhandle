@@ -83,11 +83,4 @@ public class HandleAnnotationHandlerInvestigatorTest {
 		
 	}
 	
-	@Test
-	public void testMethodOrder() throws Exception {
-		HandleAnnotationHandlerInvestigator investigator = new HandleAnnotationHandlerInvestigator();
-		List<Method> methods = investigator.getMethodsInReverseInheritenceOrder(Handler3.class);
-		
-		assertTrue(methods.get(methods.size() - 1).getName().equals("six"));
-	}
 }

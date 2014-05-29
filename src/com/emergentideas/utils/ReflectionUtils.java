@@ -661,5 +661,25 @@ public class ReflectionUtils {
 		return null;
 	}
 	
+	/**
+	 * Returns the methods of a class with the one from the actual type coming last,
+	 * the methods from the super class before that, its superclass before that, etc.
+	 * @param c
+	 * @return
+	 */
+	public static List<Method> getMethodsInReverseInheritenceOrder(Class<?> c) {
+		List<Method> result = new ArrayList<Method>();
+		
+		while(c != null) {
+			for(Method m : c.getDeclaredMethods()) {
+				result.add(m);
+			}
+			c = c.getSuperclass();
+		}
+		
+		Collections.reverse(result);
+		return result;
+	}
+
 
 }

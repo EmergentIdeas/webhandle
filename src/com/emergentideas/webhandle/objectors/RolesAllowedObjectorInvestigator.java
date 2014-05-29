@@ -75,9 +75,11 @@ public class RolesAllowedObjectorInvestigator implements
 		if(user == null && request != null && (request.getUserPrincipal() == null || StringUtils.isBlank(request.getUserPrincipal().getName())) ) {
 			throw new UserRequiredException(request == null ? null : request.getRequestURL().toString());
 		}
-		for(String allowed : rolesAllowed) {
-			if(request.isUserInRole(allowed)) {
-				return true;
+		if(request != null) {
+			for(String allowed : rolesAllowed) {
+				if(request.isUserInRole(allowed)) {
+					return true;
+				}
 			}
 		}
 		

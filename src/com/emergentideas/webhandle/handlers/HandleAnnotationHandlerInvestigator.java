@@ -77,7 +77,7 @@ public class HandleAnnotationHandlerInvestigator implements HandlerInvestigator,
 			urlPrefixPattern = new String[] { "" };
 		}
 		
-		for(Method method : removeDuplicates(getMethodsInReverseInheritenceOrder(handler.getClass()), handle, path, urlPrefixPattern)) {
+		for(Method method : removeDuplicates(ReflectionUtils.getMethodsInReverseInheritenceOrder(handler.getClass()), handle, path, urlPrefixPattern)) {
 			if(ReflectionUtils.isPublic(method) == false) {
 				continue;
 			}
@@ -210,25 +210,6 @@ public class HandleAnnotationHandlerInvestigator implements HandlerInvestigator,
 		return StringUtils.join(list, ',');
 	}
 	
-	/**
-	 * Returns the method method of a class with the one from the actual type coming first,
-	 * then the methods from the super class, then its superclass, etc.
-	 * @param c
-	 * @return
-	 */
-	protected List<Method> getMethodsInReverseInheritenceOrder(Class<?> c) {
-		List<Method> result = new ArrayList<Method>();
-		
-		while(c != null) {
-			for(Method m : c.getDeclaredMethods()) {
-				result.add(m);
-			}
-			c = c.getSuperclass();
-		}
-		
-		Collections.reverse(result);
-		return result;
-	}
 	
 	
 	public CallSpec[] determineHandlers(String requestUrl, HttpMethod method) {
