@@ -115,7 +115,7 @@
 	
 	<target name="web-app-acorn" depends="compile" description="generates a war usable for acorns" >
 		<jar jarfile="${dist}/WEB-INF/lib/webhandle.jar" basedir="${build}/classes"/>
-	  	<ivy:retrieve pattern="${dist}/WEB-INF/lib/[artifact](-[classifier]).jar" type="jar" conf="deployment"/>
+	  	<ivy:retrieve pattern="${dist}/WEB-INF/lib/[artifact](-[classifier])-[revision].jar" type="jar" conf="deployment"/>
 		
 		<copy tofile="${dist}/WEB-INF/buildNumber.properties" file="buildNumber.properties" />
 		

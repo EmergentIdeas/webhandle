@@ -7,10 +7,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.hibernate.engine.jdbc.StreamUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+
 
 public class FileStreamableResourceSink extends FileStreamableResourceSource
-		implements StreamableResourceSink {
+		implements StreamableResourceSink, DirectoryManipulator {
 	
 	public FileStreamableResourceSink(File root) {
 		super(root);
@@ -33,7 +36,7 @@ public class FileStreamableResourceSink extends FileStreamableResourceSource
 		}
 		
 		OutputStream os = new FileOutputStream(resource);
-		StreamUtils.copy(data, os);
+		IOUtils.copy(data, os);
 	}
 
 	public void write(String location, byte[] data) throws IOException {
@@ -48,11 +51,76 @@ public class FileStreamableResourceSink extends FileStreamableResourceSource
 		
 		File resource = new File(root, location);
 		if(resource.isDirectory()) {
+			removeDirectory(location, true);
 			return;
 		}
 		
 		if(resource.exists()) {
 			resource.delete();
+		}
+	}
+
+
+	@Override
+	public void makeDirectory(String path) {
+		if(isPathAcceptable(path) == false) {
+			return;
+		}
+		
+		if(StringUtils.isBlank(path)) {
+			return;
+		}
+		
+		if(path.endsWith("/")) {
+			path = path.substring(0, path.length() - 1);
+		}
+		
+		if(StringUtils.isBlank(path)) {
+			return;
+		}
+		
+		File resource = new File(root, path);
+		if(resource.exists()) {
+			return;
+		}
+		
+		resource.mkdirs();
+	}
+
+
+	@Override
+	public void removeDirectory(String path, boolean failIfNotEmpty) {
+		if(isPathAcceptable(path) == false) {
+			return;
+		}
+		
+		if(StringUtils.isBlank(path)) {
+			return;
+		}
+		
+		if(path.endsWith("/")) {
+			path = path.substring(0, path.length() - 1);
+		}
+		
+		if(StringUtils.isBlank(path)) {
+			return;
+		}
+		
+		File resource = new File(root, path);
+		if(resource.exists() == false) {
+			return;
+		}
+
+		if(failIfNotEmpty) {
+			resource.delete();
+		}
+		else {
+			try {
+				FileUtils.deleteDirectory(resource);
+			}
+			catch(IOException e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 	

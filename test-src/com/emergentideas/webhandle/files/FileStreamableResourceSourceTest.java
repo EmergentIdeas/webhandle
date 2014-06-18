@@ -3,9 +3,11 @@ package com.emergentideas.webhandle.files;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import static junit.framework.Assert.*;
 
 public class FileStreamableResourceSourceTest {
@@ -19,7 +21,7 @@ public class FileStreamableResourceSourceTest {
 	protected File f1;
 	protected File f2;
 	
-	protected FileStreamableResourceSource source;
+	protected FileStreamableResourceSink source;
 	
 	@Before
 	public void setup() throws Exception {
@@ -43,7 +45,7 @@ public class FileStreamableResourceSourceTest {
 		f1 = new File(d1, "f1");
 		f1.createNewFile();
 		
-		source = new FileStreamableResourceSource(d1);
+		source = new FileStreamableResourceSink(d1);
 	}
 	
 	
@@ -67,6 +69,22 @@ public class FileStreamableResourceSourceTest {
 		assertNull(source.get("d2/"));
 		assertNull(source.get(basePath + "/d2"));
 		assertNull(source.get(basePath + "/d2/"));
+	}
+	
+	@Test
+	public void testDirectoryManipulatorInterfaces() throws Exception {
+		assertNull(source.get("d4"));
+		source.makeDirectory("d4");
+		assertNotNull(source.get("d4"));
+		source.write("d4/test1", "hello".getBytes());
+		assertEquals("hello", IOUtils.toString(((FileStreamableResource)source.get("d4/test1")).getContent()));
+		source.removeDirectory("d4", true);
+		assertEquals("hello", IOUtils.toString(((FileStreamableResource)source.get("d4/test1")).getContent()));
+		source.delete("d4");
+		assertEquals("hello", IOUtils.toString(((FileStreamableResource)source.get("d4/test1")).getContent()));
+		source.removeDirectory("d4", false);
+		assertNull(source.get("d4/test1"));
+		
 	}
 	
 	@After
