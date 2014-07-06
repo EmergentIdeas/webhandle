@@ -45,7 +45,7 @@ public class FileStreamableResourceSource implements StreamableResourceSource {
 	}
 	
 	protected boolean isPathAcceptable(String path) {
-		return ! (path.contains("..") || path.contains("~"));
+		return ! (path.contains("..") || path.startsWith("~"));
 	}
 
 }
