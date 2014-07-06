@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.json.JsonArray;
+
 import org.apache.commons.lang.StringUtils;
 
 import static com.emergentideas.utils.ReflectionUtils.*;
@@ -487,6 +489,9 @@ public class ParameterMarshal {
 	
 	protected Class getComponentType(Type type, Type passedComponentType) {
 		if(type instanceof Class && Collection.class.isAssignableFrom((Class)type)) {
+			if(type.equals(JsonArray.class)) {
+				return (Class)type;
+			}
 			if(type instanceof ParameterizedType) {
 				Type t = ((ParameterizedType)type).getActualTypeArguments()[0];
 				if(t instanceof Class) {

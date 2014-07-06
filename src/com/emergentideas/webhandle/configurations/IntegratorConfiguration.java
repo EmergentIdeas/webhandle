@@ -18,6 +18,9 @@ import com.emergentideas.webhandle.transformers.StringToDoubleTransformer;
 import com.emergentideas.webhandle.transformers.StringToEnumTransformer;
 import com.emergentideas.webhandle.transformers.StringToFloatTransformer;
 import com.emergentideas.webhandle.transformers.StringToIntegerTransformer;
+import com.emergentideas.webhandle.transformers.StringToJsonArrayTransformer;
+import com.emergentideas.webhandle.transformers.StringToJsonObjectTransformer;
+import com.emergentideas.webhandle.transformers.StringToJsonStructureTransformer;
 
 public class IntegratorConfiguration extends ParameterMarshalConfiguration {
 	
@@ -66,6 +69,9 @@ public class IntegratorConfiguration extends ParameterMarshalConfiguration {
 		getTypeTransformers().add(new StringToEnumTransformer());
 		getTypeTransformers().add(new FileItemToBytesTransformer());
 		getTypeTransformers().add(new FileItemToStringTransformer());
+		getTypeTransformers().add(new StringToJsonStructureTransformer());
+		getTypeTransformers().add(new StringToJsonObjectTransformer());
+		getTypeTransformers().add(new StringToJsonArrayTransformer());
 	}
 	
 	protected void addDbInvestigators() {

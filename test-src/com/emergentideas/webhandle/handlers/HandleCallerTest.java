@@ -6,16 +6,19 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
+
 import static org.mockito.Mockito.*;
 
 import com.emergentideas.utils.ReflectionUtils;
+import com.emergentideas.webhandle.Constants;
 import com.emergentideas.webhandle.InvocationContext;
 import com.emergentideas.webhandle.ParameterMarshal;
 import com.emergentideas.webhandle.assumptions.oak.HandleCaller;
@@ -25,9 +28,12 @@ import com.emergentideas.webhandle.exceptions.CouldNotHandle;
 import com.emergentideas.webhandle.exceptions.CouldNotHandleException;
 import com.emergentideas.webhandle.exceptions.TransformationException;
 import com.emergentideas.webhandle.exceptions.UserRequiredException;
+import com.emergentideas.webhandle.handlers.EnumBasedHandler.TestEnum;
 import com.emergentideas.webhandle.investigators.TemplateOutputTransformersInvestigator;
 import com.emergentideas.webhandle.json.AnnotationDrivenJSONSerializer;
 import com.emergentideas.webhandle.json.StringSerializer;
+import com.emergentideas.webhandle.sources.HttpBodyValueSource;
+import com.emergentideas.webhandle.sources.MapValueSource;
 
 public class HandleCallerTest {
 
@@ -193,6 +199,117 @@ public class HandleCallerTest {
 		
 		String written = new String(out.toByteArray(), "UTF-8");
 		assertEquals("[\"hello\", \"there\"]", written);
+		
+		// setup json parameters
+		String json = "{\"hello\": \"world\"}";
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		parameters.put("theJson", json);
+		marshal.getSources().put(Constants.REQUEST_BODY_SOURCE_NAME, new MapValueSource(parameters));
+		context.setFoundParameter("theJson", String.class, json);
+
+		// Test the injection of the json data
+		final ByteArrayOutputStream out2 = new ByteArrayOutputStream();
+		request = mock(HttpServletRequest.class);
+		when(request.getServletPath()).thenReturn("/2");
+		when(request.getMethod()).thenReturn("POST");
+		
+		response = mock(HttpServletResponse.class);
+		when(response.getOutputStream()).thenReturn(new TestServletOutputStream(out2));
+		
+		context.setFoundParameter(HttpServletRequest.class, request);
+		context.setFoundParameter(HttpServletResponse.class, response);
+
+		caller.call(null, request, response, marshal);
+		
+		written = new String(out2.toByteArray(), "UTF-8");
+		assertEquals("world", written);
+		
+		
+		// Test the specific cast to JsonObject
+		final ByteArrayOutputStream out3 = new ByteArrayOutputStream();
+		request = mock(HttpServletRequest.class);
+		when(request.getServletPath()).thenReturn("/3");
+		when(request.getMethod()).thenReturn("POST");
+		
+		response = mock(HttpServletResponse.class);
+		when(response.getOutputStream()).thenReturn(new TestServletOutputStream(out3));
+		
+		context.setFoundParameter(HttpServletRequest.class, request);
+		context.setFoundParameter(HttpServletResponse.class, response);
+
+		caller.call(null, request, response, marshal);
+		
+		written = new String(out3.toByteArray(), "UTF-8");
+		assertEquals("world", written);
+		
+
+		// Test the specific cast to JsonArray
+		parameters.put("theJson", "[\"world!\"]");
+		final ByteArrayOutputStream out4 = new ByteArrayOutputStream();
+		request = mock(HttpServletRequest.class);
+		when(request.getServletPath()).thenReturn("/4");
+		when(request.getMethod()).thenReturn("POST");
+		
+		response = mock(HttpServletResponse.class);
+		when(response.getOutputStream()).thenReturn(new TestServletOutputStream(out4));
+		
+		context.setFoundParameter(HttpServletRequest.class, request);
+		context.setFoundParameter(HttpServletResponse.class, response);
+
+		caller.call(null, request, response, marshal);
+		
+		written = new String(out4.toByteArray(), "UTF-8");
+		assertEquals("world!", written);
+		
+
+	}
+	
+	@Test
+	public void testEnsureNullEnumCausesNoProblems() throws Exception {
+		final ByteArrayOutputStream out = new ByteArrayOutputStream();
+		InvocationContext context = new InvocationContext();
+		ParameterMarshal marshal = new ParameterMarshal(new WebParameterMarsahalConfiguration(), context);
+		new WebRequestContextPopulator().populate(marshal, context);
+		
+		TemplateOutputTransformersInvestigator outputInvestigator = new TemplateOutputTransformersInvestigator();
+		HandleAnnotationHandlerInvestigator handlerInvestigator = new HandleAnnotationHandlerInvestigator();
+		
+		EnumBasedHandler handler = new EnumBasedHandler();
+		handlerInvestigator.analyzeObject(handler);
+		
+		HandleCaller caller = new HandleCaller();
+		caller.setHandlerInvestigator(handlerInvestigator);
+		caller.setOutputInvestigator(outputInvestigator);
+		
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		
+		when(request.getServletPath()).thenReturn("/1");
+		when(request.getMethod()).thenReturn("GET");
+		
+		HttpServletResponse response = mock(HttpServletResponse.class);
+		when(response.getOutputStream()).thenReturn(new TestServletOutputStream(out));
+		
+		context.setFoundParameter(HttpServletRequest.class, request);
+		context.setFoundParameter(HttpServletResponse.class, response);
+
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		marshal.getSources().put(Constants.REQUEST_BODY_SOURCE_NAME, new MapValueSource(parameters));
+
+		caller.call(null, request, response, marshal);
+		
+		String written = new String(out.toByteArray(), "UTF-8");
+		
+		assertTrue(handler.isCalled());
+		
+		handler.setCalled(false);
+		
+		parameters.put("val", "ONE");
+		
+		caller.call(null, request, response, marshal);
+
+		assertTrue(handler.isCalled());
+		assertEquals(TestEnum.ONE, handler.getTheValue());
+
 	}
 	
 	@Test
