@@ -39,6 +39,7 @@ public class TripartateTemplate implements TemplateInstance {
 	
 	protected static final TripartateParser parser = new TripartateParser(); 
 	
+	protected static final String DATA_SECTION = "data";
 	
 	public TripartateTemplate(TemplateSource templateSource, ElementStreamProcessor processor, Map<String, String> sections, Properties hints) {
 		this.sections.putAll(sections);
@@ -60,18 +61,21 @@ public class TripartateTemplate implements TemplateInstance {
 	
 	public void render(SegmentedOutput output, Location location, String elementSourceName, String... processingHints) {
 		
+		loadDataIntoLocation(location);
+		
 		for(String sectionName : createSectionRenderOrder()) {
-			String hintsString = hints.getProperty(sectionName);
-			if(hintsString == null) {
-				hintsString = hints.getProperty("$default");
+			if(DATA_SECTION.equals(sectionName)) {
+				// This is the data for the template itself and shouldn't get rendered to the output
+				continue;
 			}
-			
-			String[] hints = hintsString.split(",");
 			
 			List<Element> elements = compiledSections.get(sectionName);
 			if(elements == null) {
 				continue;
 			}
+
+			String[] hints = getHintsForSection(sectionName);
+			
 			
 			if(ReflectionUtils.contains(hints, STREAM_MARKER) && ReflectionUtils.contains(hints, APPEND_MARKER)) {
 				// if we're appending to the stream, we don't have to do anything because the natural
@@ -115,6 +119,41 @@ public class TripartateTemplate implements TemplateInstance {
 				}
 			}
 		}
+	}
+	
+	protected String[] getHintsForSection(String sectionName) {
+		String hintsString = hints.getProperty(sectionName);
+		if(hintsString == null) {
+			hintsString = hints.getProperty("$default");
+		}
+		
+		String[] hints = hintsString.split(",");
+		return hints;
+	}
+	
+	/**
+	 * Loads anything from the "data" map into the location
+	 */
+	protected void loadDataIntoLocation(Location location) {
+		if(sections.containsKey(DATA_SECTION)) {
+			Map<String, String> theData = getTemplateData();
+			for(String key : theData.keySet()) {
+				location.put(key, theData.get(key));
+			}
+		}
+	}
+	
+	/**
+	 * Returns the data for this template, never null but often empty.
+	 */
+	public Map<String, String> getTemplateData() {
+		String s = sections.get(DATA_SECTION);
+		if(org.apache.commons.lang.StringUtils.isBlank(s)) {
+			return new HashMap<String, String>();
+		}
+		
+		Map<String, String> theData = parseProperties(s);
+		return theData;
 	}
 	
 	protected List<String> createSectionRenderOrder() {

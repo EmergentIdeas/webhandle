@@ -20,8 +20,8 @@
     	<dependency org="javax.ws.rs" name="jsr311-api" rev="1.1.1" conf="deployment"/>
     	
     	<!-- JSON API and Default Parser -->
-    	<dependency org="javax.json" name="javax.json-api" rev="1.0"/>
-    	<dependency org="org.glassfish" name="javax.json" rev="1.0.4"/>
+    	<dependency org="javax.json" name="javax.json-api" rev="1.0" conf="deployment->*"/>
+    	<dependency org="org.glassfish" name="javax.json" rev="1.0.4" conf="deployment->*"/>
     	
     	<dependency org="org.apache.geronimo.specs" name="geronimo-atinject_1.0_spec" rev="1.0"/>
     	
