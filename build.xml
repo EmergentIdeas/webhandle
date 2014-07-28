@@ -116,6 +116,7 @@
 	<target name="web-app-acorn" depends="compile" description="generates a war usable for acorns" >
 		<jar jarfile="${dist}/WEB-INF/lib/webhandle.jar" basedir="${build}/classes"/>
 	  	<ivy:retrieve pattern="${dist}/WEB-INF/lib/[artifact](-[classifier])-[revision].jar" type="jar" conf="deployment"/>
+	  	<ivy:retrieve pattern="${dist}/WEB-INF/lib/[artifact](-[classifier])-[revision].jar" type="bundle" conf="deployment"/>
 		
 		<copy tofile="${dist}/WEB-INF/buildNumber.properties" file="buildNumber.properties" />
 		
@@ -131,7 +132,8 @@
 
 	</target>
 	
-	<target name="web-app-acorn-war" depends="clean,web-app-acorn" >
+	<target name="web-app-acorn-war" depends="clean,dist" >
+		<delete file="webhandle.war" />
 	    <zip destfile="webhandle.war" basedir="${dist}" />
 	</target>
 	
@@ -145,9 +147,10 @@
 	
 
 
-	<target name="pub" depends="dist" >
+	<target name="pub" depends="web-app-acorn-war" >
 		<ivy:publish resolver="eico_local" pubrevision="1.0.0.${build.number}" update="true" overwrite="true">
 			<artifacts pattern="${dist}/lib/[artifact].[ext]" />
+			<artifacts pattern="[artifact].[ext]" />
 		</ivy:publish>
 	</target>
 	

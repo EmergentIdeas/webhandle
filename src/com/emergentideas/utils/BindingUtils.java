@@ -216,7 +216,7 @@ public class BindingUtils
 							// if the button value is blank, then we're just looking for an indication that the check box should be
 							// checked.  This indicates there is only one checkbox with this name.
 							s = StringUtils.replaceString(s, "checked=\"checked\"", "", "checked", "");
-							if(valueToSet.equalsIgnoreCase("on") || valueToSet.equalsIgnoreCase("yes") || valueToSet.equalsIgnoreCase("checked")) {
+							if(valueToSet.equalsIgnoreCase("on") || valueToSet.equalsIgnoreCase("yes") || valueToSet.equalsIgnoreCase("checked") || valueToSet.equalsIgnoreCase("true")) {
 								s = addValueBeforeFirstElementTermination(s, "checked=\"checked\"");
 							}
 						}

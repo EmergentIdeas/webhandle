@@ -2,6 +2,7 @@
     <info organisation="com.emergentideas" module="webhandle"/>
     <configurations defaultconf="build" defaultconfmapping="build->default;deployment->default;test->default">
     	<conf name="build" />
+    	<conf name="war" />
     	<conf name="sources" />
     	<conf name="deployment" />
     	<conf name="test" />
@@ -10,6 +11,7 @@
     
     <publications>
     	<artifact name="webhandle" type="jar" ext="jar"/>
+    	<artifact name="webhandle" type="war" ext="war" conf="war" />
     	<artifact name="webhandle-sources" type="source" ext="jar" conf="sources"/>
     </publications>
     <dependencies>

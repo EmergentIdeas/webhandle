@@ -29,6 +29,30 @@ Handling Web Requests
 @Handle is the webhandle specific annotation that let's you declare path, path variables
 and request type
 
+==@Inject
+
+@Inject says that the request parameters should be injected into the object based on parameter
+name.
+
+==@NoInject
+
+@NoInject when applied to a setter says that auto injection methods should not try to use the
+setter.
+
+==@NotNull
+
+@NotNull says that if an instance of the object does not already exist, one should be created.
+
+==@ClearBooleans
+
+@ClearBooleans says that the boolean setters should be called so that boolean values can 
+be cleared. This is done for objects with boolean members which correspond to check boxes
+which will not transmit any value if they are not checked.
+
+==@Db
+
+@Db is used to load an object from the entity manager using a specified parameter from the
+request as the id.
 
 ==J2EE Annotations
 
