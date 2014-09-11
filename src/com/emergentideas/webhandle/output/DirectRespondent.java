@@ -1,6 +1,7 @@
 package com.emergentideas.webhandle.output;
 
 import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -111,7 +112,8 @@ public class DirectRespondent implements Respondent {
 			}
 		}
 		catch(IOException e) {
-			log.error("Could not write output.", e);
+			// no problem really, it's just that the client closed the connection
+//			log.error("Could not write output.", e);
 		}
 	}
 	

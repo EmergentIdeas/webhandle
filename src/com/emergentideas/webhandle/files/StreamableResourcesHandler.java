@@ -1,6 +1,7 @@
 package com.emergentideas.webhandle.files;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -8,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.emergentideas.logging.Logger;
 import com.emergentideas.logging.SystemOutLogger;
@@ -33,6 +37,8 @@ public class StreamableResourcesHandler {
 	protected int cacheTime;
 	protected boolean showDirectoryContents = false;
 	protected int secondsIn5Years = 5 * 365 * 24 * 60 * 60;
+	protected int maxRangeSize = 3000000;
+	
 	
 	public StreamableResourcesHandler(StreamableResourceSource source) {
 		this(source, 0);
@@ -49,9 +55,10 @@ public class StreamableResourcesHandler {
 		this.cacheTime = cacheTime;
 	}
 	
-	@Handle(value = "/{filePath:.+}", method = HttpMethod.GET)
+	@Handle(value = "/{filePath:.+}", method = {HttpMethod.GET, HttpMethod.HEAD})
 	@Template
-	public Object handle(String filePath, ServletContext servletContext, @Name("If-None-Match") String existingETag, Location loc) {
+	public Object handle(String filePath, ServletContext servletContext, @Name("If-None-Match") String existingETag, Location loc,
+			HttpServletRequest request) {
 		boolean virtual = isVirtualResource(filePath); 
 		if(virtual) {
 			filePath = getNonVirtualPath(filePath);
@@ -94,11 +101,72 @@ public class StreamableResourcesHandler {
 			headers.put("Expires", DateUtils.htmlExpiresDateFormat().format(c.getTime()));
 			StreamableResource sr = (StreamableResource)resource;
 			headers.put("ETag", sr.getEtag());
-			if(sr.getEtag().equals(trimETag(existingETag))) {
+			
+			Range range = null;
+			if(resource instanceof FixedSizeResource) {
+				headers.put("Accept-Ranges", "bytes");
+				long contentLength = ((FixedSizeResource)resource).getSizeInBytes();
+				if(StringUtils.isBlank(request.getHeader("Range"))) {
+					headers.put("Content-Length", contentLength + "");
+				}
+				else if(request.getHeader("Range").startsWith("bytes=")) {
+					String rangeString = request.getHeader("Range").substring(6);
+					rangeString = rangeString.trim();
+					int dash = rangeString.indexOf('-');
+					if(dash > -1) {
+						long start = Long.parseLong(rangeString.substring(0, dash));
+						
+						// This is the end byte, inclusive
+						long end;
+						if(dash + 1 == rangeString.length()) {
+							// This is the indication that we should send whatever we want
+							end = contentLength - 1;
+						}
+						else {
+							end = Long.parseLong(rangeString.substring(dash + 1));
+						}
+						
+						range = new Range(start, end, contentLength);
+						
+						if((range.end - range.start) > maxRangeSize) {
+							range.end = (range.start + maxRangeSize) - 1;
+						}
+						
+						if(end >= contentLength || start > end || start < 0 || end < 0) {
+							return new DirectRespondent(null, 416, headers);
+						}
+					}
+				}
+				
+			}
+			
+			if(range == null && sr.getEtag().equals(trimETag(existingETag))) {
 				return new DirectRespondent(null, 304, headers);
 			}
 			
 			try {
+				if(range != null) {
+					long length = ((range.end - range.start) + 1);
+					headers.put("Content-Range", "bytes " + range.start + "-" + range.end + "/" + range.contentLength);
+					headers.put("Content-Length", length + "");
+				}
+				if("HEAD".equalsIgnoreCase(request.getMethod())) {
+					return new DirectRespondent(null, 200, headers);
+				}
+				if(range != null) {
+					long length = (range.end - range.start) + 1;
+					byte[] content = new byte[(int)length];
+					try {
+						InputStream is = sr.getContent();
+						is.skip(range.start);
+						is.read(content);
+					}
+					catch(Exception e) {
+						e.printStackTrace();
+						throw new RuntimeException(e);
+					}
+					return new DirectRespondent(content, 206, headers);
+				}
 				return new DirectRespondent(sr.getContent(), 200, headers);
 			}
 			catch(Exception e) {
@@ -214,4 +282,18 @@ public class StreamableResourcesHandler {
 		this.source = source;
 	}
 	
+	
+	class Range {
+		public long start;
+		public long end;
+		public long contentLength;
+		
+		public Range() {}
+		
+		public Range(long start, long end, long contentLength) {
+			this.start = start;
+			this.end = end;
+			this.contentLength = contentLength;
+		}
+	}
 }

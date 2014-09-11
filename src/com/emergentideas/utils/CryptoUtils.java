@@ -41,11 +41,7 @@ public class CryptoUtils
 	 */
 	public static String generateMD5Hash(String s) throws Exception
 	{
-		java.security.MessageDigest m = MessageDigest.getInstance("MD5");
-		m.update(s.getBytes(), 0, s.length());
-		
-		String sDigest = new java.math.BigInteger(1,m.digest()).toString(16);
-		return(sDigest);
+		return generateMD5Hash(s.getBytes());
 	}
 	
 	/**

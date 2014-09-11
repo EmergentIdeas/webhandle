@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -65,10 +66,10 @@ public class StreamableResourcesHandlerTest {
 	
 	@Test
 	public void testDirectoryForward() throws Exception {
-		Object ret = handler.handle("dir", null, "123", new AppLocation());
+		Object ret = handler.handle("dir", null, "123", new AppLocation(), mock(HttpServletRequest.class));
 		assertTrue(ret instanceof CouldNotHandle);
 		handler.setShowDirectoryContents(true);
-		ret = handler.handle("dir", null, "123", new AppLocation());
+		ret = handler.handle("dir", null, "123", new AppLocation(), mock(HttpServletRequest.class));
 		assertTrue(ret instanceof Show);
 	}
 	
@@ -88,7 +89,7 @@ public class StreamableResourcesHandlerTest {
 		handler.setSource(source);
 		
 		Date now = new Date();
-		DirectRespondent resp = (DirectRespondent)handler.handle("file", servletContext, "234", new AppLocation());
+		DirectRespondent resp = (DirectRespondent)handler.handle("file", servletContext, "234", new AppLocation(), mock(HttpServletRequest.class));
 		assertTrue(DateUtils.htmlExpiresDateFormat().parse(resp.getHeaders().get("Expires")).before(now));
 	}
 	
@@ -108,7 +109,7 @@ public class StreamableResourcesHandlerTest {
 		handler.setSource(source);
 		
 		Date now = new Date();
-		DirectRespondent resp = (DirectRespondent)handler.handle("file", servletContext, "234", new AppLocation());
+		DirectRespondent resp = (DirectRespondent)handler.handle("file", servletContext, "234", new AppLocation(), mock(HttpServletRequest.class));
 		assertFalse(DateUtils.htmlExpiresDateFormat().parse(resp.getHeaders().get("Expires")).before(now));
 	}
 	
