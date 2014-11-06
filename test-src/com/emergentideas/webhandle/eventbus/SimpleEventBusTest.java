@@ -91,7 +91,19 @@ public class SimpleEventBusTest {
 		bus.emit("/one", null);
 		assertEquals(1, l.getCount());
 	}
+
+	@Test
+	public void testMultiMethodListener() throws Exception {
+		SimpleEventBus bus = new SimpleEventBus();
+		MultiCallMultiMethodListener l = new MultiCallMultiMethodListener();
+		
+		bus.register(l);
+		
+		bus.emit("/one", null);
+		assertEquals(1, l.getCount());
+	}
 	
+
 	@Test
 	public void testRemoveListener() throws Exception {
 		SimpleEventBus bus = new SimpleEventBus();

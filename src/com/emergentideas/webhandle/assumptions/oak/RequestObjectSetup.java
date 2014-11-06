@@ -51,7 +51,9 @@ public class RequestObjectSetup {
 		// See if we've got request messages left over from another session
 		RequestMessages errors = (RequestMessages)sessionLocation.get(RequestMessages.SESSION_LOCATION_KEY);
 		// Clear the messages no matter what
-		sessionLocation.put(RequestMessages.SESSION_LOCATION_KEY, null);
+		if(errors != null) {
+			sessionLocation.put(RequestMessages.SESSION_LOCATION_KEY, null);
+		}
 		
 		if(errors == null) {
 			errors = new RequestMessages(sessionLocation);

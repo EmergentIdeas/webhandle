@@ -11,6 +11,7 @@ import java.util.UUID;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.emergentideas.logging.Logger;
 import com.emergentideas.logging.SystemOutLogger;
@@ -23,6 +24,7 @@ import com.emergentideas.webhandle.Name;
 import com.emergentideas.webhandle.OutputResponseInvestigator;
 import com.emergentideas.webhandle.ParameterMarshal;
 import com.emergentideas.webhandle.ParameterMarshalConfiguration;
+import com.emergentideas.webhandle.SessionLocation;
 import com.emergentideas.webhandle.Type;
 import com.emergentideas.webhandle.WebAppLocation;
 import com.emergentideas.webhandle.Wire;
@@ -67,8 +69,9 @@ public class HandleCaller implements ResponseLifecycleHandler {
 	
 	public void respond(ServletContext servletContext,
 			HttpServletRequest request, HttpServletResponse response) {
-		setupUserSession(request, response);
-		Location userLocation = (Location)request.getSession().getAttribute(handlerLocationIdentifier);
+		
+		Location userLocation = setupUserSession(request, response);
+//		Location userLocation = (Location)request.getSession().getAttribute(handlerLocationIdentifier);
 		
 		
 		WebAppLocation webApp = new WebAppLocation(userLocation);
@@ -94,13 +97,19 @@ public class HandleCaller implements ResponseLifecycleHandler {
 		}
 	}
 	
-	protected void setupUserSession(HttpServletRequest request, HttpServletResponse response) {
+	protected Location setupUserSession(HttpServletRequest request, HttpServletResponse response) {
+		HttpSession session = request.getSession(false);
+		if(session == null) {
+			Location userLocation = new SessionLocation(handlerLocationIdentifier, request, location);
+			return userLocation;
+		}
 		Location loc = (Location)request.getSession().getAttribute(handlerLocationIdentifier);
 		if(loc == null) {
 			loc = new AppLocation(location);
 			loc.put(Constants.SESSION_LOCATION, loc);
 			request.getSession().setAttribute(handlerLocationIdentifier, loc);
 		}
+		return loc;
 	}
 
 	public void call(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, ParameterMarshal marshal) {
