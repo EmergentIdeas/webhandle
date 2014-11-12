@@ -52,6 +52,12 @@ public class PreCallObjectorInvestegator implements ObjectorInvestigator {
 		CallSpec cs = ReflectionUtils.getFirstMethodCallSpec(precallObject, pc.value());
 		if(cs != null) {
 			cs.setFailOnMissingParameter(false);
+			if(cs.getMethod() != null && method != null) {
+				if(cs.getMethod().toString().equals(method.toString())) {
+					// This means our check method is our check method, so we can skip this
+					return null;
+				}
+			}
 		}
 		
 		return cs;
