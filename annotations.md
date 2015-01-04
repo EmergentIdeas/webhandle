@@ -97,3 +97,12 @@ This has the same effect as requesting with the parameter
 Either of these methods will keep the output from generating the html element, the head and body elements and their
 associated interior code and just write the contents of the body to the line. This is needed for sending back ajax
 html or json.
+
+Receiving Notification
+======================
+
+Webhandle contains an event notification system. It is an synchronous, loosely bound, annotation drivien system. It's not fundamental to webhandle (you can use any messaging system you want), but it's simple enough and useful enough that it will work for most jobs. To emit messages, you can have the class com.emergentideas.webhandle.eventbus.EventBus injected in to your class.
+
+To listen for messages, you can use the annotation @EventListener which will let you specify that the class should listen on one or more queues. To be called, the type of the argument must be compatible with the type of the message object emitted. Only one method per class can be mapped to a queue, so if you'd like to accept messages that have multiple types of messages on the same queue, then the class type of the argument on the listener should be Object.
+
+The webhandle crud tools package emit events if the event bus is available. For creation, update, and delete, they emit on the queues /object/create, /object/update, and /object/delete, respectively. Among other things, this can make it really simple to cache an object and receive notification when it is updated.
