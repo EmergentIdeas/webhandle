@@ -95,7 +95,7 @@ public class JavaObjectSerializerTest<T extends Object> {
 		output = new SegmentedOutput();
 		ser.serialize(output, new SimpleData1(), "default");
 		result = output.getStream("body").toString();
-		assertTrue(result.contains("new Date("));
+		assertFalse(result.contains("new Date("));
 		
 		output = new SegmentedOutput();
 		ser.serialize(output, new SimpleData1(), "date-as-string");

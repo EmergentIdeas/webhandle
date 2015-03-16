@@ -26,13 +26,7 @@ public abstract class DateSerializerBase<T> implements ObjectSerializer<T> {
 		}
 		else {
 			boolean asString = ReflectionUtils.contains(allowedSerializationProfiles, "date-as-string");
-			if(!asString) {
-				sb.append("new Date(");
-			}
 			sb.append('"' + jsonDateFormatter.format(objToSerialize) + '"');
-			if(!asString) {
-				sb.append(")");
-			}
 		}
 	}
 

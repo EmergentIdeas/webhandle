@@ -17,9 +17,16 @@ import com.emergentideas.webhandle.output.SegmentedOutput;
 public class JavaObjectSerializer implements ObjectSerializer<Object> {
 
 	protected MapSerializer mapSerializer = new MapSerializer();
+	protected EnumSerializer enumSerializer = new EnumSerializer();
 	
 	public void serialize(Serializer callingSerializer, SegmentedOutput output,
 			Object objToSerialize, String... allowedSerializationProfiles) throws Exception {
+		
+		if(objToSerialize instanceof Enum) {
+			enumSerializer.serialize(callingSerializer, output, (Enum)objToSerialize, allowedSerializationProfiles);
+			return;
+		}
+		
 		Map<String, Object> values = new LinkedHashMap<String, Object>();
 		
 		BeanInfo info = Introspector.getBeanInfo(objToSerialize.getClass());
@@ -84,6 +91,9 @@ public class JavaObjectSerializer implements ObjectSerializer<Object> {
 			return true;
 		}
 		if(Calendar.class.isAssignableFrom(returnType)) {
+			return true;
+		}
+		if(Enum.class.isAssignableFrom(returnType)) {
 			return true;
 		}
 		
