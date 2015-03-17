@@ -3,6 +3,7 @@ package com.emergentideas.webhandle.json;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Calendar;
 import java.util.Collection;
@@ -31,7 +32,11 @@ public class JavaObjectSerializer implements ObjectSerializer<Object> {
 		
 		BeanInfo info = Introspector.getBeanInfo(objToSerialize.getClass());
 		for(PropertyDescriptor pd : info.getPropertyDescriptors()) {
-			if(ReflectionUtils.isReturnTypeVoid(pd.getReadMethod())) {
+			Method m = pd.getReadMethod();
+			if(m == null) {
+				continue;
+			}
+			if(ReflectionUtils.isReturnTypeVoid(m)) {
 				continue;
 			}
 			String name = pd.getName();
