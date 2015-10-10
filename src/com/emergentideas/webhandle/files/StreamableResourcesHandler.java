@@ -37,7 +37,7 @@ public class StreamableResourcesHandler {
 	protected int cacheTime;
 	protected boolean showDirectoryContents = false;
 	protected int secondsIn5Years = 5 * 365 * 24 * 60 * 60;
-	protected int maxRangeSize = 3000000;
+	protected int maxRangeSize = 300000000;
 	
 	
 	public StreamableResourcesHandler(StreamableResourceSource source) {
@@ -155,17 +155,16 @@ public class StreamableResourcesHandler {
 				}
 				if(range != null) {
 					long length = (range.end - range.start) + 1;
-					byte[] content = new byte[(int)length];
 					try {
 						InputStream is = sr.getContent();
 						is.skip(range.start);
-						is.read(content);
+						ConstrainedInputStream constrained = new ConstrainedInputStream(is, length);
+						return new DirectRespondent(constrained, 206, headers);
 					}
 					catch(Exception e) {
 						e.printStackTrace();
 						throw new RuntimeException(e);
 					}
-					return new DirectRespondent(content, 206, headers);
 				}
 				return new DirectRespondent(sr.getContent(), 200, headers);
 			}
