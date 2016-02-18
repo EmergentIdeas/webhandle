@@ -97,12 +97,23 @@ public class DirectRespondent implements Respondent {
 		}
 		
 		try {
+			response.flushBuffer();
+		} catch (IOException e1) {
+		}
+		
+		try {
 			OutputStream os = createOutputStream(servletContext, request, response);
 			if(userMessage != null) {
-				byte[] temp = new byte[10000];
+				byte[] temp = new byte[262144];
 				int i;
 				while((i = userMessage.read(temp)) > 0) {
 					os.write(temp, 0, i);
+					
+					try {
+						os.flush();
+						response.flushBuffer();
+					} catch (IOException e1) {
+					}
 				}
 			}
 			

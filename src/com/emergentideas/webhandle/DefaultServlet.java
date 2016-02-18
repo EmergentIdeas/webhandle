@@ -61,6 +61,7 @@ public class DefaultServlet extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");
 		if(handle == null) {
 			System.err.println("No configuration found");
 		}
