@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +26,7 @@ import com.emergentideas.webhandle.handlers.HttpMethod;
 import com.emergentideas.webhandle.output.DirectRespondent;
 import com.emergentideas.webhandle.output.Show;
 import com.emergentideas.webhandle.output.Template;
+import com.google.common.base.Objects;
 
 /**
  * Serves file and directory resources from a StreamableResourceSource on request by path.
@@ -38,12 +41,120 @@ public class StreamableResourcesHandler {
 	protected boolean showDirectoryContents = false;
 	protected int secondsIn5Years = 5 * 365 * 24 * 60 * 60;
 	protected int maxRangeSize = 300000000;
+	protected String directoryDefaultFiles;
+	
+	protected String builtDirectoryDefaultFiles;
+	protected List<Pattern> patterns;
 	
 	
 	public StreamableResourcesHandler(StreamableResourceSource source) {
 		this(source, 0);
 	}
 	
+	
+	protected Object serverResource(String filePath, ServletContext servletContext, @Name("If-None-Match") String existingETag, Location loc,
+			HttpServletRequest request, Resource resource, boolean virtual) {
+		
+		// must-revalidate causes the browser to rigorously adhere to the caching rules without take
+		// what the spec refers to as "liberties". It does not, as the name would imply, cause every
+		// use of a cached object to be revalidated against the server copy.
+		String revalidateSegment = ", must-revalidate";
+		
+		Calendar c = Calendar.getInstance();
+		int effectiveCacheTime = cacheTime;
+		if(virtual) {
+			// virtual resources are assumed never to be changed so let's give them a long cache time
+			c.add(Calendar.YEAR, 5);
+			effectiveCacheTime = secondsIn5Years;
+		}
+		else if(cacheTime > 0) {
+			c.add(Calendar.SECOND, cacheTime);
+		}
+		else {
+			// if the cache time is zero we'll push the expire date back an hour to account for any difference
+			// between the client's clock and the server clock
+			c.add(Calendar.HOUR, -1);
+		}
+
+		Map<String, String> headers = new HashMap<String, String>();
+
+		headers.put("Content-Type", servletContext.getMimeType(filePath));
+		headers.put("Cache-Control" , (effectiveCacheTime > 0 ? "public, " : "no-cache, ") + "max-age=" + effectiveCacheTime + revalidateSegment);
+		headers.put("Expires", DateUtils.htmlExpiresDateFormat().format(c.getTime()));
+		StreamableResource sr = (StreamableResource)resource;
+		headers.put("ETag", sr.getEtag());
+		
+		Range range = null;
+		if(resource instanceof FixedSizeResource) {
+			headers.put("Accept-Ranges", "bytes");
+			long contentLength = ((FixedSizeResource)resource).getSizeInBytes();
+			if(StringUtils.isBlank(request.getHeader("Range"))) {
+				headers.put("Content-Length", contentLength + "");
+			}
+			else if(request.getHeader("Range").startsWith("bytes=")) {
+				String rangeString = request.getHeader("Range").substring(6);
+				rangeString = rangeString.trim();
+				int dash = rangeString.indexOf('-');
+				if(dash > -1) {
+					long start = Long.parseLong(rangeString.substring(0, dash));
+					
+					// This is the end byte, inclusive
+					long end;
+					if(dash + 1 == rangeString.length()) {
+						// This is the indication that we should send whatever we want
+						end = contentLength - 1;
+					}
+					else {
+						end = Long.parseLong(rangeString.substring(dash + 1));
+					}
+					
+					range = new Range(start, end, contentLength);
+					
+					if((range.end - range.start) > maxRangeSize) {
+						range.end = (range.start + maxRangeSize) - 1;
+					}
+					
+					if(end >= contentLength || start > end || start < 0 || end < 0) {
+						return new DirectRespondent(null, 416, headers);
+					}
+				}
+			}
+			
+		}
+		
+		if(range == null && sr.getEtag().equals(trimETag(existingETag))) {
+			return new DirectRespondent(null, 304, headers);
+		}
+		
+		try {
+			if(range != null) {
+				long length = ((range.end - range.start) + 1);
+				headers.put("Content-Range", "bytes " + range.start + "-" + range.end + "/" + range.contentLength);
+				headers.put("Content-Length", length + "");
+			}
+			if("HEAD".equalsIgnoreCase(request.getMethod())) {
+				return new DirectRespondent(null, 200, headers);
+			}
+			if(range != null) {
+				long length = (range.end - range.start) + 1;
+				try {
+					InputStream is = sr.getContent();
+					is.skip(range.start);
+					ConstrainedInputStream constrained = new ConstrainedInputStream(is, length);
+					return new DirectRespondent(constrained, 206, headers);
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+					throw new RuntimeException(e);
+				}
+			}
+			return new DirectRespondent(sr.getContent(), 200, headers);
+		}
+		catch(Exception e) {
+			log.error("Could not serve content for path: " + filePath, e);
+			throw new RuntimeException(e);
+		}
+	}
 	/**
 	 * 
 	 * @param source
@@ -72,131 +183,60 @@ public class StreamableResourcesHandler {
 			return new CouldNotHandle() {};
 		}
 		
-		// must-revalidate causes the browser to rigorously adhere to the caching rules without take
-		// what the spec refers to as "liberties". It does not, as the name would imply, cause every
-		// use of a cached object to be revalidated against the server copy.
-		String revalidateSegment = ", must-revalidate";
-		
-		Calendar c = Calendar.getInstance();
-		int effectiveCacheTime = cacheTime;
-		if(virtual) {
-			// virtual resources are assumed never to be changed so let's give them a long cache time
-			c.add(Calendar.YEAR, 5);
-			effectiveCacheTime = secondsIn5Years;
-		}
-		else if(cacheTime > 0) {
-			c.add(Calendar.SECOND, cacheTime);
-		}
-		else {
-			// if the cache time is zero we'll push the expire date back an hour to account for any difference
-			// between the client's clock and the server clock
-			c.add(Calendar.HOUR, -1);
-		}
 
-		Map<String, String> headers = new HashMap<String, String>();
 		
 		if(resource instanceof StreamableResource) {
-			headers.put("Content-Type", servletContext.getMimeType(filePath));
-			headers.put("Cache-Control" , (effectiveCacheTime > 0 ? "public, " : "no-cache, ") + "max-age=" + effectiveCacheTime + revalidateSegment);
-			headers.put("Expires", DateUtils.htmlExpiresDateFormat().format(c.getTime()));
-			StreamableResource sr = (StreamableResource)resource;
-			headers.put("ETag", sr.getEtag());
-			
-			Range range = null;
-			if(resource instanceof FixedSizeResource) {
-				headers.put("Accept-Ranges", "bytes");
-				long contentLength = ((FixedSizeResource)resource).getSizeInBytes();
-				if(StringUtils.isBlank(request.getHeader("Range"))) {
-					headers.put("Content-Length", contentLength + "");
-				}
-				else if(request.getHeader("Range").startsWith("bytes=")) {
-					String rangeString = request.getHeader("Range").substring(6);
-					rangeString = rangeString.trim();
-					int dash = rangeString.indexOf('-');
-					if(dash > -1) {
-						long start = Long.parseLong(rangeString.substring(0, dash));
-						
-						// This is the end byte, inclusive
-						long end;
-						if(dash + 1 == rangeString.length()) {
-							// This is the indication that we should send whatever we want
-							end = contentLength - 1;
-						}
-						else {
-							end = Long.parseLong(rangeString.substring(dash + 1));
-						}
-						
-						range = new Range(start, end, contentLength);
-						
-						if((range.end - range.start) > maxRangeSize) {
-							range.end = (range.start + maxRangeSize) - 1;
-						}
-						
-						if(end >= contentLength || start > end || start < 0 || end < 0) {
-							return new DirectRespondent(null, 416, headers);
-						}
+			return serverResource(filePath, servletContext, existingETag, loc, request, resource, virtual);
+		}
+		else if(resource instanceof Directory) {
+			if(StringUtils.isNotBlank(directoryDefaultFiles)) {
+				if(filePath.endsWith("/") == false) {
+					if(isAbsoluteFilePath(filePath) == false) {
+						filePath = "/" + filePath;
 					}
+					return new Show(filePath + "/");
 				}
 				
-			}
-			
-			if(range == null && sr.getEtag().equals(trimETag(existingETag))) {
-				return new DirectRespondent(null, 304, headers);
-			}
-			
-			try {
-				if(range != null) {
-					long length = ((range.end - range.start) + 1);
-					headers.put("Content-Range", "bytes " + range.start + "-" + range.end + "/" + range.contentLength);
-					headers.put("Content-Length", length + "");
-				}
-				if("HEAD".equalsIgnoreCase(request.getMethod())) {
-					return new DirectRespondent(null, 200, headers);
-				}
-				if(range != null) {
-					long length = (range.end - range.start) + 1;
-					try {
-						InputStream is = sr.getContent();
-						is.skip(range.start);
-						ConstrainedInputStream constrained = new ConstrainedInputStream(is, length);
-						return new DirectRespondent(constrained, 206, headers);
-					}
-					catch(Exception e) {
-						e.printStackTrace();
-						throw new RuntimeException(e);
-					}
-				}
-				return new DirectRespondent(sr.getContent(), 200, headers);
-			}
-			catch(Exception e) {
-				log.error("Could not serve content for path: " + filePath, e);
-				throw new RuntimeException(e);
-			}
-		}
-		else if(showDirectoryContents && resource instanceof Directory) {
-			if(filePath.endsWith("/") == false) {
-				if(isAbsoluteFilePath(filePath) == false) {
-					filePath = "/" + filePath;
-				}
-				return new Show(filePath + "/");
-			}
-			Directory dir = (Directory)resource;
-			List<String> entries = new ArrayList<String>();
-			for(Resource r : dir.getEntries()) {
-				if(r instanceof NamedResource) {
-					String name = ((NamedResource)r).getName();
-					if(r instanceof Directory) {
-						if(name.endsWith("/") == false) {
-							name += "/";
+				Directory dir = (Directory)resource;
+				List<String> entries = new ArrayList<String>();
+				for(Resource r : dir.getEntries()) {
+					if(r instanceof NamedResource) {
+						if(r instanceof Directory == false) {
+							String name = ((NamedResource)r).getName();
+							if(isNameDirectoryDefault(name)) {
+								return serverResource(filePath, servletContext, existingETag, loc, request, r, false);
+							}
 						}
+						
 					}
-					
-					entries.add(name);
 				}
 			}
-			loc.put("entries", entries);
-			loc.put("directoryLocation", filePath);
-			return "filetemplates/directoryIndex";
+			
+			if(showDirectoryContents) {
+				if(filePath.endsWith("/") == false) {
+					if(isAbsoluteFilePath(filePath) == false) {
+						filePath = "/" + filePath;
+					}
+					return new Show(filePath + "/");
+				}
+				Directory dir = (Directory)resource;
+				List<String> entries = new ArrayList<String>();
+				for(Resource r : dir.getEntries()) {
+					if(r instanceof NamedResource) {
+						String name = ((NamedResource)r).getName();
+						if(r instanceof Directory) {
+							if(name.endsWith("/") == false) {
+								name += "/";
+							}
+						}
+						
+						entries.add(name);
+					}
+				}
+				loc.put("entries", entries);
+				loc.put("directoryLocation", filePath);
+				return "filetemplates/directoryIndex";
+			}
 		}
 		
 		return new CouldNotHandle() {};
@@ -253,6 +293,31 @@ public class StreamableResourcesHandler {
 		return null;
 	}
 	
+	public void buildDirectoryDefaultExpressionsIfNeeded() {
+		if(Objects.equal(directoryDefaultFiles, builtDirectoryDefaultFiles) == false) {
+			patterns = Collections.synchronizedList(new ArrayList<Pattern>());
+			
+			String[] parts = directoryDefaultFiles.split(",");
+			for(String part : parts) {
+				patterns.add(Pattern.compile(part));
+			}
+		}
+		
+	}
+	
+	public synchronized boolean isNameDirectoryDefault(String name) {
+		buildDirectoryDefaultExpressionsIfNeeded();
+		if(patterns != null && patterns.size() > 0) {
+			for(Pattern pattern : patterns) {
+				if(pattern.matcher(name).matches()) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
 	protected int getVitualFixedOffset(String filePath) {
 		return 5;
 	}
@@ -282,6 +347,17 @@ public class StreamableResourcesHandler {
 	}
 	
 	
+	
+	public String getDirectoryDefaultFiles() {
+		return directoryDefaultFiles;
+	}
+
+	public void setDirectoryDefaultFiles(String directoryDefaultFiles) {
+		this.directoryDefaultFiles = directoryDefaultFiles;
+	}
+
+
+
 	class Range {
 		public long start;
 		public long end;

@@ -30,6 +30,7 @@ public class PublicResourcesIntegrator implements Creator, Integrator {
 
 	public static final String SHOW_DIRECTORY_CONTENTS = "showDirectoryContents";
 	public static final String CACHE_TIME = "cacheTime";
+	public static final String DIRECTORY_DEFAULT_FILES = "directoryDefaultFiles";
 	
 	protected HandlerInvestigator handlerInvestigator;
 	
@@ -44,6 +45,11 @@ public class PublicResourcesIntegrator implements Creator, Integrator {
 					String cacheTime = propAtom.getProperties().get(CACHE_TIME);
 					if(StringUtils.isNotBlank(cacheTime)) {
 						handler.setCacheTime(Integer.parseInt(cacheTime));
+					}
+					
+					String directoryDefaultFiles = propAtom.getProperties().get(DIRECTORY_DEFAULT_FILES);
+					if(StringUtils.isNotBlank(directoryDefaultFiles)) {
+						handler.setDirectoryDefaultFiles(directoryDefaultFiles);
 					}
 				}
 				handlerInvestigator.analyzeObject(handler);
