@@ -222,7 +222,7 @@ public class BindingUtils
 						}
 						else {
 							List values = data.all(nameOfInput);
-							if(values.contains(buttonValue)) {
+							if(doesListContain(buttonValue, values)) {
 								s = addValueBeforeFirstElementTermination(s, "checked=\"checked\"");
 							}
 						}
@@ -300,6 +300,26 @@ public class BindingUtils
 		}
 		
 		return sb.toString();
+	}
+	
+	public static boolean doesListContain(String focus, List l) {
+		
+		for(Object o : l) {
+			if(focus == o) {
+				return true;
+			}
+			if(focus == null) {
+				continue;
+			}
+			if(o != null) {
+				String s = o.toString();
+				if(focus.equals(s)) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 	public static String addValuesToSelectElements(Location data, String text)
