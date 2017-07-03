@@ -41,6 +41,10 @@ An example would be:
 
 public-resource->static_content?showDirectoryContents=true&cacheTime=3600
 
+This will also allow a default set of files like
+
+public-resource->static-content?directoryDefaultFiles=(?i)index.htm.?
+
 
 including other configurations
 ==============================
